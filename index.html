@@ -184,28 +184,28 @@
       }
     });
 
-  submitBtn.addEventListener('click', () => {
-  const data = {
-    product: productType.value,
-    text: textInput.value,
-    textColor: textColor.value,
-    bgColor: bgColor.value
-  };
-
-  // Your actual Google Form URL
-  const baseUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSd5FvoEdzSMsDMcg0Bwqok-fIrxrFldzu1wvw91pqc-0ccMHA/viewform?';
-
-  // Map your form fields to your studio data
-  const params = new URLSearchParams({
-    'entry.2141379241': data.product,
-    'entry.1449325312': data.text,
-    'entry.1145569502': data.textColor,
-    'entry.125041649': data.bgColor
-  });
-
-  // Redirect user to the pre-filled form
-  window.location.href = baseUrl + params.toString();
-});
+    submitBtn.addEventListener('click', () => {
+    const data = {
+      product: productType.value,
+      text: textInput.value,
+      textColor: textColor.value,
+      bgColor: bgColor.value
+    };
+  
+    // Your actual Google Form URL
+    const baseUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSd5FvoEdzSMsDMcg0Bwqok-fIrxrFldzu1wvw91pqc-0ccMHA/viewform?';
+  
+    // Map your form fields to your studio data
+    const params = new URLSearchParams({
+      'entry.2141379241': data.product,
+      'entry.1449325312': data.text,
+      'entry.1145569502': data.textColor,
+      'entry.125041649': data.bgColor
+    });
+  
+    // Redirect user to the pre-filled form
+    window.location.href = baseUrl + params.toString();
+    });
 
 
       // For now, just show it. Later we’ll send this to a Google Form.
