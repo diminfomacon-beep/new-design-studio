@@ -124,9 +124,9 @@
       <div class="control-group">
         <label for="productType">Product</label>
         <select id="productType">
-          <option value="shirt">Shirt</option>
-          <option value="tumbler">Tumbler</option>
-          <option value="mug">Mug</option>
+          <option value="T-Shirt">T-Shirt</option>
+          <option value="Ornament">Ornament</option>
+          <option value="Tumbler">Tumbler</option>
         </select>
       </div>
 
@@ -142,12 +142,12 @@
 
       <div class="control-group">
         <label for="bgColor">Background Color</label>
-        <input type="color" id="bgColor" value="#e0e0e0" />
+        <input type="color" id="bgColor" value="#ffffff" />
       </div>
 
       <button id="submitDesign">Continue / Submit Design</button>
       <div class="note">
-        In a later step, this button can send your design details to a Google Form or order page.
+        Your design will be sent to the order form automatically.
       </div>
     </div>
   </div>
@@ -174,10 +174,9 @@
     });
 
     productType.addEventListener('change', () => {
-      // Simple visual tweak per product type
-      if (productType.value === 'ornament') {
+      if (productType.value === 'Ornament') {
         productShape.style.borderRadius = '50%';
-      } else if (productType.value === 'tumbler') {
+      } else if (productType.value === 'Tumbler') {
         productShape.style.borderRadius = '20px';
       } else {
         productShape.style.borderRadius = '8px';
@@ -185,31 +184,23 @@
     });
 
     submitBtn.addEventListener('click', () => {
-    const data = {
-      product: productType.value,
-      text: textInput.value,
-      textColor: textColor.value,
-      bgColor: bgColor.value
-    };
-  
-    // Your actual Google Form URL
-    const baseUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSd5FvoEdzSMsDMcg0Bwqok-fIrxrFldzu1wvw91pqc-0ccMHA/viewform?';
-  
-    // Map your form fields to your studio data
-    const params = new URLSearchParams({
-      'entry.2141379241': data.product,
-      'entry.1449325312': data.text,
-      'entry.1145569502': data.textColor,
-      'entry.125041649': data.bgColor
-    });
-  
-    // Redirect user to the pre-filled form
-    window.location.href = baseUrl + params.toString();
-    });
+      const data = {
+        product: productType.value,
+        text: textInput.value,
+        textColor: textColor.value,
+        bgColor: bgColor.value
+      };
 
+      const baseUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSd5FvoEdzSMsDMcg0Bwqok-fIrxrFldzu1wvw91pqc-0ccMHA/viewform?';
 
-      // For now, just show it. Later we’ll send this to a Google Form.
-      alert('Design captured:\\n' + JSON.stringify(data, null, 2));
+      const params = new URLSearchParams({
+        'entry.2141379241': data.product,
+        'entry.1449325312': data.text,
+        'entry.1145569502': data.textColor,
+        'entry.125041649': data.bgColor
+      });
+
+      window.location.href = baseUrl + params.toString();
     });
   </script>
 </body>
