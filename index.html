@@ -125,7 +125,7 @@
         <label for="productType">Product</label>
         <select id="productType">
           <option value="T-Shirt">T-Shirt</option>
-          <option value="Mug">Mug</option>
+          <option value="Ornament">Ornament</option>
           <option value="Tumbler">Tumbler</option>
         </select>
       </div>
@@ -200,7 +200,10 @@
         'entry.125041649': data.bgColor
       });
 
-      window.location.href = baseUrl + params.toString();
+      const finalURL = baseUrl + params.toString();
+
+      // OPEN GOOGLE FORM IN A NEW TAB (FIXED)
+      window.top.open(finalURL, "_blank");
     });
   </script>
 </body>
