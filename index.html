@@ -30,7 +30,6 @@
       gap: 30px;
     }
 
-    /* Steps Display */
     .step-indicator {
       grid-column: 1 / -1;
       display: flex;
@@ -46,7 +45,6 @@
     }
     .step-dot.active { background: var(--accent); }
 
-    /* Preview Logic */
     .preview-container {
       background: #fdfdfd;
       border: 1px solid #eee;
@@ -68,7 +66,6 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.05);
     }
 
-    /* Product Shapes */
     .shape-tshirt { width: 260px; height: 260px; border-radius: 12px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
     .shape-ornament { width: 240px; height: 240px; border-radius: 50%; }
     .shape-tumbler { width: 160px; height: 280px; border-radius: 10px 10px 40px 40px; }
@@ -83,7 +80,6 @@
       pointer-events: none;
     }
 
-    /* Controls */
     .controls-panel { display: flex; flex-direction: column; gap: 18px; }
     .step-content { display: none; flex-direction: column; gap: 15px; }
     .step-content.active { display: flex; }
@@ -93,13 +89,14 @@
     input[type="text"], select { padding: 10px; border-radius: 8px; border: 1px solid #ddd; outline-color: var(--accent); }
     .color-row { display: flex; gap: 15px; }
 
-    .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
     button { 
-      flex: 1; padding: 12px; border-radius: 8px; border: none; 
+      flex: 1; min-width: 120px; padding: 12px; border-radius: 8px; border: none; 
       font-weight: 600; cursor: pointer; transition: opacity 0.2s; 
     }
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: #e5e7eb; color: #374151; }
+    .btn-share { background: #dbeafe; color: #1e40af; }
     button:hover { opacity: 0.9; }
 
     .summary-box {
@@ -158,7 +155,8 @@
 
       <div class="btn-group">
         <button class="btn-secondary" id="resetBtn">Reset</button>
-        <button class="btn-primary" id="nextBtn">Review Design →</button>
+        <button class="btn-share" id="shareBtn">🔗 Copy Design Link</button>
+        <button class="btn-primary" id="nextBtn" style="width: 100%;">Review Design →</button>
       </div>
     </div>
 
@@ -175,12 +173,10 @@
         <button class="btn-primary" id="submitDesign">Finalize & Order</button>
       </div>
     </div>
-    
   </div>
 </div>
 
 <script>
-  // Elements
   const textInput = document.getElementById('textInput');
   const textColor = document.getElementById('textColor');
   const bgColor = document.getElementById('bgColor');
@@ -189,41 +185,63 @@
   const productType = document.getElementById('productType');
   const previewLabel = document.getElementById('previewLabel');
 
-  // Navigation
   const step1 = document.getElementById('step1');
   const step2 = document.getElementById('step2');
   const dot1 = document.getElementById('dot1');
   const dot2 = document.getElementById('dot2');
 
-  // Listeners
-  textInput.addEventListener('input', () => {
+  // Load from URL if exists
+  window.addEventListener('load', () => {
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+      const params = new URLSearchParams(hash);
+      if (params.has('p')) productType.value = params.get('p');
+      if (params.has('t')) textInput.value = params.get('t');
+      if (params.has('tc')) textColor.value = params.get('tc');
+      if (params.has('bg')) bgColor.value = params.get('bg');
+      
+      // Refresh UI
+      updateUI();
+    }
+  });
+
+  function updateUI() {
     designText.textContent = textInput.value || 'Your Text Here';
-  });
-
-  textColor.addEventListener('input', () => {
     designText.style.color = textColor.value;
-  });
-
-  bgColor.addEventListener('input', () => {
     productShape.style.backgroundColor = bgColor.value;
-  });
-
-  productType.addEventListener('change', () => {
+    
     const val = productType.value;
     previewLabel.textContent = `${val.toUpperCase()} MOCKUP`;
-    
-    // Reset classes
     productShape.className = 'product-stage';
     if (val === 'Ornament') productShape.classList.add('shape-ornament');
     else if (val === 'Tumbler') productShape.classList.add('shape-tumbler');
     else productShape.classList.add('shape-tshirt');
+  }
+
+  // Listeners
+  [textInput, textColor, bgColor, productType].forEach(el => {
+    el.addEventListener('input', updateUI);
   });
 
-  // Flow Logic
+  // Share Logic
+  document.getElementById('shareBtn').addEventListener('click', () => {
+    const params = new URLSearchParams({
+      p: productType.value,
+      t: textInput.value,
+      tc: textColor.value,
+      bg: bgColor.value
+    });
+    const shareUrl = window.location.origin + window.location.pathname + '#' + params.toString();
+    
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      alert("Design link copied to clipboard!");
+    });
+  });
+
+  // Navigation Logic
   document.getElementById('nextBtn').addEventListener('click', () => {
     document.getElementById('revProduct').textContent = productType.value;
     document.getElementById('revText').textContent = textInput.value || "(No text entered)";
-    
     step1.classList.remove('active');
     step2.classList.add('active');
     dot2.classList.add('active');
@@ -236,29 +254,20 @@
   });
 
   document.getElementById('resetBtn').addEventListener('click', () => {
-    if(confirm("Start over from scratch?")) {
-        textInput.value = "";
-        designText.textContent = "Your Text Here";
-        textColor.value = "#000000";
-        designText.style.color = "#000000";
-        bgColor.value = "#ffffff";
-        productShape.style.backgroundColor = "#ffffff";
-        productType.value = "T-Shirt";
-        productType.dispatchEvent(new Event('change'));
+    if(confirm("Start over?")) {
+        window.location.hash = "";
+        window.location.reload();
     }
   });
 
-  // Final Submission
   document.getElementById('submitDesign').addEventListener('click', () => {
     const baseUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSd5FvoEdzSMsDMcg0Bwqok-fIrxrFldzu1wvw91pqc-0ccMHA/viewform?';
-    
     const params = new URLSearchParams({
       'entry.2141379241': productType.value,
       'entry.1449325312': textInput.value,
       'entry.1145569502': textColor.value,
       'entry.125041649': bgColor.value
     });
-
     window.open(baseUrl + params.toString(), "_blank");
   });
 </script>
