@@ -190,21 +190,23 @@
         textColor: textColor.value,
         bgColor: bgColor.value
       };
-
+    
       const baseUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSd5FvoEdzSMsDMcg0Bwqok-fIrxrFldzu1wvw91pqc-0ccMHA/viewform?';
-
+    
       const params = new URLSearchParams({
         'entry.2141379241': data.product,
         'entry.1449325312': data.text,
         'entry.1145569502': data.textColor,
         'entry.125041649': data.bgColor
       });
-
+    
       const finalURL = baseUrl + params.toString();
-
-      // Open Google Form in a new tab
+    
+      // ✔️ Works inside Google Sites iframe
       window.open(finalURL, "_blank");
     });
+
+    
   </script>
 </body>
 </html>
