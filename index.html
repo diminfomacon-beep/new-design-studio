@@ -184,26 +184,26 @@
       }
     });
 
-   submitBtn.addEventListener('click', () => {
-    const data = {
-      product: productType.value,
-      text: textInput.value,
-      textColor: textColor.value,
-      bgColor: bgColor.value
+  submitBtn.addEventListener('click', () => {
+  const data = {
+    product: productType.value,
+    text: textInput.value,
+    textColor: textColor.value,
+    bgColor: bgColor.value
   };
 
-  // 1. Base URL from your pre-filled link (everything before the first "entry.")
+  // Your actual Google Form URL
   const baseUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSd5FvoEdzSMsDMcg0Bwqok-fIrxrFldzu1wvw91pqc-0ccMHA/viewform?';
 
-  // 2. Map your form's entry IDs to the data
+  // Map your form fields to your studio data
   const params = new URLSearchParams({
-    'entry.2141379241': data.product,    // Product type
-    'entry.1449325312': data.text,       // Custom text
-    'entry.1145569502': data.textColor,  // Text color
-    'entry.125041649': data.bgColor     // Background color
+    'entry.2141379241': data.product,
+    'entry.1449325312': data.text,
+    'entry.1145569502': data.textColor,
+    'entry.125041649': data.bgColor
   });
 
-  // 3. Redirect the user to the pre-filled form
+  // Redirect user to the pre-filled form
   window.location.href = baseUrl + params.toString();
 });
 
