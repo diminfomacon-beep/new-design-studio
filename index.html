@@ -1,949 +1,367 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>D.I.M. Design Studio</title>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Custom Design Studio</title>
-    
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    
-    <link rel="stylesheet" href="..."/>
-    </head>
-  
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>D.I.M. Design Studio</title>
 
-  <style>
-    :root {
-      --primary: #111827;
-      --accent: #3b82f6;
-      --bg-light: #f5f5f5;
-      --border-color: #ddd;
-    }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--bg-light);
-      margin: 0;
-      padding: 10px;
-      display: flex;
-      justify-content: center;
-      user-select: none;
-      box-sizing: border-box;
-    }
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 
-    .studio-wrapper {
-      background: #CAE4DB;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      padding: 15px;
-      width: 100%;
-      display: grid;
-      grid-template-columns: 240px 1fr 240px;
-      gap: 15px;
-      box-sizing: border-box;
-    }
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
 
-    /* PANELS */
-    .gallery-panel {
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 10px;
-      background: #f9fafb;
-      display: flex;
-      flex-direction: column;
-      height: 550px;
-      overflow: hidden;
-    }
-    .gallery-header { margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px; }
-    .gallery-title { font-size: 13px; font-weight: bold; color: #333; }
-    
-    .gallery-search {
-        padding: 5px; border-radius: 6px; border: 1px solid #ddd; font-size: 11px; width: 100%; box-sizing: border-box;
-    }
-    .alignment-guide {
-        position: absolute;
-        background-color: var(--accent);
-        display: none;
-        z-index: 100;
-    }
-    
-    #guide-h {
-        height: 1px;
-        width: 100%;
-        top: 50%;
-        left: 0;
-        transform: translateY(-50%);
-    }
-    
-    #guide-v {
-        width: 1px;
-        height: 100%;
-        left: 50%;
-        top: 0;
-        transform: translateX(-50%);
-    }
-    .mini-gallery-container {
-        margin-bottom: 10px;
-        height: 200px; /* Fixed height for each gallery */
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .mini-gallery-title {
-        font-size: 10px;
-        color: var(--accent);
-        text-transform: uppercase;
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-    
-    .gallery-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
-        gap: 5px;
-        overflow-y: auto;
-        padding-right: 5px;
-        flex-grow: 1;
-    }
-    
-    .gallery-item {
-        width: 45px; 
-        height: 45px;
-        border: 1px solid #eee;
-        border-radius: 6px;
-        cursor: pointer;
-        object-fit: contain;
-        background: white;
-    }
-    .gallery-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-        gap: 8px;
-        overflow-y: auto;
-        padding-right: 5px;
-        flex-grow: 1;
-    }
-    .gallery-item {
-        width: 50px; height: 50px;
-        border: 2px solid #eee;
-        border-radius: 8px;
-        cursor: pointer;
-        object-fit: contain;
-        background: white;
-        transition: all 0.2s;
-    }
-    .gallery-item:hover { border-color: var(--accent); transform: scale(1.05); }
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat:wght@400;900&family=Pacifico&family=Playfair+Display:wght@700&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
 
+<style>
+:root{
+--primary:#111827;
+--accent:#3b82f6;
+--bg-light:#f5f5f5;
+--border:#ddd;
+}
 
-     .preview-container {
-        background-color: #eff0f1; /* The base gray color */
-        /* Create the dots using a radial gradient */
-       /* background-image: radial-gradient(#bcbece 1px, transparent 1px);*/
-        /* Adjust the spacing of the dots */
-       /* background-size: 5px 5px; */
-        
-        /* Keep your existing properties below */
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 10px;
-        position: relative;
-        min-height: 500px;
-        gap: 15px;
-        overflow: hidden;
-    }
-    .product-stage {
-        display: none;
-        position: relative;
-        transform-origin: center;
-        transition: transform 0.1s ease-out;
-        align-items: center;
-        justify-content: center;
-    }
-    .product-stage.active-product { display: flex; gap: 10px; }
+body{
+font-family:Segoe UI, sans-serif;
+background:var(--bg-light);
+margin:0;
+padding:10px;
+display:flex;
+justify-content:center;
+}
 
-    .product-view {
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      position: relative;
-      overflow: hidden;
-      background-color: white;
-      cursor: pointer;
-      border: 3px solid transparent; 
-      transition: all 0.3s;
-    }
-      
-        /* T-Shirt Size */
-    .view-tshirt { 
-        width: 320px;  /* Increased from 240px */
-        height: 330px; /* Increased from 250px */
-        clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); 
-    }
-    
-    /* Tumbler Size */
-    .view-tumbler { 
-        width: 140px;  /* Increased from 100px */
-        height: 330px; /* Increased from 250px */
-        border-radius: 10px; 
-    }
-    
-    /* Mug Size */
-    .view-mug { 
-        width: 200px;  /* Increased from 150px */
-        height: 170px; /* Increased from 130px */
-        border-radius: 10px 10px 50px 50px; 
-    }
+.studio-wrapper{
+background:#CAE4DB;
+border-radius:16px;
+box-shadow:0 10px 25px rgba(0,0,0,.1);
+padding:15px;
+width:100%;
+max-width:1400px;
+display:grid;
+grid-template-columns:240px 1fr 240px;
+gap:15px;
+}
 
-    /* DRAGGABLES */
-    .draggable {
-      position: absolute;
-      cursor: move;
-      border: 2px solid transparent;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 20px;
-      min-height: 20px;
-      box-sizing: border-box;
-      touch-action: none;
-    }
-    .draggable.active-layer { border: 2px solid var(--accent); }
-    .draggable img { max-width: 100%; max-height: 100%; pointer-events: none; }
-    
-    .design-text { 
-        text-align: center; 
-        pointer-events: none;
-        word-break: break-word;
-        display: block;
-        width: 100%;
-        line-height: 1.1;
-    }
+/* PANELS */
+.gallery-panel,.controls-panel{
+background:#f9fafb;
+border-radius:12px;
+padding:10px;
+border:1px solid var(--border);
+}
 
-    .resize-handle {
-        width: 10px; height: 10px; background: white; border: 2px solid var(--accent);
-        position: absolute; display: none; cursor: nwse-resize;
-    }
-    .draggable.active-layer .resize-handle { display: block; }
-    .handle-br { bottom: -5px; right: -5px; }
+.preview-container{
+background:#eff0f1;
+border-radius:12px;
+border:1px solid var(--border);
+display:flex;
+align-items:center;
+justify-content:center;
+min-height:520px;
+position:relative;
+overflow:hidden;
+}
 
-    /* CONTROLS */
-    .controls-panel { display: flex; flex-direction: column; gap: 10px; }
-    .control-group { display: flex; flex-direction: column; gap: 3px; }
-    label { font-weight: 600; font-size: 10px; color: #000; text-transform: uppercase; }
-    input, select { padding: 6px; border-radius: 6px; border: 1px solid #ddd; font-size: 12px;}
-    
-    #bgPicker, #fontColorPicker { border: 1px solid #ddd; border-radius: 6px; padding: 2px; background: white; }
+/* PRODUCTS */
+.product-stage{
+display:none;
+align-items:center;
+justify-content:center;
+position:relative;
+}
+.product-stage.active-product{
+display:flex;
+}
 
-    .layer-manager {
-        background: #f3f4f6; padding: 8px; border-radius: 8px; border: 1px solid #e5e7eb;
-        max-height: 120px; overflow-y: auto;
-    }
-    
-    .layer-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: white;
-        padding: 6px 8px;
-        border-radius: 4px;
-        margin-bottom: 4px;
-        font-size: 11px;
-        border: 1px solid #eee;
-        cursor: default;
-    }
-    
-    .btn-icon { background: #eee; border: none; padding: 2px 5px; border-radius: 3px; cursor: pointer; font-size: 9px; }
-    .btn-delete { background: #fee2e2; color: #991b1b; }
+.product-view{
+position:relative;
+background:white;
+box-shadow:0 10px 25px rgba(0,0,0,.2);
+overflow:hidden;
+}
 
-    .btn-group { display: flex; gap: 8px; margin-top: 5px; }
-    button { padding: 8px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: 12px;}
-    
-    .btn-style { background: #f3f4f6; color: #333; font-weight: bold; padding: 6px 10px; border: 1px solid #ddd;}
-    .btn-style.active { background: var(--accent); color: white; border-color: var(--accent); }
-    
-    .btn-primary { background: var(--primary); color: white; flex: 1; }
-    .btn-action { background: #dbeafe; color: #1e40af; }
-    .btn-download { background: #2F6B64; color: #ffffff; flex: 1; }
-    
-    #textEditor { display: none; background: #f3f4f6; padding: 10px; border-radius: 8px; border: 1px solid #e5e7eb;}
-    .size-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-    .size-row input { width: 60px; }
-  </style>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat:wght@400;900&family=Pacifico&family=Playfair+Display:wght@700&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
+.view-tshirt{
+width:320px;
+height:330px;
+clip-path:polygon(25% 0%,75% 0%,100% 20%,85% 35%,85% 100%,15% 100%,15% 35%,0% 20%);
+}
+
+.view-tumbler{
+width:140px;
+height:330px;
+border-radius:10px;
+}
+
+.view-mug{
+width:200px;
+height:170px;
+border-radius:10px 10px 50px 50px;
+}
+
+/* DRAGGABLE */
+.draggable{
+position:absolute;
+cursor:move;
+min-width:20px;
+min-height:20px;
+}
+
+.draggable.active-layer{
+outline:2px solid var(--accent);
+}
+
+.design-text{
+pointer-events:none;
+text-align:center;
+}
+
+.resize-handle{
+width:10px;
+height:10px;
+background:white;
+border:2px solid var(--accent);
+position:absolute;
+bottom:-5px;
+right:-5px;
+cursor:nwse-resize;
+display:none;
+}
+
+.draggable.active-layer .resize-handle{
+display:block;
+}
+
+/* LAYERS */
+.layer-manager{
+max-height:120px;
+overflow-y:auto;
+background:white;
+border-radius:6px;
+padding:5px;
+}
+
+.layer-item{
+display:flex;
+justify-content:space-between;
+font-size:11px;
+margin-bottom:4px;
+}
+
+/* BUTTONS */
+button{
+padding:6px;
+border-radius:6px;
+border:none;
+cursor:pointer;
+font-weight:600;
+font-size:12px;
+}
+
+.btn-primary{background:var(--primary);color:white;}
+.btn-download{background:#2F6B64;color:white;}
+.btn-delete{background:#fee2e2;color:#991b1b;}
+
+</style>
 </head>
+
 <body>
 
 <div class="studio-wrapper">
-  
- <div class="gallery-panel">
-    <div class="gallery-header">
-        <div class="gallery-title">Asset Search</div>
-        <input type="text" id="gallerySearch" class="gallery-search" placeholder="Search all libraries...">
-    </div>
-    
-    <div class="mini-gallery-container">
-        <div class="mini-gallery-title">Pixabay (Vector)</div>
-        <div class="gallery-grid" id="pixabayGrid"></div>
-    </div>
-    
-    <div class="mini-gallery-container">
-        <div class="mini-gallery-title">OpenClipart (SVG)</div>
-        <div class="gallery-grid" id="openClipartGrid"></div>
-    </div>
 
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
-    <div class="control-group">
-        <label>Upload Local Image</label>
-        <input type="file" id="imageInput" accept="image/*" style="padding: 3px;" />
-    </div>
+<!-- LEFT -->
+<div class="gallery-panel">
+<input type="file" id="imageInput" accept="image/*">
 </div>
-  
-  <div class="preview-container">
-    <div id="view-tshirt" class="product-view view-tshirt">
-        <div id="guide-h" class="alignment-guide"></div>
-        <div id="guide-v" class="alignment-guide"></div>
-    </div>
-    <div id="stage-tumbler" class="product-stage">
-        <div id="view-tumbler" class="product-view view-tumbler"></div>
-        <div id="guide-h" class="alignment-guide"></div>
-        <div id="guide-v" class="alignment-guide"></div>
-    </div>
-    <div id="stage-mug" class="product-stage">
-        <div id="view-mug" class="product-view view-mug"></div>
-        <div id="guide-h" class="alignment-guide"></div>
-        <div id="guide-v" class="alignment-guide"></div>
-    </div>
-  </div>
 
-  <div class="controls-panel">
-    <h3 style="margin:0; font-size: 16px;">Editor</h3>
-    
-    <div class="control-group">
-        <label>Product</label>
-        <select id="productSelect">
-            <option value="tshirt">T-Shirt</option>
-            <option value="tumbler">Tumbler</option>
-            <option value="mug">Mug</option>
-        </select>
-    </div>
-    
-    <div class="control-group">
-        <label>Zoom Preview</label>
-        <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
-    </div>
+<!-- CENTER -->
+<div class="preview-container">
 
-    <div class="control-group">
-        <label>Surface Color</label>
-        <div id="bgPicker"></div>
-    </div>
+<div id="stage-tshirt" class="product-stage active-product">
+<div id="view-tshirt" class="product-view view-tshirt"></div>
+</div>
 
-    <div class="control-group">
-        <label>Add Text</label>
-        <div style="display:flex; gap:3px;">
-            <input type="text" id="textInput" placeholder="Enter text..." value="Add Text Here" style="flex:1"/>
-            <button class="btn-action" id="addTextBtn">Add</button>
-        </div>
-    </div>
-      
-   <div id="textEditor">
-        <div class="size-row">
-            <div style="flex:1">
-                <label>Text Color</label>
-                <div id="fontColorPicker"></div>
-            </div>
-            <div>
-                <label>Size (px)</label><br>
-                <input type="number" id="fontSizeInput" min="8" max="200" value="24">
-            </div>
-        </div>
-        
-        <div class="control-group" style="margin-bottom: 8px;">
-            <label>Rotation</label>
-            <input type="range" id="rotationSlider" min="0" max="360" value="0">
-            <label>Outline Width</label>
-            <input type="range" id="outlineWidthSlider" min="0" max="10" step="1" value="0">
-        </div>
-        
-        <div class="control-group" style="margin-bottom: 8px;">
-            <label>Opacity</label>
-            <input type="range" id="opacitySlider" min="0" max="1" step="0.01" value="1">
-        </div>
-    
-        <div class="control-group" style="margin-bottom: 8px;">
-            <label>Drop Shadow</label>
-        <select id="shadowSelect">
-            <option value="none">None</option>
-            <option value="small">Small</option>
-            <option value="large">Large</option>
-        </select>
-          <label>Flip</label>
-            <div style="display:flex; gap:5px;">
-                <button id="btnFlipH" class="btn-style" style="flex:1" title="Flip Horizontal">↔</button>
-                <button id="btnFlipV" class="btn-style" style="flex:1" title="Flip Vertical">↕</button>
-            </div>
-        </div>
-    
-        <div class="control-group">
-            <label>Font Family</label>
-            <select id="fontFamily">
-                </select>
-        </div>
-        
-        <div style="display:flex; gap:5px; margin-top:5px;">
-            <button id="btnBold" class="btn-style" style="flex:1">B</button>
-            <button id="btnItalic" class="btn-style" style="flex:1">I</button>
-        </div>
-    </div>
-    <div class="btn-group">
-        <button class="btn-download" id="downloadBtn">💾 Save</button>
-        <button class="btn-style" id="clearCanvasBtn" style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;">🗑️ Clear</button>
-        <button class="btn-primary" id="submitDesign">Finalize</button>
-    </div>
-  </div>
+<div id="stage-tumbler" class="product-stage">
+<div id="view-tumbler" class="product-view view-tumbler"></div>
+</div>
+
+<div id="stage-mug" class="product-stage">
+<div id="view-mug" class="product-view view-mug"></div>
+</div>
+
+</div>
+
+<!-- RIGHT -->
+<div class="controls-panel">
+
+<select id="productSelect">
+<option value="tshirt">T-Shirt</option>
+<option value="tumbler">Tumbler</option>
+<option value="mug">Mug</option>
+</select>
+
+<input type="text" id="textInput" placeholder="Add text">
+<button id="addTextBtn">Add Text</button>
+
+<div id="layerList" class="layer-manager"></div>
+
+<button class="btn-download" id="downloadBtn">Save PNG</button>
+<button class="btn-delete" id="clearCanvasBtn">Clear</button>
+<button class="btn-primary">Finalize</button>
+
+</div>
+
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-  const PIXABAY_API_KEY = '54841320-2fc493da46915b0eb0a6f740c';
-  let activeViewId = 'view-tshirt';
-  let currentProduct = 'tshirt';
 
-  // EXTENDED SWATCHES
-  const extendedSwatches = [
-      '#FFFFFF', '#F2F2F2', '#D9D9D9', '#BFBFBF', '#A6A6A6', '#808080', '#595959', '#404040', '#262626', '#000000',
-      '#FFCCCC', '#FF9999', '#FF6666', '#FF3333', '#FF0000', '#CC0000', '#990000', '#660000', '#330000',
-      '#FFE5CC', '#FFCC99', '#FFB266', '#FF9933', '#FF8000', '#CC6600', '#994C00', '#663300', '#331900',
-      '#FFFFCC', '#FFFF99', '#FFFF66', '#FFFF33', '#FFFF00', '#CCCC00', '#999900', '#666600', '#333300',
-      '#CCFFCC', '#99FF99', '#66FF66', '#33FF33', '#00FF00', '#00CC00', '#009900', '#006600', '#003300',
-      '#CCFFFF', '#99FFFF', '#66FFFF', '#33FFFF', '#00FFFF', '#00CCCC', '#009999', '#006666', '#003333',
-      '#CCCCFF', '#9999FF', '#6666FF', '#3333FF', '#0000FF', '#0000CC', '#000099', '#000066', '#000033',
-      '#E5CCFF', '#CC99FF', '#B266FF', '#9933FF', '#8000FF', '#6600CC', '#4C0099', '#330066', '#190033',
-      '#FFCCFF', '#FF99FF', '#FF66FF', '#FF33FF', '#FF00FF', '#CC00CC', '#990099', '#660066', '#330033'
-  ];
+let activeViewId="view-tshirt";
+let layerCount=0;
+let activeItem=null;
+let offset={x:0,y:0};
+let isResizing=false;
 
-  const createPicker = (el, def) => Pickr.create({
-      el, theme: 'classic', default: def, swatches: extendedSwatches,
-      components: { preview: true, opacity: true, hue: true, interaction: { hex: true, input: true, save: true } }
-  });
-
-  const bgPicker = createPicker('#bgPicker', '#ffffff');
-  const fontColorPicker = createPicker('#fontColorPicker', '#000000');
-
-  bgPicker.on('change', (color) => {
-    const colorString = color.toRGBA().toString();
-    // Update the mug body
-    document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = colorString);
-    // Update the mug handle border color
-    const handle = document.querySelector('.mug-handle');
-    if (handle) handle.style.borderColor = colorString;
-  });
-
-  fontColorPicker.on('change', (color) => {
-      const active = document.querySelector('.active-layer .design-text');
-      if(active) active.style.color = color.toRGBA().toString();
-  });
-
-  // PRODUCT LOGIC
-  document.getElementById('productSelect').addEventListener('change', (e) => {
-      currentProduct = e.target.value;
-      document.querySelectorAll('.product-stage').forEach(s => s.classList.remove('active-product'));
-      const stage = document.getElementById('stage-' + currentProduct);
-      stage.classList.add('active-product');
-      activeViewId = stage.querySelector('.product-view').id;
-  });
-
-  document.getElementById('zoomSlider').addEventListener('input', (e) => {
-      document.querySelector('.active-product').style.transform = `scale(${e.target.value})`;
-  });
-
-  // TEXT CONTROL LOGIC
-  document.getElementById('fontSizeInput').addEventListener('input', (e) => {
-      const activeText = document.querySelector('.active-layer .design-text');
-      if(activeText) activeText.style.fontSize = e.target.value + 'px';
-  });
-
-  document.getElementById('fontFamily').addEventListener('change', (e) => {
-      const activeText = document.querySelector('.active-layer .design-text');
-      if(activeText) activeText.style.fontFamily = e.target.value;
-  });
-
-  document.getElementById('btnBold').addEventListener('click', () => {
-      const activeText = document.querySelector('.active-layer .design-text');
-      if(activeText) activeText.style.fontWeight = activeText.style.fontWeight === 'bold' ? 'normal' : 'bold';
-  });
-
-    // --- TEXT STYLE LOGIC ---
-  const outlineSlider = document.getElementById('outlineWidthSlider');
-  const shadowSelect = document.getElementById('shadowSelect');
-  
-  outlineSlider.addEventListener('input', (e) => {
-      const activeText = document.querySelector('.active-layer .design-text');
-      if (activeText) {
-          const width = e.target.value;
-          // Sets a black outline. You could add another picker for outline color!
-          activeText.style.webkitTextStroke = `${width}px black`;
-      }
-  });
-  
-  shadowSelect.addEventListener('change', (e) => {
-      const activeText = document.querySelector('.active-layer .design-text');
-      if (activeText) {
-          const value = e.target.value;
-          if (value === 'small') {
-              activeText.style.textShadow = '2px 2px 2px rgba(0,0,0,0.5)';
-          } else if (value === 'large') {
-              activeText.style.textShadow = '4px 4px 5px rgba(0,0,0,0.7)';
-          } else {
-              activeText.style.textShadow = 'none';
-          }
-      }
-  });
-  
-  // --- UPDATE DRAGGABLE SYNC ---
-  function makeDraggable(el) {
-      el.addEventListener('mousedown', (e) => {
-          // ... existing logic ...
-          
-          const text = el.querySelector('.design-text');
-          if(text) {
-              document.getElementById('textEditor').style.display = 'block';
-              // ... sync font size/family ...
-  
-              // Sync Styles
-              const stroke = text.style.webkitTextStroke;
-              outlineSlider.value = stroke ? parseInt(stroke) : 0;
-              
-              const shadow = text.style.textShadow;
-              if (shadow.includes('4px')) shadowSelect.value = 'large';
-              else if (shadow.includes('2px')) shadowSelect.value = 'small';
-              else shadowSelect.value = 'none';
-          }
-          // ...
-      });
-  }
-  // LAYER ENGINE
-  let layerCount = 0;
-  function createLayer(type, content) {
-    layerCount++;
-    const layerId = 'layer_' + layerCount;
-    const layer = document.createElement('div');
-    layer.id = layerId;
-    layer.className = 'draggable active-layer';
-    const activeView = document.getElementById(activeViewId);
-    layer.style.top = '80px'; layer.style.left = '40px';
-    
-    if (type === 'image') {
-        const img = document.createElement('img');
-        img.src = content; img.style.width = '60px'; 
-        layer.appendChild(img);
-        addLayerToList(layerId, 'Icon');
-        document.getElementById('textEditor').style.display = 'none';
-    } else {
-        const text = document.createElement('div');
-        text.className = 'design-text';
-        text.textContent = content;
-        text.style.fontSize = '16px';
-        text.style.fontFamily = document.getElementById('fontFamily').value;
-        layer.appendChild(text);
-        addLayerToList(layerId, 'Text');
-        document.getElementById('textEditor').style.display = 'block';
-        document.getElementById('fontSizeInput').value = 16;
-    }
-
-    const handle = document.createElement('div');
-    handle.className = 'resize-handle handle-br';
-    layer.appendChild(handle);
-    activeView.appendChild(layer);
-    makeDraggable(layer);
-    makeResizable(layer, handle, type);
-    
-    document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
-    layer.classList.add('active-layer');
-   }
-
-  function addLayerToList(id, name) {
-    const item = document.createElement('div');
-    item.className = 'layer-item';
-    item.id = 'list_' + id;
-    
-    const btnContainer = document.createElement('div');
-    btnContainer.style.display = 'flex';
-    btnContainer.style.gap = '2px';
-
-    // Bring to Front Button
-    const btnFront = document.createElement('button');
-    btnFront.className = 'btn-icon';
-    btnFront.innerHTML = '▲';
-    btnFront.title = 'Bring to Front';
-    btnFront.onclick = (e) => {
-        e.stopPropagation();
-        const layer = document.getElementById(id);
-        layer.parentNode.appendChild(layer); 
-    };
-
-    // Send to Back Button
-    const btnBack = document.createElement('button');
-    btnBack.className = 'btn-icon';
-    btnBack.innerHTML = '▼';
-    btnBack.title = 'Send to Back';
-    btnBack.onclick = (e) => {
-        e.stopPropagation();
-        const layer = document.getElementById(id);
-        layer.parentNode.prepend(layer);
-    };
-
-    // --- Add Duplicate Button ---
-    const btnDuplicate = document.createElement('button');
-    btnDuplicate.className = 'btn-icon';
-    btnDuplicate.innerHTML = '⧉'; // Duplicate icon
-    btnDuplicate.title = 'Duplicate';
-    btnDuplicate.onclick = (e) => {
-        e.stopPropagation();
-        duplicateLayer(id);
-    };
-
-    // Delete Button
-    const btnDelete = document.createElement('button');
-    btnDelete.className = 'btn-icon btn-delete';
-    btnDelete.innerHTML = '✕';
-    btnDelete.onclick = (e) => {
-        e.stopPropagation();
-        removeLayer(id);
-    };
-
-    // Assemble buttons
-    btnContainer.appendChild(btnBack);
-    btnContainer.appendChild(btnFront);
-    btnContainer.appendChild(btnDuplicate); // Add to container
-    btnContainer.appendChild(btnDelete);
-
-    item.innerHTML = `<span>${name}</span>`;
-    item.appendChild(btnContainer);
-    
-    document.getElementById('layerList').prepend(item);
-  }
-
-  function removeLayer(id) {
-      document.getElementById(id).remove();
-      document.getElementById('list_' + id).remove();
-  }
-
-  // DRAG & RESIZE
-  let activeItem = null, offset = { x: 0, y: 0 }, isResizing = false;
-
-   // --- UPDATE EXISTING DRAGGABLE LOGIC ---
-  function makeDraggable(el) {
-      el.addEventListener('mousedown', (e) => {
-          if (isResizing) return;
-          activeItem = el;
-          document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
-          el.classList.add('active-layer');
-          const rect = el.getBoundingClientRect();
-          const parentRect = el.parentNode.getBoundingClientRect();
-          offset.x = e.clientX - rect.left;
-          offset.y = e.clientY - rect.top;
-          
-          // Update Editor Values
-          const text = el.querySelector('.design-text');
-          
-          // Show editor for both text and images to allow flipping/opacity
-          document.getElementById('textEditor').style.display = 'block';
-  
-          if(text) {
-              document.getElementById('fontSizeInput').value = parseInt(text.style.fontSize);
-              document.getElementById('fontFamily').value = text.style.fontFamily.replace(/"/g, "'");
-              // Hide specific text controls if necessary, or keep them
-          }
-          
-          // Sync sliders based on current layer style
-          const transform = el.style.transform;
-          const rotateMatch = transform.match(/rotate\(([^deg)]+)deg\)/);
-          document.getElementById('rotationSlider').value = rotateMatch ? rotateMatch[1] : 0;
-          
-          document.getElementById('opacitySlider').value = el.style.opacity || 1;
-      });
-  }
-
-  function makeResizable(el, handle, type) {
-    handle.addEventListener('mousedown', (e) => {
-        isResizing = true; activeItem = el; e.stopPropagation();
-        document.addEventListener('mousemove', resize);
-        document.addEventListener('mouseup', () => { isResizing = false; document.removeEventListener('mousemove', resize); });
-  });
-
-  function duplicateLayer(id) {
-    const originalLayer = document.getElementById(id);
-    const container = originalLayer.parentNode;
-    
-    // Clone the layer and its children
-    const clone = originalLayer.cloneNode(true);
-    
-    // Create new unique ID
-    layerCount++;
-    const newId = 'layer_' + layerCount;
-    clone.id = newId;
-    
-    // Offset the position slightly
-    const top = parseInt(clone.style.top);
-    const left = parseInt(clone.style.left);
-    clone.style.top = (top + 20) + 'px';
-    clone.style.left = (left + 20) + 'px';
-    
-    // Add to container
-    container.appendChild(clone);
-    
-    // Set up dragging/resizing for new clone
-    const handle = clone.querySelector('.resize-handle');
-    const type = clone.querySelector('img') ? 'image' : 'text';
-    makeDraggable(clone);
-    makeResizable(clone, handle, type);
-    
-    // Add to layer list
-    const name = type === 'image' ? 'Icon' : 'Text';
-    addLayerToList(newId, name);
-    
-    // Select the new clone
-    document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
-    clone.classList.add('active-layer');
-  }
-  function resize(e) {
-      const rect = el.getBoundingClientRect();
-      const nw = e.clientX - rect.left, nh = e.clientY - rect.top;
-      el.style.width = Math.max(20, nw) + 'px';
-      el.style.height = Math.max(20, nh) + 'px';
-      if(type === 'image') el.querySelector('img').style.width = '100%';
-      else {
-          const newSize = Math.max(8, Math.round(nw * 0.35));
-          el.querySelector('.design-text').style.fontSize = newSize + 'px';
-          document.getElementById('fontSizeInput').value = newSize;
-        }
-      }
-    }
-
-  document.getElementById('rotationSlider').addEventListener('input', (e) => {
-    const activeLayer = document.querySelector('.active-layer');
-    if (activeLayer) {
-        const rotation = e.target.value;
-        // Apply rotation, preserving potential scaling transforms if necessary
-        activeLayer.style.transform = `rotate(${rotation}deg)`;
-    }
-  });
-  document.addEventListener('mousemove', (e) => {
-    if (!activeItem || isResizing) return;
-    const parent = activeItem.parentNode.getBoundingClientRect();
-    activeItem.style.left = (e.clientX - parent.left - offset.x) + 'px';
-    activeItem.style.top = (e.clientY - parent.top - offset.y) + 'px';
-  });
-  document.addEventListener('mouseup', () => activeItem = null);
-
-  // SEARCH & ASSETS
-  // --- PIXABAY LOADER ---
-    async function loadPixabay(searchTerm = '') {
-        const grid = document.getElementById('pixabayGrid');
-        const apiUrl = `https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(searchTerm)}&image_type=vector&per_page=10`;
-        try {
-            const response = await fetch(apiUrl);
-            const data = await response.json();
-            grid.innerHTML = '';
-            data.hits.forEach(image => {
-                const img = document.createElement('img');
-                img.src = image.previewURL;
-                img.className = 'gallery-item';
-                img.onclick = () => createLayer('image', image.largeImageURL);
-                grid.appendChild(img);
-            });
-        } catch (error) { console.error(error); }
-    }
-    
-    // --- OPENCLIPART LOADER ---
-    async function loadOpenClipart(searchTerm = '') {
-        const grid = document.getElementById('openClipartGrid');
-        const endpoint = searchTerm 
-            ? `https://openclipart.org/search/json/?query=${encodeURIComponent(searchTerm)}&amount=10`
-            : `https://openclipart.org/search/json/?sort=downloads&amount=10`;
-        
-        try {
-            const response = await fetch(endpoint);
-            
-            // --- ADD THIS CHECK ---
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            // ----------------------
-            
-            const data = await response.json();
-            grid.innerHTML = '';
-            
-            if (data.payload) {
-                data.payload.forEach(clipart => {
-                    const img = document.createElement('img');
-                    const thumbUrl = clipart.svg.url_thumb.replace(/^http:/, 'https:');
-                    const fullUrl = clipart.svg.url.replace(/^http:/, 'https:');
-                    
-                    img.src = thumbUrl; 
-                    img.className = 'gallery-item';
-                    img.onclick = () => createLayer('image', fullUrl);
-                    
-                    grid.appendChild(img);
-                });
-            }
-        } catch (error) {
-            console.error('Error fetching from OpenClipart:', error);
-            grid.innerHTML = '<p style="font-size:10px; color:red;">API Down</p>';
-        }
-    }
-    
-    // --- INITIAL LOAD AND SEARCH EVENT ---
-    document.getElementById('gallerySearch').addEventListener('input', (e) => {
-        loadPixabay(e.target.value);
-        loadOpenClipart(e.target.value);
-    });
-    
-    // Initial load
-    loadPixabay();
-    loadOpenClipart();
-
-    document.getElementById('imageInput').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (ev) => createLayer('image', ev.target.result);
-        reader.readAsDataURL(file);
-      }
-    });
-  
-    document.getElementById('downloadBtn').addEventListener('click', () => {
-      document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
-      html2canvas(document.querySelector('.active-product'), { backgroundColor: null }).then(canvas => {
-          const link = document.createElement('a');
-          link.download = currentProduct + '-mockup.png';
-          link.href = canvas.toDataURL();
-          link.click();
-      });
-    });
-    document.getElementById('clearCanvasBtn').addEventListener('click', () => {
-      if (confirm('Are you sure you want to remove all designs?')) {
-          // Remove all draggable layers from the current product
-          document.querySelectorAll('.active-product .draggable').forEach(el => el.remove());
-          // Clear the layer list manager
-          document.getElementById('layerList').innerHTML = '';
-          // Hide the text editor
-          document.getElementById('textEditor').style.display = 'none';
-      }
-    });
-    document.addEventListener('mousemove', (e) => {
-      if (!activeItem || isResizing) return;
-      
-      const parent = activeItem.parentNode.getBoundingClientRect();
-      const newX = e.clientX - parent.left - offset.x;
-      const newY = e.clientY - parent.top - offset.y;
-      
-      activeItem.style.left = newX + 'px';
-      activeItem.style.top = newY + 'px';
-      
-      // Alignment Guide Logic
-      const itemRect = activeItem.getBoundingClientRect();
-      const parentRect = parent;
-      
-      const itemCenterX = itemRect.left + itemRect.width / 2;
-      const itemCenterY = itemRect.top + itemRect.height / 2;
-      const parentCenterX = parentRect.left + parentRect.width / 2;
-      const parentCenterY = parentRect.top + parentRect.height / 2;
-      
-      const hGuide = activeItem.parentNode.querySelector('#guide-h');
-      const vGuide = activeItem.parentNode.querySelector('#guide-v');
-      
-      // Threshold for snapping/showing guide (pixels)
-      const threshold = 5; 
-      
-      if (Math.abs(itemCenterX - parentCenterX) < threshold) {
-          vGuide.style.display = 'block';
-      } else {
-          vGuide.style.display = 'none';
-      }
-      
-      if (Math.abs(itemCenterY - parentCenterY) < threshold) {
-          hGuide.style.display = 'block';
-      } else {
-          hGuide.style.display = 'none';
-      }
-    });
-  
-    // Hide guides when dragging stops
-    document.addEventListener('mouseup', () => {
-        activeItem = null;
-        document.querySelectorAll('.alignment-guide').forEach(g => g.style.display = 'none');
-    });
-
-    // --- FLIP LOGIC ---
-    document.getElementById('btnFlipH').addEventListener('click', () => {
-        const activeLayer = document.querySelector('.active-layer');
-        if (activeLayer) {
-            // Toggle horizontal flip using scaleX
-            const currentTransform = activeLayer.style.transform;
-            activeLayer.style.transform = currentTransform.includes('scaleX(-1)') 
-                ? currentTransform.replace('scaleX(-1)', '') 
-                : currentTransform + ' scaleX(-1)';
-        }
-    });
-    
-    document.getElementById('btnFlipV').addEventListener('click', () => {
-        const activeLayer = document.querySelector('.active-layer');
-        if (activeLayer) {
-            // Toggle vertical flip using scaleY
-            const currentTransform = activeLayer.style.transform;
-            activeLayer.style.transform = currentTransform.includes('scaleY(-1)') 
-                ? currentTransform.replace('scaleY(-1)', '') 
-                : currentTransform + ' scaleY(-1)';
-        }
-    });
-    // --- OPACITY LOGIC ---
-document.getElementById('opacitySlider').addEventListener('input', (e) => {
-    const activeLayer = document.querySelector('.active-layer');
-    if (activeLayer) {
-        activeLayer.style.opacity = e.target.value;
-    }
+/* PRODUCT SWITCH */
+document.getElementById("productSelect").addEventListener("change",(e)=>{
+document.querySelectorAll(".product-stage").forEach(s=>s.classList.remove("active-product"));
+document.getElementById("stage-"+e.target.value).classList.add("active-product");
+activeViewId="view-"+e.target.value;
 });
 
-// --- UPDATE EXISTING DRAGGABLE LOGIC ---
-function makeDraggable(el) {
-    el.addEventListener('mousedown', (e) => {
-        if (isResizing) return;
-        activeItem = el;
-        document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
-        el.classList.add('active-layer');
-        const rect = el.getBoundingClientRect();
-        const parentRect = el.parentNode.getBoundingClientRect();
-        offset.x = e.clientX - rect.left;
-        offset.y = e.clientY - rect.top;
-        
-        // Update Editor Values
-        const text = el.querySelector('.design-text');
-        
-        // Show editor for both text and images to allow flipping/opacity
-        document.getElementById('textEditor').style.display = 'block';
+/* ADD TEXT */
+document.getElementById("addTextBtn").onclick=()=>{
+const text=document.getElementById("textInput").value;
+if(!text) return;
+createLayer("text",text);
+};
 
-        if(text) {
-            document.getElementById('fontSizeInput').value = parseInt(text.style.fontSize);
-            document.getElementById('fontFamily').value = text.style.fontFamily.replace(/"/g, "'");
-            // Hide specific text controls if necessary, or keep them
-        }
-        
-        // Sync sliders based on current layer style
-        const transform = el.style.transform;
-        const rotateMatch = transform.match(/rotate\(([^deg)]+)deg\)/);
-        document.getElementById('rotationSlider').value = rotateMatch ? rotateMatch[1] : 0;
-        
-        document.getElementById('opacitySlider').value = el.style.opacity || 1;
-    });
-  }
-    document.getElementById('submitDesign').addEventListener('click', () => alert('Design finalized! Sent to production.'));
+/* IMAGE UPLOAD */
+document.getElementById("imageInput").addEventListener("change",(e)=>{
+const file=e.target.files[0];
+if(!file) return;
+const reader=new FileReader();
+reader.onload=(ev)=>createLayer("image",ev.target.result);
+reader.readAsDataURL(file);
+});
+
+/* CREATE LAYER */
+function createLayer(type,content){
+layerCount++;
+const layer=document.createElement("div");
+layer.className="draggable active-layer";
+layer.id="layer_"+layerCount;
+layer.style.top="60px";
+layer.style.left="60px";
+
+if(type==="image"){
+const img=document.createElement("img");
+img.src=content;
+img.style.width="80px";
+layer.appendChild(img);
+addLayerToList(layer.id,"Image");
+}else{
+const text=document.createElement("div");
+text.className="design-text";
+text.textContent=content;
+text.style.fontSize="20px";
+layer.appendChild(text);
+addLayerToList(layer.id,"Text");
+}
+
+const handle=document.createElement("div");
+handle.className="resize-handle";
+layer.appendChild(handle);
+
+document.getElementById(activeViewId).appendChild(layer);
+makeDraggable(layer);
+makeResizable(layer,handle,type);
+
+document.querySelectorAll(".draggable").forEach(d=>d.classList.remove("active-layer"));
+layer.classList.add("active-layer");
+}
+
+/* LAYER LIST */
+function addLayerToList(id,name){
+const item=document.createElement("div");
+item.className="layer-item";
+item.innerHTML=`<span>${name}</span>`;
+const btn=document.createElement("button");
+btn.textContent="X";
+btn.onclick=()=>removeLayer(id);
+item.appendChild(btn);
+document.getElementById("layerList").prepend(item);
+}
+
+function removeLayer(id){
+document.getElementById(id)?.remove();
+}
+
+/* DRAG */
+function makeDraggable(el){
+el.addEventListener("mousedown",(e)=>{
+if(isResizing) return;
+activeItem=el;
+const rect=el.getBoundingClientRect();
+const parent=el.parentNode.getBoundingClientRect();
+offset.x=e.clientX-rect.left;
+offset.y=e.clientY-rect.top;
+});
+}
+
+document.addEventListener("mousemove",(e)=>{
+if(!activeItem||isResizing) return;
+const parent=activeItem.parentNode.getBoundingClientRect();
+activeItem.style.left=(e.clientX-parent.left-offset.x)+"px";
+activeItem.style.top=(e.clientY-parent.top-offset.y)+"px";
+});
+
+document.addEventListener("mouseup",()=>activeItem=null);
+
+/* RESIZE */
+function makeResizable(el,handle,type){
+handle.addEventListener("mousedown",(e)=>{
+isResizing=true;
+activeItem=el;
+e.stopPropagation();
+
+function resizeMove(ev){
+const rect=el.getBoundingClientRect();
+const newW=ev.clientX-rect.left;
+const newH=ev.clientY-rect.top;
+el.style.width=Math.max(20,newW)+"px";
+el.style.height=Math.max(20,newH)+"px";
+if(type==="image"){
+el.querySelector("img").style.width="100%";
+}
+}
+
+function stop(){
+isResizing=false;
+document.removeEventListener("mousemove",resizeMove);
+document.removeEventListener("mouseup",stop);
+}
+
+document.addEventListener("mousemove",resizeMove);
+document.addEventListener("mouseup",stop);
+});
+}
+
+/* DOWNLOAD */
+document.getElementById("downloadBtn").onclick=()=>{
+html2canvas(document.querySelector(".active-product")).then(canvas=>{
+const link=document.createElement("a");
+link.download="design.png";
+link.href=canvas.toDataURL();
+link.click();
+});
+};
+
+/* CLEAR */
+document.getElementById("clearCanvasBtn").onclick=()=>{
+document.querySelectorAll(".active-product .draggable").forEach(d=>d.remove());
+document.getElementById("layerList").innerHTML="";
+};
+
 </script>
 </body>
 </html>
