@@ -581,6 +581,57 @@
   document.getElementById('submitDesign').addEventListener('click', () => {
     alert('Design Submitted!');
   });
+    // --- GOOGLE FONTS API INTEGRATION ---
+  const GOOGLE_API_KEY = 'AIzaSyAq-9ivkRTYYP4olKp2Xfy50pi72CKJY2w'; // <--- PUT YOUR KEY HERE
+  const fontFamilySelect = document.getElementById('fontFamily');
+  
+  // 1. Fetch the list of fonts from Google
+  async function populateFontDropdown() {
+      try {
+          const response = await fetch(`https://www.googleapis.com/webfonts/v1/webfonts?key=${GOOGLE_API_KEY}&sort=popularity`);
+          const data = await response.json();
+  
+          // Clear existing static options
+          fontFamilySelect.innerHTML = '';
+  
+          // Add fonts from API (limiting to 100 for better performance)
+          data.items.slice(0, 100).forEach(font => {
+              const option = document.createElement('option');
+              option.value = `'${font.family}', ${font.category}`;
+              option.textContent = font.family;
+              fontFamilySelect.appendChild(option);
+          });
+          
+          // Load the default font immediately
+          loadAndApplyFont(fontFamilySelect.value);
+      } catch (error) {
+          console.error('Error fetching fonts:', error);
+      }
+  }
+  
+  // 2. Load the font dynamically when changed
+  function loadAndApplyFont(fontFamilyValue) {
+      const fontFamily = fontFamilyValue.split(',')[0].replace(/'/g, '');
+      
+      // Create a new <link> tag for the specific font
+      const link = document.createElement('link');
+      link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/ /g, '+')}&display=swap`;
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
+  
+      // Apply to the active layer
+      const activeLayerText = document.querySelector('.active-layer .design-text');
+      if (activeLayerText) {
+          activeLayerText.style.fontFamily = fontFamilyValue;
+      }
+  }
+  
+  fontFamilySelect.addEventListener('change', (e) => {
+      loadAndApplyFont(e.target.value);
+  });
+  
+  // Run this function on page load
+  populateFontDropdown();
 </script>
 </body>
 </html>
