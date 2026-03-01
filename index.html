@@ -232,18 +232,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-  // --- UPDATED PICKR CONFIGURATION ---
+  // --- COLOR PICKER INITIALIZATION ---
   const createColorPicker = (selector, defaultColor) => {
       return Pickr.create({
           el: selector,
-          theme: 'classic',
+          theme: 'classic', 
           default: defaultColor,
-          // Expanded Palette for better variety
           swatches: [
               '#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF',
-              '#FF5733', '#C70039', '#900C3F', '#581845', '#DAF7A6', '#FFC300', '#FF5733', '#C70039',
-              '#33FF57', '#3357FF', '#FF33A8', '#33FFA8', '#A833FF', '#FF8C33', '#8C33FF', '#33FF8C',
-              '#808080', '#A9A9A9', '#D3D3D3', '#F5F5F5', '#FFE4E1', '#E6E6FA', '#F0F8FF', '#F0FFF0'
+              '#FF5733', '#C70039', '#900C3F', '#581845', '#DAF7A6', '#FFC300', '#33FF57', '#3357FF'
           ],
           components: {
               preview: true,
@@ -271,7 +268,7 @@
       if(active) active.style.color = color.toHEXA().toString();
   });
 
-  // --- EXISTING LOGIC ---
+  // --- EXISTING FUNCTIONALITY ---
   const galleryAssets = [
       'https://cdn-icons-png.flaticon.com/128/1157/1157077.png',
       'https://cdn-icons-png.flaticon.com/128/2921/2921820.png',
