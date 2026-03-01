@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Full Color Control</title>
+  <title>Custom Design Studio - Color Swatches</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -334,15 +334,21 @@
       document.getElementById(viewId).classList.add('active-view');
   }
 
-  // --- COLOR PICKERS WITH OPACITY ---
+  // --- COLOR PICKERS WITH SWATCHES ---
+  const swatches = [
+      '#FFFFFF', '#000000', '#FF0000', '#00FF00', '#0000FF', 
+      '#FFFF00', '#FF00FF', '#00FFFF', '#FFA500', '#800080'
+  ];
+
   const createColorPicker = (selector, defaultColor) => {
       return Pickr.create({
           el: selector,
           theme: 'classic', 
           default: defaultColor,
+          swatches: swatches, // ADDED SWATCHES
           components: { 
               preview: true, 
-              opacity: true, // RE-ENABLED OPACITY
+              opacity: true, 
               hue: true, 
               interaction: { hex: true, input: true, save: true } 
           }
