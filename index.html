@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Fixed Fonts</title>
+  <title>Custom Design Studio - Improved Text</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -195,15 +195,19 @@
     .btn-delete { background: #fee2e2; color: #991b1b; }
 
     .btn-group { display: flex; gap: 8px; margin-top: 5px; }
-    button { flex: 1; padding: 8px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: 12px;}
-    .btn-primary { background: var(--primary); color: white; }
+    button { padding: 8px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: 12px;}
+    
+    .btn-style { background: #f3f4f6; color: #333; font-weight: bold; padding: 6px 10px; font-size: 14px; border: 1px solid #ddd;}
+    .btn-style.active { background: var(--accent); color: white; border-color: var(--accent); }
+    
+    .btn-primary { background: var(--primary); color: white; flex: 1; }
     .btn-action { background: #dbeafe; color: #1e40af; }
-    .btn-download { background: #d1fae5; color: #065f46; }
+    .btn-download { background: #d1fae5; color: #065f46; flex: 1; }
     
     #textEditor { display: none; background: #f3f4f6; padding: 8px; border-radius: 8px; }
   </style>
   
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Georgia&family=Lobster&family=Merriweather&family=Open+Sans&family=Pacifico&family=Roboto:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Georgia&family=Lobster&family=Merriweather&family=Open+Sans&family=Pacifico&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -269,7 +273,7 @@
     </div>
 
     <div class="control-group">
-        <label>Color</label>
+        <label>Product Color</label>
         <div id="bgPicker"></div>
     </div>
 
@@ -285,6 +289,7 @@
         <label style="color: var(--accent); font-size: 10px;">Text Style</label>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 3px; align-items: center;">
             <div id="fontColorPicker" style="border: 1px solid #ddd; border-radius: 6px; padding: 2px; background: white; height: 20px;"></div>
+            
             <select id="fontFamily" style="grid-column: span 2; padding: 4px;">
                 <option value="'Roboto', sans-serif">Roboto (Sans)</option>
                 <option value="'Open Sans', sans-serif">Open Sans</option>
@@ -296,6 +301,9 @@
                 <option value="'Pacifico', cursive">Pacifico</option>
                 <option value="'Dancing Script', cursive">Dancing Script</option>
             </select>
+            
+            <button id="btnBold" class="btn-style">B</button>
+            <button id="btnItalic" class="btn-style"><em>I</em></button>
         </div>
     </div>
 
@@ -381,10 +389,28 @@
       if(active) active.style.color = color.toRGBA().toString();
   });
   
-  // --- FONT FAMILY CHANGE ---
+  // --- FONT SETTINGS CHANGE ---
   document.getElementById('fontFamily').addEventListener('change', (e) => {
       const active = document.querySelector('.active-layer .design-text');
       if(active) active.style.fontFamily = e.target.value;
+  });
+  
+  document.getElementById('btnBold').addEventListener('click', (e) => {
+      const active = document.querySelector('.active-layer .design-text');
+      if(active) {
+          const isBold = active.style.fontWeight === 'bold';
+          active.style.fontWeight = isBold ? 'normal' : 'bold';
+          e.target.classList.toggle('active');
+      }
+  });
+
+  document.getElementById('btnItalic').addEventListener('click', (e) => {
+      const active = document.querySelector('.active-layer .design-text');
+      if(active) {
+          const isItalic = active.style.fontStyle === 'italic';
+          active.style.fontStyle = isItalic ? 'normal' : 'italic';
+          e.target.classList.toggle('active');
+      }
   });
 
   // --- API ---
@@ -485,13 +511,18 @@
       offset.y = e.clientY - rect.top;
       setActiveView(el.parentNode.id);
       
-      // --- FIXED FONT SYNC ---
+      // --- SYNC EDITOR CONTROLS ---
       const text = el.querySelector('.design-text');
       if(text) {
           textEditor.style.display = 'block';
-          // Clean up the fontFamily string to match the option value
-          let currentFont = text.style.fontFamily.replace(/"/g, "'");
-          document.getElementById('fontFamily').value = currentFont;
+          // Sync Font
+          document.getElementById('fontFamily').value = text.style.fontFamily.replace(/"/g, "'");
+          // Sync Bold Button
+          if(text.style.fontWeight === 'bold') document.getElementById('btnBold').classList.add('active');
+          else document.getElementById('btnBold').classList.remove('active');
+          // Sync Italic Button
+          if(text.style.fontStyle === 'italic') document.getElementById('btnItalic').classList.add('active');
+          else document.getElementById('btnItalic').classList.remove('active');
       } else {
           textEditor.style.display = 'none';
       }
