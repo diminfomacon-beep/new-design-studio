@@ -99,16 +99,16 @@
       min-width: 20px;
       min-height: 20px;
       box-sizing: border-box;
+      touch-action: none;
     }
     .draggable.active-layer { border: 2px solid var(--accent); }
     .draggable img { max-width: 100%; max-height: 100%; pointer-events: none; }
     
-    /* Updated Text Styling */
     .design-text { 
         font-weight: bold; 
         text-align: center; 
         pointer-events: none;
-        word-break: break-word; /* Allows text to wrap */
+        word-break: break-word;
         display: block;
         width: 100%;
         line-height: 1.2;
@@ -226,7 +226,6 @@
   const productShape = document.getElementById('productShape');
   const layerList = document.getElementById('layerList');
   let layerCount = 0;
-  let highestZ = 1;
 
   function createLayer(type, content) {
     layerCount++;
@@ -234,9 +233,11 @@
     
     const layer = document.createElement('div');
     layer.id = layerId;
-    layer.className = 'draggable';
+    layer.className = 'draggable active-layer';
     layer.style.top = '100px'; layer.style.left = '100px';
-    layer.style.zIndex = highestZ++;
+    
+    // Remove active class from others
+    document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
     
     if (type === 'image') {
         const img = document.createElement('img');
@@ -270,8 +271,8 @@
       item.innerHTML = `
         <span>${name}</span>
         <div class="layer-controls">
-            <button class="btn-icon" onclick="moveLayer('${id}', 1)">▲</button>
-            <button class="btn-icon" onclick="moveLayer('${id}', -1)">▼</button>
+            <button class="btn-icon" onclick="moveLayer('${id}', 'up')">▲</button>
+            <button class="btn-icon" onclick="moveLayer('${id}', 'down')">▼</button>
             <button class="btn-icon btn-delete" onclick="removeLayer('${id}')">X</button>
         </div>
       `;
@@ -283,10 +284,24 @@
       document.getElementById('list_' + id).remove();
   }
 
+  // --- REORDERING LOGIC ---
   function moveLayer(id, direction) {
       const el = document.getElementById(id);
-      let z = parseInt(el.style.zIndex);
-      el.style.zIndex = z + direction;
+      const listItem = document.getElementById('list_' + id);
+      
+      if (direction === 'up') {
+          // Move in DOM (behind in stacking order)
+          if (el.nextSibling) {
+              el.parentNode.insertBefore(el, el.nextSibling.nextSibling);
+              listItem.parentNode.insertBefore(listItem, listItem.nextSibling.nextSibling);
+          }
+      } else {
+          // Move in DOM (front in stacking order)
+          if (el.previousSibling) {
+              el.parentNode.insertBefore(el, el.previousSibling);
+              listItem.parentNode.insertBefore(listItem, listItem.previousSibling);
+          }
+      }
   }
 
   // --- DRAG AND RESIZE ---
@@ -303,7 +318,9 @@
       const rect = el.getBoundingClientRect();
       offset.x = e.clientX - rect.left;
       offset.y = e.clientY - rect.top;
-      el.style.zIndex = highestZ++;
+      
+      // Bring to top of DOM for dragging
+      el.parentNode.appendChild(el);
     });
   }
 
@@ -331,10 +348,8 @@
               const img = el.querySelector('img');
               if(img) img.style.width = '100%';
           } else {
-              // --- CORE CHANGE: RESIZE FONT BASED ON WIDTH ---
               const textDiv = el.querySelector('.design-text');
               if(textDiv) {
-                  // Calculate font size proportional to width (e.g., 20% of width)
                   const newFontSize = newWidth * 0.2; 
                   textDiv.style.fontSize = Math.max(10, newFontSize) + 'px';
               }
@@ -392,7 +407,7 @@
     const baseUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSd5FvoEdzSMsDMcg0Bwqok-fIrxrFldzu1wvw91pqc-0ccMHA/viewform?';
     const layers = document.querySelectorAll('.draggable');
     let layerSummary = "";
-    layers.forEach(l => layerSummary += `[${l.id}: T${l.style.top} L${l.style.left} Z${l.style.zIndex}] `);
+    layers.forEach(l => layerSummary += `[${l.id}: T${l.style.top} L${l.style.left}] `);
     
     const params = new URLSearchParams({
       'entry.2141379241': productType.value,
