@@ -170,7 +170,17 @@
     label { font-weight: 600; font-size: 10px; color: #666; text-transform: uppercase; }
     input, select { padding: 6px; border-radius: 6px; border: 1px solid #ddd; font-size: 12px;}
     
-    #bgPicker, #fontColorPicker { border: 1px solid #ddd; border-radius: 6px; padding: 2px; background: white; }
+    /* ... existing styles ... */
+
+    /* --- UPDATED COLOR PICKER STYLES --- */
+    #bgPicker .pcr-button, 
+    #fontColorPicker .pcr-button {
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        /* This replaces the solid color with a gradient/pattern icon */
+        background: white url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NjYyI+PHBhdGggZD0iTTIyIDEyYzAtMS4xLS45LTItMi0ySDRjLTEuMSAwLTIgLjktMiAyczAuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMnpNMTIgMmwtNiA2aDEybC02LTZ6bTAgMjBsNi02SDRsNiA2eiIvPjwvc3ZnPg==') no-repeat center / 16px;
+    }
+    /* ... existing styles ... */
 
     .layer-manager {
         background: #f3f4f6; padding: 8px; border-radius: 8px; border: 1px solid #e5e7eb;
