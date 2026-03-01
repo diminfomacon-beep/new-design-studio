@@ -102,7 +102,17 @@
     }
     .draggable.active-layer { border: 2px solid var(--accent); }
     .draggable img { max-width: 100%; max-height: 100%; pointer-events: none; }
-    .design-text { font-weight: bold; text-align: center; white-space: nowrap; pointer-events: none; }
+    
+    /* Updated Text Styling */
+    .design-text { 
+        font-weight: bold; 
+        text-align: center; 
+        pointer-events: none;
+        word-break: break-word; /* Allows text to wrap */
+        display: block;
+        width: 100%;
+        line-height: 1.2;
+    }
 
     /* RESIZE HANDLES */
     .resize-handle {
@@ -244,14 +254,13 @@
         addLayerToList(layerId, 'Text');
     }
 
-    // Add Resize Handle
     const handle = document.createElement('div');
     handle.className = 'resize-handle handle-br';
     layer.appendChild(handle);
     
     productShape.appendChild(layer);
     makeDraggable(layer);
-    makeResizable(layer, handle);
+    makeResizable(layer, handle, type);
   }
 
   function addLayerToList(id, name) {
@@ -294,12 +303,11 @@
       const rect = el.getBoundingClientRect();
       offset.x = e.clientX - rect.left;
       offset.y = e.clientY - rect.top;
-      // Bring to front
       el.style.zIndex = highestZ++;
     });
   }
 
-  function makeResizable(el, handle) {
+  function makeResizable(el, handle, type) {
       handle.addEventListener('mousedown', (e) => {
           isResizing = true;
           activeItem = el;
@@ -313,11 +321,24 @@
 
       function resize(e) {
           const rect = el.getBoundingClientRect();
-          el.style.width = (e.clientX - rect.left) + 'px';
-          el.style.height = (e.clientY - rect.top) + 'px';
-          // Resize internal image/text if needed
-          const img = el.querySelector('img');
-          if(img) img.style.width = '100%';
+          const newWidth = e.clientX - rect.left;
+          const newHeight = e.clientY - rect.top;
+          
+          el.style.width = newWidth + 'px';
+          el.style.height = newHeight + 'px';
+          
+          if(type === 'image') {
+              const img = el.querySelector('img');
+              if(img) img.style.width = '100%';
+          } else {
+              // --- CORE CHANGE: RESIZE FONT BASED ON WIDTH ---
+              const textDiv = el.querySelector('.design-text');
+              if(textDiv) {
+                  // Calculate font size proportional to width (e.g., 20% of width)
+                  const newFontSize = newWidth * 0.2; 
+                  textDiv.style.fontSize = Math.max(10, newFontSize) + 'px';
+              }
+          }
       }
   }
 
