@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Robust Fonts</title>
+  <title>Custom Design Studio - Optimized Fonts</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -26,7 +26,7 @@
     }
 
     .studio-wrapper {
-      background: #CAE4DB;
+      background: #ffffff;
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.1);
       padding: 15px;
@@ -130,7 +130,6 @@
       min-height: 20px;
       box-sizing: border-box;
       touch-action: none;
-      /* Improve text rendering */
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -146,7 +145,6 @@
         line-height: 1.2;
     }
 
-    /* RESIZE HANDLES */
     .resize-handle {
         width: 10px; height: 10px; background: white; border: 2px solid var(--accent);
         position: absolute; display: none; cursor: nwse-resize;
@@ -190,7 +188,7 @@
     #textEditor { display: none; background: #f3f4f6; padding: 8px; border-radius: 8px; }
   </style>
   
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Georgia&family=Montserrat:wght@700&family=Oswald&family=Pacifico&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat:wght@400;900&family=Pacifico&family=Playfair+Display:wght@700&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -201,11 +199,7 @@
         <div class="gallery-title">Assets (Pixabay)</div>
         <input type="text" id="gallerySearch" class="gallery-search" placeholder="Search icons...">
     </div>
-    
-    <div id="galleryLoader" style="display:none; font-size:12px; text-align:center;">Loading...</div>
-    
     <div class="gallery-grid" id="galleryGrid"></div>
-    
     <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
     <div class="control-group">
         <label>Upload Local Image</label>
@@ -214,15 +208,12 @@
   </div>
 
   <div class="preview-container">
-    
     <div id="stage-tshirt" class="product-stage active-product">
         <div id="view-tshirt" class="product-view view-tshirt"></div>
     </div>
-
     <div id="stage-tumbler" class="product-stage">
         <div id="view-tumbler" class="product-view view-tumbler"></div>
     </div>
-
     <div id="stage-mug" class="product-stage">
         <div id="view-mug" class="product-view view-mug"></div>
     </div>
@@ -264,13 +255,18 @@
             <div id="fontColorPicker" style="border: 1px solid #ddd; border-radius: 6px; padding: 2px; background: white; height: 20px;"></div>
             
             <select id="fontFamily" style="grid-column: span 2; padding: 4px;">
-                <option value="Roboto, sans-serif">Roboto</option>
-                <option value="'Montserrat', sans-serif">Montserrat</option>
-                <option value="'Anton', sans-serif">Anton</option>
-                <option value="'Oswald', sans-serif">Oswald</option>
-                <option value="'Bangers', cursive">Bangers</option>
-                <option value="'Pacifico', cursive">Pacifico</option>
-                <option value="Georgia, serif">Georgia</option>
+                <option value="'Montserrat', sans-serif">Modern: Montserrat</option>
+                <option value="'Playfair Display', serif">Classic: Playfair</option>
+                <option value="'Pacifico', cursive">Script: Pacifico</option>
+                <option value="'Lobster', cursive">Bold Script: Lobster</option>
+                <option value="'Bungee', cursive">Block: Bungee</option>
+                <option value="'Anton', sans-serif">Impact: Anton</option>
+                <option value="'Bangers', cursive">Comic: Bangers</option>
+                <option value="'Rock Salt', cursive">Handwritten: Rock Salt</option>
+                <option value="'Monoton', cursive">Retro: Monoton</option>
+                <option value="'Special Elite', cursive">Typewriter: Special Elite</option>
+                <option value="'Creepster', cursive">Horror: Creepster</option>
+                <option value="'Press Start 2P', cursive">Pixel: Press Start</option>
             </select>
             
             <button id="btnBold" class="btn-style" title="Bold">B</button>
@@ -308,13 +304,11 @@
       stage.style.transform = 'scale(1)';
   });
 
-  // --- ZOOM FUNCTIONALITY ---
   document.getElementById('zoomSlider').addEventListener('input', (e) => {
       const scale = e.target.value;
       document.querySelector('.active-product').style.transform = `scale(${scale})`;
   });
 
-  // --- COLOR SWATCHES ---
   const swatches = [
       '#FFFFFF', '#F2F2F2', '#D9D9D9', '#BFBFBF', '#A6A6A6', '#808080', '#595959', '#404040', '#262626', '#000000',
       '#FFCCCC', '#FF9999', '#FF6666', '#FF3333', '#FF0000', '#CC0000', '#990000', '#660000', '#330000',
@@ -333,12 +327,7 @@
           theme: 'classic', 
           default: defaultColor,
           swatches: swatches,
-          components: { 
-              preview: true, 
-              opacity: true, 
-              hue: true, 
-              interaction: { hex: true, input: true, save: true } 
-          }
+          components: { preview: true, opacity: true, hue: true, interaction: { hex: true, input: true, save: true } }
       });
   };
 
@@ -354,7 +343,6 @@
       if(active) active.style.color = color.toRGBA().toString();
   });
   
-  // --- FONT SETTINGS CHANGE ---
   document.getElementById('fontFamily').addEventListener('change', (e) => {
       const active = document.querySelector('.active-layer .design-text');
       if(active) active.style.fontFamily = e.target.value;
@@ -378,7 +366,6 @@
       }
   });
 
-  // --- API ---
   async function loadGallery(searchTerm = '') {
     const grid = document.getElementById('galleryGrid');
     const apiUrl = `https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(searchTerm)}&image_type=all&per_page=15`;
@@ -398,7 +385,6 @@
   document.getElementById('gallerySearch').addEventListener('input', (e) => loadGallery(e.target.value));
   loadGallery();
 
-  // --- LAYERS ---
   const layerList = document.getElementById('layerList');
   const textEditor = document.getElementById('textEditor');
   let layerCount = 0;
@@ -409,10 +395,7 @@
     const layer = document.createElement('div');
     layer.id = layerId;
     layer.className = 'draggable active-layer';
-    
     const activeView = document.getElementById(activeViewId);
-    
-    // Default position to center of view
     layer.style.top = '100px';
     layer.style.left = '50px';
     
@@ -438,11 +421,9 @@
     const handle = document.createElement('div');
     handle.className = 'resize-handle handle-br';
     layer.appendChild(handle);
-    
     activeView.appendChild(layer);
     makeDraggable(layer);
     makeResizable(layer, handle, type);
-    
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
     layer.classList.add('active-layer');
   }
@@ -460,7 +441,6 @@
       document.getElementById('list_' + id).remove();
   }
 
-  // --- DRAG/RESIZE LOGIC ---
   let activeItem = null;
   let offset = { x: 0, y: 0 };
   let isResizing = false;
@@ -475,15 +455,12 @@
       offset.x = e.clientX - rect.left;
       offset.y = e.clientY - rect.top;
       
-      // --- SYNC EDITOR CONTROLS ---
       const text = el.querySelector('.design-text');
       if(text) {
           textEditor.style.display = 'block';
           document.getElementById('fontFamily').value = text.style.fontFamily.replace(/"/g, "'");
-          if(text.style.fontWeight === 'bold') document.getElementById('btnBold').classList.add('active');
-          else document.getElementById('btnBold').classList.remove('active');
-          if(text.style.fontStyle === 'italic') document.getElementById('btnItalic').classList.add('active');
-          else document.getElementById('btnItalic').classList.remove('active');
+          document.getElementById('btnBold').classList.toggle('active', text.style.fontWeight === 'bold');
+          document.getElementById('btnItalic').classList.toggle('active', text.style.fontStyle === 'italic');
       } else {
           textEditor.style.display = 'none';
       }
@@ -503,16 +480,11 @@
       });
 
       function resize(e) {
-          const container = el.parentNode;
-          const containerRect = container.getBoundingClientRect();
           const elRect = el.getBoundingClientRect();
-          
           const newWidth = e.clientX - elRect.left;
           const newHeight = e.clientY - elRect.top;
-          
           el.style.width = Math.max(15, newWidth) + 'px';
           el.style.height = Math.max(15, newHeight) + 'px';
-          
           if(type === 'image') el.querySelector('img').style.width = '100%';
           else el.querySelector('.design-text').style.fontSize = Math.max(8, newWidth * 0.3) + 'px';
       }
@@ -522,12 +494,8 @@
     if (!activeItem || isResizing) return;
     const container = activeItem.parentNode;
     const containerRect = container.getBoundingClientRect();
-    
-    let newX = e.clientX - containerRect.left - offset.x;
-    let newY = e.clientY - containerRect.top - offset.y;
-    
-    activeItem.style.left = newX + 'px';
-    activeItem.style.top = newY + 'px';
+    activeItem.style.left = (e.clientX - containerRect.left - offset.x) + 'px';
+    activeItem.style.top = (e.clientY - containerRect.top - offset.y) + 'px';
   });
   document.addEventListener('mouseup', () => { activeItem = null; });
 
@@ -555,9 +523,7 @@
     });
   });
 
-  document.getElementById('submitDesign').addEventListener('click', () => {
-    alert('Design Submitted!');
-  });
+  document.getElementById('submitDesign').addEventListener('click', () => alert('Design Submitted!'));
 </script>
 </body>
 </html>
