@@ -7,24 +7,29 @@
 
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 
+<!-- Pickr -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
 
+<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat:wght@400;900&family=Pacifico&family=Playfair+Display:wght@700&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <style>
+/* ---------- CORE ---------- */
 :root{
 --primary:#111827;
 --accent:#3b82f6;
---bg-light:#f5f5f5;
+--bg:#f5f5f5;
 --border:#ddd;
 }
 
 body{
-font-family:Segoe UI, sans-serif;
-background:var(--bg-light);
 margin:0;
 padding:10px;
+background:var(--bg);
+font-family:Segoe UI,sans-serif;
 display:flex;
 justify-content:center;
 }
@@ -35,13 +40,13 @@ border-radius:16px;
 box-shadow:0 10px 25px rgba(0,0,0,.1);
 padding:15px;
 width:100%;
-max-width:1400px;
+max-width:1500px;
 display:grid;
-grid-template-columns:240px 1fr 240px;
+grid-template-columns:260px 1fr 260px;
 gap:15px;
 }
 
-/* PANELS */
+/* ---------- PANELS ---------- */
 .gallery-panel,.controls-panel{
 background:#f9fafb;
 border-radius:12px;
@@ -51,8 +56,8 @@ border:1px solid var(--border);
 
 .preview-container{
 background:#eff0f1;
-border-radius:12px;
 border:1px solid var(--border);
+border-radius:12px;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -61,16 +66,15 @@ position:relative;
 overflow:hidden;
 }
 
-/* PRODUCTS */
+/* ---------- PRODUCTS ---------- */
 .product-stage{
 display:none;
 align-items:center;
 justify-content:center;
 position:relative;
+transform-origin:center;
 }
-.product-stage.active-product{
-display:flex;
-}
+.product-stage.active-product{display:flex;}
 
 .product-view{
 position:relative;
@@ -80,24 +84,13 @@ overflow:hidden;
 }
 
 .view-tshirt{
-width:320px;
-height:330px;
+width:320px;height:330px;
 clip-path:polygon(25% 0%,75% 0%,100% 20%,85% 35%,85% 100%,15% 100%,15% 35%,0% 20%);
 }
+.view-tumbler{width:140px;height:330px;border-radius:10px;}
+.view-mug{width:200px;height:170px;border-radius:10px 10px 50px 50px;}
 
-.view-tumbler{
-width:140px;
-height:330px;
-border-radius:10px;
-}
-
-.view-mug{
-width:200px;
-height:170px;
-border-radius:10px 10px 50px 50px;
-}
-
-/* DRAGGABLE */
+/* ---------- DRAGGABLE ---------- */
 .draggable{
 position:absolute;
 cursor:move;
@@ -112,54 +105,58 @@ outline:2px solid var(--accent);
 .design-text{
 pointer-events:none;
 text-align:center;
+word-break:break-word;
 }
 
 .resize-handle{
-width:10px;
-height:10px;
+width:10px;height:10px;
 background:white;
 border:2px solid var(--accent);
 position:absolute;
-bottom:-5px;
-right:-5px;
+bottom:-5px;right:-5px;
 cursor:nwse-resize;
 display:none;
 }
 
-.draggable.active-layer .resize-handle{
-display:block;
-}
+.draggable.active-layer .resize-handle{display:block;}
 
-/* LAYERS */
+/* ---------- LAYERS ---------- */
 .layer-manager{
-max-height:120px;
-overflow-y:auto;
 background:white;
 border-radius:6px;
 padding:5px;
+max-height:120px;
+overflow-y:auto;
+font-size:11px;
 }
 
 .layer-item{
 display:flex;
 justify-content:space-between;
-font-size:11px;
 margin-bottom:4px;
 }
 
-/* BUTTONS */
 button{
 padding:6px;
-border-radius:6px;
 border:none;
+border-radius:6px;
 cursor:pointer;
-font-weight:600;
 font-size:12px;
+font-weight:600;
 }
 
 .btn-primary{background:var(--primary);color:white;}
 .btn-download{background:#2F6B64;color:white;}
 .btn-delete{background:#fee2e2;color:#991b1b;}
 
+.alignment-guide{
+position:absolute;
+background:var(--accent);
+display:none;
+z-index:100;
+}
+#guide-h{height:1px;width:100%;top:50%;left:0;}
+#guide-v{width:1px;height:100%;left:50%;top:0;}
 </style>
 </head>
 
@@ -167,8 +164,12 @@ font-size:12px;
 
 <div class="studio-wrapper">
 
-<!-- LEFT -->
+<!-- LEFT PANEL -->
 <div class="gallery-panel">
+<input type="text" id="gallerySearch" placeholder="Search assets..." style="width:100%;margin-bottom:8px;">
+<div id="pixabayGrid"></div>
+<div id="openClipartGrid"></div>
+<hr>
 <input type="file" id="imageInput" accept="image/*">
 </div>
 
@@ -176,20 +177,29 @@ font-size:12px;
 <div class="preview-container">
 
 <div id="stage-tshirt" class="product-stage active-product">
-<div id="view-tshirt" class="product-view view-tshirt"></div>
+<div id="view-tshirt" class="product-view view-tshirt">
+<div id="guide-h" class="alignment-guide"></div>
+<div id="guide-v" class="alignment-guide"></div>
+</div>
 </div>
 
 <div id="stage-tumbler" class="product-stage">
-<div id="view-tumbler" class="product-view view-tumbler"></div>
+<div id="view-tumbler" class="product-view view-tumbler">
+<div id="guide-h" class="alignment-guide"></div>
+<div id="guide-v" class="alignment-guide"></div>
+</div>
 </div>
 
 <div id="stage-mug" class="product-stage">
-<div id="view-mug" class="product-view view-mug"></div>
+<div id="view-mug" class="product-view view-mug">
+<div id="guide-h" class="alignment-guide"></div>
+<div id="guide-v" class="alignment-guide"></div>
+</div>
 </div>
 
 </div>
 
-<!-- RIGHT -->
+<!-- RIGHT PANEL -->
 <div class="controls-panel">
 
 <select id="productSelect">
@@ -198,53 +208,43 @@ font-size:12px;
 <option value="mug">Mug</option>
 </select>
 
-<input type="text" id="textInput" placeholder="Add text">
+<input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
+
+<input type="text" id="textInput" placeholder="Enter text">
 <button id="addTextBtn">Add Text</button>
 
 <div id="layerList" class="layer-manager"></div>
 
 <button class="btn-download" id="downloadBtn">Save PNG</button>
 <button class="btn-delete" id="clearCanvasBtn">Clear</button>
-<button class="btn-primary">Finalize</button>
+<button class="btn-primary" id="submitDesign">Finalize</button>
 
 </div>
 
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-
-let activeViewId="view-tshirt";
-let layerCount=0;
+/* ---------------- GLOBALS ---------------- */
+const PIXABAY_API_KEY='54841320-2fc493da46915b0eb0a6f740c';
+let activeViewId='view-tshirt';
 let activeItem=null;
 let offset={x:0,y:0};
 let isResizing=false;
+let layerCount=0;
 
-/* PRODUCT SWITCH */
+/* ---------------- PRODUCT SWITCH ---------------- */
 document.getElementById("productSelect").addEventListener("change",(e)=>{
 document.querySelectorAll(".product-stage").forEach(s=>s.classList.remove("active-product"));
 document.getElementById("stage-"+e.target.value).classList.add("active-product");
 activeViewId="view-"+e.target.value;
 });
 
-/* ADD TEXT */
-document.getElementById("addTextBtn").onclick=()=>{
-const text=document.getElementById("textInput").value;
-if(!text) return;
-createLayer("text",text);
-};
-
-/* IMAGE UPLOAD */
-document.getElementById("imageInput").addEventListener("change",(e)=>{
-const file=e.target.files[0];
-if(!file) return;
-const reader=new FileReader();
-reader.onload=(ev)=>createLayer("image",ev.target.result);
-reader.readAsDataURL(file);
+/* ---------------- ZOOM ---------------- */
+document.getElementById("zoomSlider").addEventListener("input",(e)=>{
+document.querySelector(".active-product").style.transform=`scale(${e.target.value})`;
 });
 
-/* CREATE LAYER */
+/* ---------------- CREATE LAYER ---------------- */
 function createLayer(type,content){
 layerCount++;
 const layer=document.createElement("div");
@@ -273,6 +273,7 @@ handle.className="resize-handle";
 layer.appendChild(handle);
 
 document.getElementById(activeViewId).appendChild(layer);
+
 makeDraggable(layer);
 makeResizable(layer,handle,type);
 
@@ -280,7 +281,7 @@ document.querySelectorAll(".draggable").forEach(d=>d.classList.remove("active-la
 layer.classList.add("active-layer");
 }
 
-/* LAYER LIST */
+/* ---------------- LAYERS ---------------- */
 function addLayerToList(id,name){
 const item=document.createElement("div");
 item.className="layer-item";
@@ -291,15 +292,12 @@ btn.onclick=()=>removeLayer(id);
 item.appendChild(btn);
 document.getElementById("layerList").prepend(item);
 }
+function removeLayer(id){document.getElementById(id)?.remove();}
 
-function removeLayer(id){
-document.getElementById(id)?.remove();
-}
-
-/* DRAG */
+/* ---------------- DRAG ---------------- */
 function makeDraggable(el){
 el.addEventListener("mousedown",(e)=>{
-if(isResizing) return;
+if(isResizing)return;
 activeItem=el;
 const rect=el.getBoundingClientRect();
 const parent=el.parentNode.getBoundingClientRect();
@@ -309,7 +307,7 @@ offset.y=e.clientY-rect.top;
 }
 
 document.addEventListener("mousemove",(e)=>{
-if(!activeItem||isResizing) return;
+if(!activeItem||isResizing)return;
 const parent=activeItem.parentNode.getBoundingClientRect();
 activeItem.style.left=(e.clientX-parent.left-offset.x)+"px";
 activeItem.style.top=(e.clientY-parent.top-offset.y)+"px";
@@ -317,7 +315,7 @@ activeItem.style.top=(e.clientY-parent.top-offset.y)+"px";
 
 document.addEventListener("mouseup",()=>activeItem=null);
 
-/* RESIZE */
+/* ---------------- RESIZE ---------------- */
 function makeResizable(el,handle,type){
 handle.addEventListener("mousedown",(e)=>{
 isResizing=true;
@@ -326,13 +324,9 @@ e.stopPropagation();
 
 function resizeMove(ev){
 const rect=el.getBoundingClientRect();
-const newW=ev.clientX-rect.left;
-const newH=ev.clientY-rect.top;
-el.style.width=Math.max(20,newW)+"px";
-el.style.height=Math.max(20,newH)+"px";
-if(type==="image"){
-el.querySelector("img").style.width="100%";
-}
+el.style.width=Math.max(20,ev.clientX-rect.left)+"px";
+el.style.height=Math.max(20,ev.clientY-rect.top)+"px";
+if(type==="image")el.querySelector("img").style.width="100%";
 }
 
 function stop(){
@@ -346,7 +340,22 @@ document.addEventListener("mouseup",stop);
 });
 }
 
-/* DOWNLOAD */
+/* ---------------- ADD TEXT ---------------- */
+document.getElementById("addTextBtn").onclick=()=>{
+const val=document.getElementById("textInput").value;
+if(val)createLayer("text",val);
+};
+
+/* ---------------- IMAGE UPLOAD ---------------- */
+document.getElementById("imageInput").addEventListener("change",(e)=>{
+const file=e.target.files[0];
+if(!file)return;
+const reader=new FileReader();
+reader.onload=(ev)=>createLayer("image",ev.target.result);
+reader.readAsDataURL(file);
+});
+
+/* ---------------- DOWNLOAD ---------------- */
 document.getElementById("downloadBtn").onclick=()=>{
 html2canvas(document.querySelector(".active-product")).then(canvas=>{
 const link=document.createElement("a");
@@ -356,12 +365,17 @@ link.click();
 });
 };
 
-/* CLEAR */
+/* ---------------- CLEAR ---------------- */
 document.getElementById("clearCanvasBtn").onclick=()=>{
+if(confirm("Clear design?")){
 document.querySelectorAll(".active-product .draggable").forEach(d=>d.remove());
 document.getElementById("layerList").innerHTML="";
+}
 };
 
+document.getElementById("submitDesign").onclick=()=>{
+alert("Design finalized! Sent to production.");
+};
 </script>
 </body>
 </html>
