@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Professional Palette</title>
+  <title>D.I.M. Design Studio</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -26,7 +26,7 @@
     }
 
     .studio-wrapper {
-      background: #ffffff;
+      background: #CAE4DB;
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.1);
       padding: 15px;
@@ -74,21 +74,52 @@
     }
     .gallery-item:hover { border-color: var(--accent); transform: scale(1.05); }
 
-    .preview-container {
-      background: #e5e7eb;
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 10px;
-      position: relative;
-      min-height: 500px;
-      gap: 15px;
-      overflow: hidden;
-    }
+    /* Container for the mug and handle to sit side-by-side */
+#stage-mug {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
+.mug-handle {
+    width: 40px;
+    height: 80px;
+    border: 12px solid #ccc; /* Matches the default mug color */
+    border-left: 0;
+    border-radius: 0 50px 50px 0;
+    position: absolute;
+    right: -30px; /* Adjust this to pull the handle closer or further */
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 0; /* Keeps it behind the mug body */
+}
+
+.view-mug {
+    position: relative;
+    z-index: 1; /* Ensures text/images stay on the mug body */
+}
+
+     .preview-container {
+        background-color: #e5e7eb; /* The base gray color */
+        /* Create the dots using a radial gradient */
+        background-image: radial-gradient(#bcbece 1px, transparent 1px);
+        /* Adjust the spacing of the dots */
+        background-size: 20px 20px; 
+        
+        /* Keep your existing properties below */
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        position: relative;
+        min-height: 500px;
+        gap: 15px;
+        overflow: hidden;
+    }
     .product-stage {
         display: none;
         position: relative;
@@ -175,7 +206,7 @@
     
     .btn-primary { background: var(--primary); color: white; flex: 1; }
     .btn-action { background: #dbeafe; color: #1e40af; }
-    .btn-download { background: #d1fae5; color: #065f46; flex: 1; }
+    .btn-download { background: #2F6B64; color: #ffffff; flex: 1; }
     
     #textEditor { display: none; background: #f3f4f6; padding: 10px; border-radius: 8px; border: 1px solid #e5e7eb;}
     .size-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
@@ -190,8 +221,8 @@
   
   <div class="gallery-panel">
     <div class="gallery-header">
-        <div class="gallery-title">Assets (Pixabay)</div>
-        <input type="text" id="gallerySearch" class="gallery-search" placeholder="Search icons...">
+        <div class="gallery-title">Images (Pixabay)</div>
+        <input type="text" id="gallerySearch" class="gallery-search" placeholder="Search...">
     </div>
     <div class="gallery-grid" id="galleryGrid"></div>
     <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
@@ -209,6 +240,7 @@
         <div id="view-tumbler" class="product-view view-tumbler"></div>
     </div>
     <div id="stage-mug" class="product-stage">
+        <div class="mug-handle"></div>
         <div id="view-mug" class="product-view view-mug"></div>
     </div>
   </div>
@@ -238,7 +270,7 @@
     <div class="control-group">
         <label>Add Text</label>
         <div style="display:flex; gap:3px;">
-            <input type="text" id="textInput" placeholder="Enter text..." value="New Text" style="flex:1"/>
+            <input type="text" id="textInput" placeholder="Enter text..." value="Add Text Here" style="flex:1"/>
             <button class="btn-action" id="addTextBtn">Add</button>
         </div>
     </div>
@@ -320,7 +352,12 @@
   const fontColorPicker = createPicker('#fontColorPicker', '#000000');
 
   bgPicker.on('change', (color) => {
-      document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color.toRGBA().toString());
+    const colorString = color.toRGBA().toString();
+    // Update the mug body
+    document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = colorString);
+    // Update the mug handle border color
+    const handle = document.querySelector('.mug-handle');
+    if (handle) handle.style.borderColor = colorString;
   });
 
   fontColorPicker.on('change', (color) => {
