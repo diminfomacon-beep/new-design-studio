@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Solid Colors</title>
+  <title>Custom Design Studio - Full Color Control</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -74,7 +74,7 @@
     }
     .gallery-item:hover { border-color: var(--accent); transform: scale(1.05); }
 
-    /* PREVIEW PANEL - UPDATED FOR CENTERING & ZOOM */
+    /* PREVIEW PANEL */
     .preview-container {
       background: #e5e7eb;
       border: 1px solid var(--border-color);
@@ -82,19 +82,19 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center; /* Center items vertically */
+      justify-content: center;
       padding: 10px;
       position: relative;
       min-height: 500px;
       gap: 15px;
-      overflow: hidden; /* Hide overflow when zoomed */
+      overflow: hidden;
     }
 
     .product-stage {
         display: none;
         position: relative;
         transform-origin: center;
-        transition: transform 0.1s ease-out; /* Smooth zoom */
+        transition: transform 0.1s ease-out;
         align-items: center;
         justify-content: center;
     }
@@ -334,7 +334,7 @@
       document.getElementById(viewId).classList.add('active-view');
   }
 
-  // --- SOLID COLOR PICKERS ---
+  // --- COLOR PICKERS WITH OPACITY ---
   const createColorPicker = (selector, defaultColor) => {
       return Pickr.create({
           el: selector,
@@ -342,7 +342,7 @@
           default: defaultColor,
           components: { 
               preview: true, 
-              opacity: false, // REMOVED OPACITY
+              opacity: true, // RE-ENABLED OPACITY
               hue: true, 
               interaction: { hex: true, input: true, save: true } 
           }
@@ -353,12 +353,12 @@
   const fontColorPicker = createColorPicker('#fontColorPicker', '#000000');
 
   bgPicker.on('change', (color) => {
-      document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color.toHEXA().toString());
+      document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color.toRGBA().toString());
   });
 
   fontColorPicker.on('change', (color) => {
       const active = document.querySelector('.active-layer .design-text');
-      if(active) active.style.color = color.toHEXA().toString();
+      if(active) active.style.color = color.toRGBA().toString();
   });
 
   // --- API ---
