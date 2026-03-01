@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Print Design Studio - Front & Back</title>
+  <title>Custom Print Design Studio - Limited Areas</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -98,7 +98,7 @@
         100% { transform: rotate(360deg); }
     }
 
-    /* PREVIEW PANEL - UPDATED FOR FRONT/BACK */
+    /* PREVIEW PANEL */
     .preview-container {
       background: #e5e7eb;
       border: 1px solid var(--border-color);
@@ -128,22 +128,39 @@
       background-color: white;
       cursor: pointer;
       border: 3px solid transparent;
+      width: 200px;
+      height: 250px;
     }
     .product-view.active-view {
         border: 3px solid var(--accent);
     }
 
-    /* Print area constraint */
+    /* SHAPE */
+    .shape-tshirt { clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
+
+    /* PRINT AREAS - UPDATED RESTRICTIONS */
     .print-area {
         position: absolute;
-        width: 150px;
-        height: 200px;
-        border: 2px dashed rgba(0,0,0,0.2);
+        border: 2px dashed rgba(0,0,0,0.3);
         pointer-events: none;
+        background: rgba(255,255,255,0.1);
+    }
+    
+    /* Front: Pocket Size */
+    #viewFront .print-area {
+        width: 50px;                
+        height: 50px;
+        top: 60px;                  /* Down from neck */
+        left: 30px;                 /* Towards left side */
     }
 
-    /* Shapes */
-    .shape-tshirt { width: 200px; height: 250px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
+    /* Back: Upper 1/3 */
+    #viewBack .print-area {
+        width: 140px;               /* Not full width */
+        height: 70px;               /* 1/3rd height */
+        top: 30px;                  /* Top area */
+        left: 30px;                 /* Centered */
+    }
 
     /* LAYERS */
     .draggable {
@@ -249,7 +266,7 @@
             <div class="print-area"></div>
         </div>
     </div>
-    <p style="font-size: 9px; color: #555; font-weight:bold;">DRAG/RESIZE ITEMS WITHIN DASHED AREA</p>
+    <p style="font-size: 9px; color: #555; font-weight:bold;">DRAG/RESIZE WITHIN DASHED AREA</p>
   </div>
 
   <div class="controls-panel">
@@ -300,14 +317,12 @@
   const PIXABAY_API_KEY = '54841320-2fc493da46915b0eb0a6f740c';
   let activeViewId = 'viewFront';
 
-  // --- VIEW MANAGEMENT ---
   function setActiveView(viewId) {
       activeViewId = viewId;
       document.querySelectorAll('.product-view').forEach(v => v.classList.remove('active-view'));
       document.getElementById(viewId).classList.add('active-view');
   }
 
-  // --- COLOR PICKER ---
   const createColorPicker = (selector, defaultColor) => {
       return Pickr.create({
           el: selector,
@@ -329,7 +344,6 @@
       if(active) active.style.color = color.toHEXA().toString();
   });
 
-  // --- API INTEGRATION ---
   async function loadGallery(searchTerm = '') {
     const grid = document.getElementById('galleryGrid');
     const loader = document.getElementById('galleryLoader');
@@ -355,7 +369,6 @@
   document.getElementById('gallerySearch').addEventListener('input', (e) => loadGallery(e.target.value));
   loadGallery();
 
-  // --- LAYER FUNCTIONALITY ---
   const layerList = document.getElementById('layerList');
   const textEditor = document.getElementById('textEditor');
   let layerCount = 0;
@@ -367,7 +380,7 @@
     const layer = document.createElement('div');
     layer.id = layerId;
     layer.className = 'draggable active-layer';
-    layer.style.top = '25px'; layer.style.left = '25px';
+    layer.style.top = '70px'; layer.style.left = '40px';
     layer.dataset.type = type;
     
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
@@ -375,7 +388,7 @@
     if (type === 'image') {
         const img = document.createElement('img');
         img.src = content;
-        img.style.width = '60px'; 
+        img.style.width = '40px'; 
         layer.appendChild(img);
         addLayerToList(layerId, 'Image');
         textEditor.style.display = 'none';
@@ -383,7 +396,7 @@
         const text = document.createElement('div');
         text.className = 'design-text';
         text.textContent = content;
-        text.style.fontSize = '20px';
+        text.style.fontSize = '16px';
         text.style.fontFamily = 'Roboto';
         text.style.color = '#000000';
         layer.appendChild(text);
@@ -400,7 +413,6 @@
     makeResizable(layer, handle, type);
   }
 
-  // --- LAYER MANAGEMENT ---
   function addLayerToList(id, name) {
       const item = document.createElement('div');
       item.className = 'layer-item';
@@ -419,7 +431,6 @@
       textEditor.style.display = 'none';
   }
 
-  // --- DRAG & RESIZE (With Boundary Checks) ---
   let activeItem = null;
   let offset = { x: 0, y: 0 };
   let isResizing = false;
@@ -435,7 +446,6 @@
       offset.x = e.clientX - rect.left;
       offset.y = e.clientY - rect.top;
       
-      // Update active view to parent of clicked item
       setActiveView(el.parentNode.id);
     });
   }
@@ -454,20 +464,24 @@
 
       function resize(e) {
           const container = el.parentNode;
+          const printArea = container.querySelector('.print-area');
+          const printRect = printArea.getBoundingClientRect();
           const containerRect = container.getBoundingClientRect();
-          const printArea = container.querySelector('.print-area').getBoundingClientRect();
           
-          const newWidth = Math.min(e.clientX - el.getBoundingClientRect().left, printArea.width);
-          const newHeight = Math.min(e.clientY - el.getBoundingClientRect().top, printArea.height);
+          const maxWidth = printRect.width - (el.getBoundingClientRect().left - printRect.left);
+          const maxHeight = printRect.height - (el.getBoundingClientRect().top - printRect.top);
           
-          el.style.width = newWidth + 'px';
-          el.style.height = newHeight + 'px';
+          const newWidth = Math.min(e.clientX - el.getBoundingClientRect().left, maxWidth);
+          const newHeight = Math.min(e.clientY - el.getBoundingClientRect().top, maxHeight);
+          
+          el.style.width = Math.max(10, newWidth) + 'px';
+          el.style.height = Math.max(10, newHeight) + 'px';
           
           if(type === 'image') {
               el.querySelector('img').style.width = '100%';
           } else {
               const textDiv = el.querySelector('.design-text');
-              textDiv.style.fontSize = Math.max(10, newWidth * 0.25) + 'px';
+              textDiv.style.fontSize = Math.max(8, newWidth * 0.3) + 'px';
           }
       }
   }
@@ -480,11 +494,9 @@
     const printArea = container.querySelector('.print-area');
     const printRect = printArea.getBoundingClientRect();
     
-    // Calculate boundaries relative to the print area
     let newX = e.clientX - containerRect.left - offset.x;
     let newY = e.clientY - containerRect.top - offset.y;
     
-    // Constrain to print area
     const minX = printArea.offsetLeft;
     const maxX = printArea.offsetLeft + printRect.width - activeItem.offsetWidth;
     const minY = printArea.offsetTop;
@@ -495,7 +507,6 @@
   });
   document.addEventListener('mouseup', () => { activeItem = null; });
 
-  // --- CONTROLS & DOWNLOAD ---
   document.getElementById('addTextBtn').addEventListener('click', () => {
       const text = document.getElementById('textInput').value;
       if(text) createLayer('text', text);
@@ -512,7 +523,6 @@
 
   document.getElementById('downloadBtn').addEventListener('click', () => {
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
-    // Download front and back
     ['viewFront', 'viewBack'].forEach(viewId => {
         html2canvas(document.getElementById(viewId), { backgroundColor: null }).then(canvas => {
             const link = document.createElement('a');
