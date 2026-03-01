@@ -548,9 +548,19 @@ fontColorPicker.on('change', (color, instance) => {
 
   document.addEventListener('mousemove', (e) => {
     if (!activeItem || isResizing) return;
-    const parent = activeItem.parentNode.getBoundingClientRect();
-    activeItem.style.left = (e.clientX - parent.left - offset.x) + 'px';
-    activeItem.style.top = (e.clientY - parent.top - offset.y) + 'px';
+  
+    const parent = activeItem.parentNode;
+    const parentRect = parent.getBoundingClientRect();
+  
+    let newX = e.clientX - parentRect.left - offset.x;
+    let newY = e.clientY - parentRect.top - offset.y;
+  
+    // Keep inside product boundaries
+    newX = Math.max(0, Math.min(newX, parent.offsetWidth - activeItem.offsetWidth));
+    newY = Math.max(0, Math.min(newY, parent.offsetHeight - activeItem.offsetHeight));
+  
+    activeItem.style.left = newX + 'px';
+    activeItem.style.top = newY + 'px';
   });
   document.addEventListener('mouseup', () => activeItem = null);
 
