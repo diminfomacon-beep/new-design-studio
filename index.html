@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Unlimited Area</title>
+  <title>Custom Design Studio - Minimalist</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -109,14 +109,12 @@
       overflow: hidden;
       background-color: white;
       cursor: pointer;
-      border: 3px solid transparent;
+      /* REMOVED ACTIVE BORDER STYLE */
+      border: 3px solid transparent; 
       transition: all 0.3s;
     }
-    .product-view.active-view {
-        border: 3px solid var(--accent);
-    }
 
-    /* PRODUCT SHAPES - DESIGN AREA RESTRICTIONS REMOVED */
+    /* PRODUCT SHAPES */
     
     /* T-Shirt */
     .view-tshirt { width: 240px; height: 250px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
@@ -220,10 +218,8 @@
   </div>
 
   <div class="preview-container">
-    <label style="font-size: 12px; color: #333;">Design Canvas</label>
-    
     <div id="stage-tshirt" class="product-stage active-product">
-        <div id="view-tshirt" class="product-view view-tshirt active-view"></div>
+        <div id="view-tshirt" class="product-view view-tshirt"></div>
     </div>
 
     <div id="stage-tumbler" class="product-stage">
@@ -558,7 +554,6 @@
     let newX = e.clientX - containerRect.left - offset.x;
     let newY = e.clientY - containerRect.top - offset.y;
     
-    // No restrictions on placement
     activeItem.style.left = newX + 'px';
     activeItem.style.top = newY + 'px';
   });
