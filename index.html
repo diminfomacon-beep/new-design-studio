@@ -115,9 +115,26 @@
       transition: all 0.3s;
     }
       
-    .view-tshirt { width: 240px; height: 250px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
-    .view-tumbler { width: 100px; height: 250px; border-radius: 10px; }
-    .view-mug { width: 150px; height: 130px; border-radius: 10px 10px 50px 50px; }
+        /* T-Shirt Size */
+    .view-tshirt { 
+        width: 320px;  /* Increased from 240px */
+        height: 330px; /* Increased from 250px */
+        clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); 
+    }
+    
+    /* Tumbler Size */
+    .view-tumbler { 
+        width: 140px;  /* Increased from 100px */
+        height: 330px; /* Increased from 250px */
+        border-radius: 10px; 
+    }
+    
+    /* Mug Size */
+    .view-mug { 
+        width: 200px;  /* Increased from 150px */
+        height: 170px; /* Increased from 130px */
+        border-radius: 10px 10px 50px 50px; 
+    }
 
     /* DRAGGABLES */
     .draggable {
@@ -390,7 +407,7 @@
         const text = document.createElement('div');
         text.className = 'design-text';
         text.textContent = content;
-        text.style.fontSize = '24px';
+        text.style.fontSize = '16px';
         text.style.fontFamily = document.getElementById('fontFamily').value;
         layer.appendChild(text);
         addLayerToList(layerId, 'Text');
