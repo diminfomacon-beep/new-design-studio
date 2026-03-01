@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Print Design Studio</title>
+  <title>Custom Print Design Studio - Layer Editor</title>
   <style>
     :root {
       --primary: #111827;
@@ -16,6 +16,7 @@
       padding: 20px;
       display: flex;
       justify-content: center;
+      user-select: none;
     }
 
     .studio-wrapper {
@@ -23,28 +24,18 @@
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.1);
       padding: 24px;
-      max-width: 950px;
+      max-width: 1000px;
       width: 100%;
       display: grid;
-      grid-template-columns: 1.1fr 1fr;
+      grid-template-columns: 1.2fr 1fr;
       gap: 30px;
     }
 
-    .step-indicator {
-      grid-column: 1 / -1;
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .step-dot {
-      flex: 1;
-      height: 6px;
-      background: #eee;
-      border-radius: 10px;
-      transition: background 0.3s;
-    }
+    .step-indicator { grid-column: 1 / -1; display: flex; gap: 10px; margin-bottom: 10px; }
+    .step-dot { flex: 1; height: 6px; background: #eee; border-radius: 10px; }
     .step-dot.active { background: var(--accent); }
 
+    /* PREVIEW & LAYER AREA */
     .preview-container {
       background: #fdfdfd;
       border: 1px solid #eee;
@@ -55,69 +46,62 @@
       justify-content: center;
       padding: 20px;
       position: relative;
-      min-height: 400px;
+      min-height: 450px;
       overflow: hidden;
     }
 
     .product-stage {
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: background-color 0.3s;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       box-shadow: 0 8px 20px rgba(0,0,0,0.05);
       position: relative;
+      overflow: hidden;
     }
 
-    /* Mockup Shapes */
-    .shape-tshirt { width: 280px; height: 280px; border-radius: 12px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
-    .shape-ornament { width: 260px; height: 260px; border-radius: 50%; }
-    .shape-tumbler { width: 180px; height: 300px; border-radius: 10px 10px 40px 40px; }
+    .shape-tshirt { width: 320px; height: 320px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
+    .shape-ornament { width: 280px; height: 280px; border-radius: 50%; }
+    .shape-tumbler { width: 180px; height: 320px; border-radius: 10px 10px 40px 40px; }
 
-    .design-text {
-      font-size: 18px;
-      font-weight: bold;
-      text-align: center;
-      padding: 10px;
-      word-wrap: break-word;
-      max-width: 80%;
-      z-index: 2;
+    /* DRAGGABLE LAYERS */
+    .draggable {
+      position: absolute;
+      cursor: move;
+      border: 1px dashed transparent;
+      transition: border 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+    .draggable.active-layer { border: 1px dashed var(--accent); background: rgba(59, 130, 246, 0.05); }
 
-    #uploadedImagePreview {
-      max-width: 60%;
-      max-height: 40%;
-      object-fit: contain;
-      margin-bottom: 10px;
-      display: none;
-      z-index: 1;
-    }
+    #uploadedImagePreview { max-width: 100%; max-height: 100%; display: none; pointer-events: none; }
+    .design-text { font-weight: bold; text-align: center; white-space: nowrap; pointer-events: none; }
 
+    /* CONTROLS */
     .controls-panel { display: flex; flex-direction: column; gap: 18px; }
     .step-content { display: none; flex-direction: column; gap: 15px; }
     .step-content.active { display: flex; }
 
     .control-group { display: flex; flex-direction: column; gap: 6px; }
-    label { font-weight: 600; font-size: 13px; color: #444; text-transform: uppercase; }
-    input[type="text"], input[type="file"], select { padding: 10px; border-radius: 8px; border: 1px solid #ddd; }
+    label { font-weight: 600; font-size: 11px; color: #666; text-transform: uppercase; }
+    input[type="text"], input[type="file"], select, input[type="range"] { padding: 8px; border-radius: 6px; border: 1px solid #ddd; }
     
-    .btn-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-    button { 
-      flex: 1; min-width: 120px; padding: 12px; border-radius: 8px; border: none; 
-      font-weight: 600; cursor: pointer; transition: opacity 0.2s; 
+    .layer-tools {
+      background: #f3f4f6;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
     }
+
+    .btn-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    button:hover { opacity: 0.9; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: #e5e7eb; color: #374151; }
-    .btn-share { background: #dbeafe; color: #1e40af; }
-    .btn-danger { background: #fee2e2; color: #b91c1c; font-size: 11px; padding: 5px; }
-
-    .summary-box {
-      background: #f9fafb;
-      padding: 15px;
-      border-radius: 8px;
-      font-size: 14px;
-      border-left: 4px solid var(--accent);
-    }
+    .btn-action { background: #dbeafe; color: #1e40af; font-size: 12px; padding: 8px; }
+    .btn-download { background: #d1fae5; color: #065f46; }
   </style>
 </head>
 <body>
@@ -129,21 +113,28 @@
   </div>
 
   <div class="preview-area">
-    <div class="preview-container">
+    <div class="preview-container" id="dropZone">
       <div id="productShape" class="product-stage shape-tshirt" style="background-color: #ffffff;">
-        <img id="uploadedImagePreview" src="" alt="Custom Design" />
-        <div id="designText" class="design-text">Your Text Here</div>
+        
+        <div id="layerImage" class="draggable" style="top: 20%; left: 50%; transform: translateX(-50%); width: 100px;">
+          <img id="uploadedImagePreview" src="" alt="" />
+        </div>
+
+        <div id="layerText" class="draggable" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
+          <div id="designText" class="design-text" style="font-size: 20px; color: #000000;">Your Text Here</div>
+        </div>
+
       </div>
-      <p id="previewLabel" style="margin-top:15px; font-size: 12px; color:#999; font-weight:bold;">T-SHIRT MOCKUP</p>
+      <p style="font-size: 10px; color: #999; margin-top: 10px;">TIP: DRAG ITEMS TO POSITION THEM</p>
     </div>
   </div>
 
   <div class="controls-panel">
     <div id="step1" class="step-content active">
-      <h2 style="margin:0">1. Customize</h2>
+      <h2 style="margin:0">1. Design Editor</h2>
       
       <div class="control-group">
-        <label>Product Type</label>
+        <label>1. Select Product</label>
         <select id="productType">
           <option value="T-Shirt">T-Shirt</option>
           <option value="Ornament">Ornament</option>
@@ -151,158 +142,198 @@
         </select>
       </div>
 
-      <div class="control-group">
-        <label>Add an Image (Logo/Photo)</label>
-        <input type="file" id="imageInput" accept="image/*" />
-        <button id="removeImgBtn" class="btn-danger" style="display:none; margin-top:5px;">Remove Image</button>
+      <div class="layer-tools">
+        <label style="color: var(--accent); margin-bottom: 8px; display: block;">2. Layer Settings</label>
+        
+        <div class="btn-group" style="margin-bottom: 10px;">
+            <button class="btn-action" id="centerBtn">↔ Center Items</button>
+            <button class="btn-download" id="downloadBtn">💾 Download PNG</button>
+        </div>
+
+        <div class="control-group">
+          <label>Text Content</label>
+          <input type="text" id="textInput" placeholder="Edit text..." />
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+          <div class="control-group">
+            <label>Text Size</label>
+            <input type="range" id="textSizeRange" min="10" max="80" value="20">
+          </div>
+          <div class="control-group">
+            <label>Image Size</label>
+            <input type="range" id="imgSizeRange" min="20" max="250" value="100">
+          </div>
+        </div>
       </div>
 
       <div class="control-group">
-        <label>Personalized Text</label>
-        <input type="text" id="textInput" placeholder="Enter name or phrase" maxlength="30" />
+        <label>3. Upload Logo/Image</label>
+        <input type="file" id="imageInput" accept="image/*" />
       </div>
 
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
         <div class="control-group">
           <label>Text Color</label>
-          <input type="color" id="textColor" value="#000000" style="width:100%; height:40px;" />
+          <input type="color" id="textColor" value="#000000" style="width:100%; height:35px;">
         </div>
         <div class="control-group">
           <label>Product Color</label>
-          <input type="color" id="bgColor" value="#ffffff" style="width:100%; height:40px;" />
+          <input type="color" id="bgColor" value="#ffffff" style="width:100%; height:35px;">
         </div>
       </div>
 
       <div class="btn-group">
-        <button class="btn-secondary" id="resetBtn">Reset</button>
-        <button class="btn-share" id="shareBtn">🔗 Copy Link</button>
-        <button class="btn-primary" id="nextBtn" style="width: 100%;">Review Design →</button>
+        <button class="btn-secondary" onclick="location.reload()">Reset</button>
+        <button class="btn-primary" id="nextBtn">Review & Order →</button>
       </div>
     </div>
 
     <div id="step2" class="step-content">
-      <h2 style="margin:0">2. Review Design</h2>
-      <div class="summary-box">
-        <p><strong>Item:</strong> <span id="revProduct">-</span></p>
-        <p><strong>Text:</strong> <span id="revText">-</span></p>
-        <p><strong>Image:</strong> <span id="revImage">None</span></p>
-        <p style="margin-bottom:0; font-size: 11px; color: #ef4444;">* Note: If you uploaded an image, please email it to us after ordering to ensure high quality!</p>
+      <h2>2. Confirm Design</h2>
+      <div style="background: #f9fafb; padding: 15px; border-radius: 8px; font-size: 14px;">
+        <p>Your custom layout has been saved. We will receive the coordinates and sizing for your print.</p>
       </div>
-      
       <div class="btn-group">
         <button class="btn-secondary" id="backBtn">← Back</button>
-        <button class="btn-primary" id="submitDesign">Finalize & Order</button>
+        <button class="btn-primary" id="submitDesign">Submit to Form</button>
       </div>
     </div>
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <script>
-  // DOM Elements
   const textInput = document.getElementById('textInput');
+  const textSizeRange = document.getElementById('textSizeRange');
+  const imgSizeRange = document.getElementById('imgSizeRange');
   const textColor = document.getElementById('textColor');
   const bgColor = document.getElementById('bgColor');
   const imageInput = document.getElementById('imageInput');
-  const imgPreview = document.getElementById('uploadedImagePreview');
-  const removeImgBtn = document.getElementById('removeImgBtn');
-  const designText = document.getElementById('designText');
-  const productShape = document.getElementById('productShape');
   const productType = document.getElementById('productType');
+  const centerBtn = document.getElementById('centerBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
   
-  const step1 = document.getElementById('step1');
-  const step2 = document.getElementById('step2');
-  const dot1 = document.getElementById('dot1');
-  const dot2 = document.getElementById('dot2');
+  const layerText = document.getElementById('layerText');
+  const layerImage = document.getElementById('layerImage');
+  const designText = document.getElementById('designText');
+  const imgPreview = document.getElementById('uploadedImagePreview');
+  const productShape = document.getElementById('productShape');
 
-  // Handle Image Upload
-  imageInput.addEventListener('change', function(e) {
+  // DRAG AND DROP
+  let activeItem = null;
+  let offset = { x: 0, y: 0 };
+
+  function makeDraggable(el) {
+    el.addEventListener('mousedown', (e) => {
+      activeItem = el;
+      document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
+      el.classList.add('active-layer');
+
+      const rect = el.getBoundingClientRect();
+      offset.x = e.clientX - rect.left;
+      offset.y = e.clientY - rect.top;
+    });
+  }
+
+  document.addEventListener('mousemove', (e) => {
+    if (!activeItem) return;
+    
+    const containerRect = productShape.getBoundingClientRect();
+    let newX = e.clientX - containerRect.left - offset.x;
+    let newY = e.clientY - containerRect.top - offset.y;
+
+    newX = Math.max(0, Math.min(newX, containerRect.width - activeItem.offsetWidth));
+    newY = Math.max(0, Math.min(newY, containerRect.height - activeItem.offsetHeight));
+
+    activeItem.style.left = newX + 'px';
+    activeItem.style.top = newY + 'px';
+    activeItem.style.transform = 'none'; // Remove centering transform when dragging
+  });
+
+  document.addEventListener('mouseup', () => { activeItem = null; });
+
+  makeDraggable(layerText);
+  makeDraggable(layerImage);
+
+  // Center Function
+  centerBtn.addEventListener('click', () => {
+    layerText.style.left = '50%';
+    layerText.style.top = '50%';
+    layerText.style.transform = 'translate(-50%, -50%)';
+    
+    layerImage.style.left = '50%';
+    layerImage.style.top = '20%';
+    layerImage.style.transform = 'translateX(-50%)';
+  });
+
+  // Download Function
+  downloadBtn.addEventListener('click', () => {
+    downloadBtn.textContent = "Generating...";
+    html2canvas(productShape, {
+        backgroundColor: null,
+        logging: false
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'my-design.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        downloadBtn.textContent = "💾 Download PNG";
+    });
+  });
+
+  // Layer Updates
+  textInput.addEventListener('input', () => designText.textContent = textInput.value || "Your Text Here");
+  textSizeRange.addEventListener('input', () => designText.style.fontSize = textSizeRange.value + 'px');
+  imgSizeRange.addEventListener('input', () => layerImage.style.width = imgSizeRange.value + 'px');
+  textColor.addEventListener('input', () => designText.style.color = textColor.value);
+  bgColor.addEventListener('input', () => productShape.style.backgroundColor = bgColor.value);
+
+  imageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = function(event) {
-        imgPreview.src = event.target.result;
+      reader.onload = (ev) => {
+        imgPreview.src = ev.target.result;
         imgPreview.style.display = 'block';
-        removeImgBtn.style.display = 'block';
-      }
+      };
       reader.readAsDataURL(file);
     }
   });
 
-  removeImgBtn.addEventListener('click', () => {
-    imageInput.value = "";
-    imgPreview.src = "";
-    imgPreview.style.display = 'none';
-    removeImgBtn.style.display = 'none';
-  });
-
-  // UI Updates
-  function updateUI() {
-    designText.textContent = textInput.value || 'Your Text Here';
-    designText.style.color = textColor.value;
-    productShape.style.backgroundColor = bgColor.value;
-    
-    const val = productType.value;
-    document.getElementById('previewLabel').textContent = `${val.toUpperCase()} MOCKUP`;
-    productShape.className = 'product-stage';
-    if (val === 'Ornament') productShape.classList.add('shape-ornament');
-    else if (val === 'Tumbler') productShape.classList.add('shape-tumbler');
-    else productShape.classList.add('shape-tshirt');
-  }
-
-  [textInput, textColor, bgColor, productType].forEach(el => {
-    el.addEventListener('input', updateUI);
+  productType.addEventListener('change', () => {
+    productShape.className = 'product-stage ' + 
+      (productType.value === 'Ornament' ? 'shape-ornament' : 
+       productType.value === 'Tumbler' ? 'shape-tumbler' : 'shape-tshirt');
   });
 
   // Navigation
   document.getElementById('nextBtn').addEventListener('click', () => {
-    document.getElementById('revProduct').textContent = productType.value;
-    document.getElementById('revText').textContent = textInput.value || "(No text)";
-    document.getElementById('revImage').textContent = imageInput.files.length > 0 ? "Uploaded" : "None";
-    
-    step1.classList.remove('active');
-    step2.classList.add('active');
-    dot2.classList.add('active');
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('step2').classList.add('active');
+    document.getElementById('dot2').classList.add('active');
   });
 
   document.getElementById('backBtn').addEventListener('click', () => {
-    step2.classList.remove('active');
-    step1.classList.add('active');
-    dot2.classList.remove('active');
-  });
-
-  // Share/Submit
-  document.getElementById('shareBtn').addEventListener('click', () => {
-    const params = new URLSearchParams({ p: productType.value, t: textInput.value, tc: textColor.value, bg: bgColor.value });
-    const shareUrl = window.location.origin + window.location.pathname + '#' + params.toString();
-    navigator.clipboard.writeText(shareUrl).then(() => alert("Link copied! (Note: Images are not saved in the link)"));
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('step1').classList.add('active');
+    document.getElementById('dot2').classList.remove('active');
   });
 
   document.getElementById('submitDesign').addEventListener('click', () => {
     const baseUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSd5FvoEdzSMsDMcg0Bwqok-fIrxrFldzu1wvw91pqc-0ccMHA/viewform?';
+    
+    // We add position data so you know where they placed things
+    const layoutDetails = `Pos: T(${layerText.style.top},${layerText.style.left}) I(${layerImage.style.top},${layerImage.style.left}) Size: ${textSizeRange.value}px`;
+    
     const params = new URLSearchParams({
       'entry.2141379241': productType.value,
-      'entry.1449325312': textInput.value,
+      'entry.1449325312': textInput.value + " | " + layoutDetails,
       'entry.1145569502': textColor.value,
       'entry.125041649': bgColor.value
     });
     window.open(baseUrl + params.toString(), "_blank");
-  });
-
-  document.getElementById('resetBtn').addEventListener('click', () => {
-    if(confirm("Reset all?")) window.location.reload();
-  });
-
-  // URL Loader
-  window.addEventListener('load', () => {
-    const hash = window.location.hash.substring(1);
-    if (hash) {
-      const p = new URLSearchParams(hash);
-      if (p.has('p')) productType.value = p.get('p');
-      if (p.has('t')) textInput.value = p.get('t');
-      if (p.has('tc')) textColor.value = p.get('tc');
-      if (p.has('bg')) bgColor.value = p.get('bg');
-      updateUI();
-    }
   });
 </script>
 
