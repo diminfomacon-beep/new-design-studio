@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Print Design Studio - Pro Editor</title>
+  <title>Custom Print Design Studio - Multi-Layer</title>
   <style>
     :root {
       --primary: #111827;
@@ -25,23 +25,23 @@
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.1);
       padding: 24px;
-      max-width: 1100px;
+      max-width: 1200px;
       width: 100%;
       display: grid;
-      grid-template-columns: 300px 1.2fr 1fr; /* Gallery | Preview | Controls */
+      grid-template-columns: 250px 1fr 300px; /* Gallery | Preview | Controls */
       gap: 20px;
     }
 
-    /* GALLERY PANEL */
+    /* GALLERY */
     .gallery-panel {
       border: 1px solid var(--border-color);
       border-radius: 12px;
       padding: 15px;
       background: #f9fafb;
       overflow-y: auto;
-      max-height: 550px;
+      max-height: 600px;
     }
-    .gallery-title { font-size: 14px; font-weight: bold; margin-bottom: 10px; color: #333; }
+    .gallery-title { font-size: 14px; font-weight: bold; margin-bottom: 15px; color: #333; }
     .gallery-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
@@ -58,7 +58,7 @@
     }
     .gallery-item:hover { border-color: var(--accent); }
 
-    /* PREVIEW & LAYER AREA */
+    /* PREVIEW */
     .preview-container {
       background: #fdfdfd;
       border: 1px solid var(--border-color);
@@ -69,7 +69,7 @@
       justify-content: center;
       padding: 10px;
       position: relative;
-      min-height: 450px;
+      min-height: 500px;
       overflow: hidden;
     }
 
@@ -81,46 +81,46 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.05);
       position: relative;
       overflow: hidden;
+      background-size: cover;
     }
 
-    .shape-tshirt { width: 300px; height: 300px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
-    .shape-ornament { width: 260px; height: 260px; border-radius: 50%; }
-    .shape-tumbler { width: 160px; height: 280px; border-radius: 10px 10px 40px 40px; }
+    .shape-tshirt { width: 350px; height: 350px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
+    .shape-ornament { width: 300px; height: 300px; border-radius: 50%; }
+    .shape-tumbler { width: 180px; height: 320px; border-radius: 10px 10px 40px 40px; }
 
-    /* DRAGGABLE LAYERS */
+    /* LAYERS */
     .draggable {
       position: absolute;
       cursor: move;
       border: 1px dashed transparent;
-      transition: border 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
+      min-width: 20px;
+      min-height: 20px;
     }
-    .draggable.active-layer { border: 1px dashed var(--accent); background: rgba(59, 130, 246, 0.05); }
-
-    #layerImage img { max-width: 100%; max-height: 100%; display: none; pointer-events: none; }
+    .draggable.active-layer { border: 1px dashed var(--accent); }
+    .draggable img { max-width: 100%; max-height: 100%; pointer-events: none; }
     .design-text { font-weight: bold; text-align: center; white-space: nowrap; pointer-events: none; }
 
     /* CONTROLS */
-    .controls-panel { display: flex; flex-direction: column; gap: 18px; }
-    .step-content { display: none; flex-direction: column; gap: 15px; }
-    .step-content.active { display: flex; }
-
-    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    .controls-panel { display: flex; flex-direction: column; gap: 15px; }
+    .control-group { display: flex; flex-direction: column; gap: 5px; }
     label { font-weight: 600; font-size: 11px; color: #666; text-transform: uppercase; }
-    input[type="text"], input[type="file"], select, input[type="range"] { padding: 8px; border-radius: 6px; border: 1px solid #ddd; }
+    input, select { padding: 8px; border-radius: 6px; border: 1px solid #ddd; font-size: 13px;}
     
-    .layer-tools {
-      background: #f3f4f6;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
+    .layer-manager {
+        background: #f3f4f6; padding: 10px; border-radius: 8px; border: 1px solid #e5e7eb;
+        max-height: 200px; overflow-y: auto;
     }
+    .layer-item {
+        display: flex; justify-content: space-between; align-items: center;
+        background: white; padding: 5px 10px; border-radius: 4px; margin-bottom: 5px; font-size: 12px;
+    }
+    .btn-delete { background: #fee2e2; color: #991b1b; border: none; padding: 2px 6px; border-radius: 4px; cursor: pointer; }
 
-    .btn-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-    button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: opacity 0.2s; font-size: 13px;}
-    button:hover { opacity: 0.9; }
+    .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+    button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: 13px;}
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: #e5e7eb; color: #374151; }
     .btn-action { background: #dbeafe; color: #1e40af; }
@@ -134,96 +134,53 @@
   
   <div class="gallery-panel">
     <div class="gallery-title">Assets</div>
-    <div class="gallery-grid" id="galleryGrid">
-      </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+    <div class="control-group">
+        <label>Upload Image</label>
+        <input type="file" id="imageInput" accept="image/*" />
+    </div>
   </div>
 
-  <div class="preview-area">
-    <div class="preview-container">
-      <div id="productShape" class="product-stage shape-tshirt" style="background-color: #ffffff;">
-        <div id="layerImage" class="draggable" style="top: 20%; left: 50%; transform: translateX(-50%); width: 100px;">
-          <img id="uploadedImagePreview" src="" alt="" />
-        </div>
-        <div id="layerText" class="draggable" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
-          <div id="designText" class="design-text" style="font-size: 24px; color: #000000; font-family: 'Roboto', sans-serif;">Your Text</div>
-        </div>
+  <div class="preview-container">
+    <div id="productShape" class="product-stage shape-tshirt" style="background-color: #ffffff;">
       </div>
-      <p style="font-size: 10px; color: #999; margin-top: 10px;">TIP: DRAG ITEMS TO POSITION THEM</p>
-    </div>
+    <p style="font-size: 10px; color: #999; margin-top: 10px;">DRAG ITEMS TO POSITION</p>
   </div>
 
   <div class="controls-panel">
-    <div id="step1" class="step-content active">
-      <h2 style="margin:0">1. Editor</h2>
-      
-      <div class="control-group">
-        <label>Product</label>
-        <select id="productType">
-          <option value="T-Shirt">T-Shirt</option>
-          <option value="Ornament">Ornament</option>
-          <option value="Tumbler">Tumbler</option>
-        </select>
-      </div>
-
-      <div class="layer-tools">
-        <label style="color: var(--accent); margin-bottom: 8px; display: block;">2. Layer Actions</label>
-        <div class="btn-group" style="margin-bottom: 10px;">
-            <button class="btn-action" id="centerBtn">↔ Center</button>
-            <button class="btn-download" id="downloadBtn">💾 PNG</button>
-        </div>
-
-        <div class="control-group">
-          <label>Text Content</label>
-          <input type="text" id="textInput" placeholder="Enter text..." value="Your Text" />
-        </div>
-
-        <div class="control-group">
-            <label>Font Style</label>
-            <select id="fontSelect">
-                <option value="'Roboto', sans-serif">Standard</option>
-                <option value="'Lobster', cursive">Script</option>
-                <option value="'Press Start 2P', cursive">Pixel</option>
-            </select>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-          <div class="control-group">
-            <label>Text Size</label>
-            <input type="range" id="textSizeRange" min="10" max="80" value="24">
-          </div>
-          <div class="control-group">
-            <label>Image Size</label>
-            <input type="range" id="imgSizeRange" min="20" max="250" value="100">
-          </div>
-        </div>
-      </div>
-
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-        <div class="control-group">
-          <label>Text Color</label>
-          <input type="color" id="textColor" value="#000000" style="width:100%; height:35px;">
-        </div>
-        <div class="control-group">
-          <label>Product Color</label>
-          <input type="color" id="bgColor" value="#ffffff" style="width:100%; height:35px;">
-        </div>
-      </div>
-
-      <div class="btn-group">
-        <button class="btn-secondary" onclick="location.reload()">Reset</button>
-        <button class="btn-primary" id="nextBtn">Review →</button>
-      </div>
+    <h3 style="margin:0">Editor</h3>
+    
+    <div class="control-group">
+      <label>Product</label>
+      <select id="productType">
+        <option value="T-Shirt">T-Shirt</option>
+        <option value="Ornament">Ornament</option>
+        <option value="Tumbler">Tumbler</option>
+      </select>
     </div>
 
-    <div id="step2" class="step-content">
-      <h2>2. Confirm Design</h2>
-      <div style="background: #f9fafb; padding: 15px; border-radius: 8px; font-size: 14px;">
-        <p>Your layout is saved. We will receive the coordinates, font style, and sizing for your print.</p>
-      </div>
-      <div class="btn-group">
-        <button class="btn-secondary" id="backBtn">← Back</button>
+    <div class="control-group">
+      <label>Product Color</label>
+      <input type="color" id="bgColor" value="#ffffff">
+    </div>
+
+    <div class="control-group">
+        <label>Add Text Layer</label>
+        <div style="display:flex; gap:5px;">
+            <input type="text" id="textInput" placeholder="Enter text..." value="New Text" style="flex:1"/>
+            <button class="btn-action" id="addTextBtn">Add</button>
+        </div>
+    </div>
+
+    <div class="layer-manager">
+        <label style="color: var(--accent); margin-bottom: 8px; display: block;">Active Layers</label>
+        <div id="layerList"></div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn-download" id="downloadBtn">💾 PNG</button>
         <button class="btn-primary" id="submitDesign">Submit</button>
-      </div>
     </div>
   </div>
 </div>
@@ -231,42 +188,72 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-  // --- ASSET CONFIGURATION ---
-  // Add your image URLs here for the gallery
+  // --- CONFIGURATION ---
   const galleryAssets = [
-      'https://cdn-icons-png.flaticon.com/128/1157/1157077.png', // Heart
-      'https://cdn-icons-png.flaticon.com/128/2921/2921820.png', // Star
-      'https://cdn-icons-png.flaticon.com/128/3016/3016629.png'  // Camera
+      'https://cdn-icons-png.flaticon.com/128/1157/1157077.png',
+      'https://cdn-icons-png.flaticon.com/128/2921/2921820.png',
+      'https://cdn-icons-png.flaticon.com/128/3016/3016629.png'
   ];
 
   // Initialize Gallery
   const grid = document.getElementById('galleryGrid');
   galleryAssets.forEach(src => {
       const img = document.createElement('img');
-      img.src = src;
-      img.className = 'gallery-item';
-      img.onclick = () => setLayerImage(src);
+      img.src = src; img.className = 'gallery-item';
+      img.onclick = () => createLayer('image', src);
       grid.appendChild(img);
   });
 
   // DOM Elements
-  const textInput = document.getElementById('textInput');
-  const textSizeRange = document.getElementById('textSizeRange');
-  const imgSizeRange = document.getElementById('imgSizeRange');
-  const fontSelect = document.getElementById('fontSelect');
-  const textColor = document.getElementById('textColor');
-  const bgColor = document.getElementById('bgColor');
-  const productType = document.getElementById('productType');
-  const centerBtn = document.getElementById('centerBtn');
-  const downloadBtn = document.getElementById('downloadBtn');
-  
-  const layerText = document.getElementById('layerText');
-  const layerImage = document.getElementById('layerImage');
-  const designText = document.getElementById('designText');
-  const imgPreview = document.getElementById('uploadedImagePreview');
   const productShape = document.getElementById('productShape');
+  const layerList = document.getElementById('layerList');
+  let layerCount = 0;
 
-  // DRAG AND DROP
+  // --- LAYER MANAGEMENT ---
+  function createLayer(type, content) {
+    layerCount++;
+    const layerId = 'layer_' + layerCount;
+    
+    // Create layer container
+    const layer = document.createElement('div');
+    layer.id = layerId;
+    layer.className = 'draggable';
+    layer.style.top = '50px'; layer.style.left = '50px';
+    
+    if (type === 'image') {
+        const img = document.createElement('img');
+        img.src = content;
+        img.style.width = '100px'; // Default size
+        layer.appendChild(img);
+        addLayerToList(layerId, 'Image');
+    } else {
+        const text = document.createElement('div');
+        text.className = 'design-text';
+        text.textContent = content;
+        text.style.fontSize = '24px';
+        text.style.fontFamily = 'Roboto';
+        layer.appendChild(text);
+        addLayerToList(layerId, 'Text: ' + content);
+    }
+    
+    productShape.appendChild(layer);
+    makeDraggable(layer);
+  }
+
+  function addLayerToList(id, name) {
+      const item = document.createElement('div');
+      item.className = 'layer-item';
+      item.id = 'list_' + id;
+      item.innerHTML = `<span>${name}</span> <button class="btn-delete" onclick="removeLayer('${id}')">X</button>`;
+      layerList.appendChild(item);
+  }
+
+  function removeLayer(id) {
+      document.getElementById(id).remove();
+      document.getElementById('list_' + id).remove();
+  }
+
+  // --- DRAG AND DROP ---
   let activeItem = null;
   let offset = { x: 0, y: 0 };
 
@@ -286,73 +273,59 @@
     const containerRect = productShape.getBoundingClientRect();
     let newX = e.clientX - containerRect.left - offset.x;
     let newY = e.clientY - containerRect.top - offset.y;
+    // Simple boundary check
     newX = Math.max(0, Math.min(newX, containerRect.width - activeItem.offsetWidth));
     newY = Math.max(0, Math.min(newY, containerRect.height - activeItem.offsetHeight));
     activeItem.style.left = newX + 'px';
     activeItem.style.top = newY + 'px';
-    activeItem.style.transform = 'none';
   });
   document.addEventListener('mouseup', () => { activeItem = null; });
-  makeDraggable(layerText);
-  makeDraggable(layerImage);
 
-  // Layer Functions
-  function setLayerImage(src) {
-      imgPreview.src = src;
-      imgPreview.style.display = 'block';
-  }
-
-  centerBtn.addEventListener('click', () => {
-    layerText.style.left = '50%'; layerText.style.top = '50%';
-    layerText.style.transform = 'translate(-50%, -50%)';
-    layerImage.style.left = '50%'; layerImage.style.top = '20%';
-    layerImage.style.transform = 'translateX(-50%)';
+  // --- CONTROLS ---
+  document.getElementById('addTextBtn').addEventListener('click', () => {
+      const text = document.getElementById('textInput').value;
+      if(text) createLayer('text', text);
   });
 
-  downloadBtn.addEventListener('click', () => {
-    downloadBtn.textContent = "Generating...";
-    html2canvas(productShape, { backgroundColor: null, logging: false }).then(canvas => {
+  document.getElementById('imageInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => createLayer('image', ev.target.result);
+      reader.readAsDataURL(file);
+    }
+  });
+
+  document.getElementById('bgColor').addEventListener('input', (e) => productShape.style.backgroundColor = e.target.value);
+  
+  document.getElementById('productType').addEventListener('change', (e) => {
+    productShape.className = 'product-stage ' + 
+      (e.target.value === 'Ornament' ? 'shape-ornament' : 
+       e.target.value === 'Tumbler' ? 'shape-tumbler' : 'shape-tshirt');
+  });
+
+  // --- PNG DOWNLOAD ---
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    html2canvas(productShape, { backgroundColor: null }).then(canvas => {
         const link = document.createElement('a');
         link.download = 'design.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
-        downloadBtn.textContent = "💾 PNG";
     });
   });
 
-  // Event Listeners
-  textInput.addEventListener('input', () => designText.textContent = textInput.value || "Your Text");
-  textSizeRange.addEventListener('input', () => designText.style.fontSize = textSizeRange.value + 'px');
-  imgSizeRange.addEventListener('input', () => layerImage.style.width = imgSizeRange.value + 'px');
-  fontSelect.addEventListener('change', () => designText.style.fontFamily = fontSelect.value);
-  textColor.addEventListener('input', () => designText.style.color = textColor.value);
-  bgColor.addEventListener('input', () => productShape.style.backgroundColor = bgColor.value);
-
-  productType.addEventListener('change', () => {
-    productShape.className = 'product-stage ' + 
-      (productType.value === 'Ornament' ? 'shape-ornament' : 
-       productType.value === 'Tumbler' ? 'shape-tumbler' : 'shape-tshirt');
-  });
-
-  // Navigation
-  document.getElementById('nextBtn').addEventListener('click', () => {
-    document.getElementById('step1').classList.remove('active');
-    document.getElementById('step2').classList.add('active');
-  });
-  document.getElementById('backBtn').addEventListener('click', () => {
-    document.getElementById('step2').classList.remove('active');
-    document.getElementById('step1').classList.add('active');
-  });
-
-  // Submit
+  // --- SUBMIT ---
   document.getElementById('submitDesign').addEventListener('click', () => {
     const baseUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSd5FvoEdzSMsDMcg0Bwqok-fIrxrFldzu1wvw91pqc-0ccMHA/viewform?';
-    const layout = `PosT:${layerText.style.top},${layerText.style.left} PosI:${layerImage.style.top},${layerImage.style.left} SizeT:${textSizeRange.value}px SizeI:${imgSizeRange.value}px Font:${fontSelect.options[fontSelect.selectedIndex].text}`;
+    // For multiple layers, we send a summary to the form
+    const layers = document.querySelectorAll('.draggable');
+    let layerSummary = "";
+    layers.forEach(l => layerSummary += `[${l.id}: T${l.style.top} L${l.style.left}] `);
     
     const params = new URLSearchParams({
       'entry.2141379241': productType.value,
-      'entry.1449325312': textInput.value + " | " + layout,
-      'entry.1145569502': textColor.value,
+      'entry.1449325312': "Multiple Layers: " + layerSummary,
+      'entry.1145569502': 'See Layout Summary',
       'entry.125041649': bgColor.value
     });
     window.open(baseUrl + params.toString(), "_blank");
