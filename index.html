@@ -106,25 +106,26 @@
       min-height: 500px;
       gap: 15px;
       overflow: hidden;
-      .guide-line {
-        position: absolute;
-        background: #3b82f6;
-        pointer-events: none;
-        opacity: 0;
-      }
-      .guide-vertical {
-        width: 2px;
-        height: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-      .guide-horizontal {
-        height: 2px;
-        width: 100%;
-        top: 50%;
-        transform: translateY(-50%);
-      }
     }
+    .guide-line {
+      position: absolute;
+      background: #3b82f6;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .guide-vertical {
+      width: 2px;
+      height: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .guide-horizontal {
+      height: 2px;
+      width: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  
 
     .product-stage {
         display: none;
@@ -692,7 +693,11 @@ createGuides();
     if (Math.abs(newY - centerY) < snapThreshold) {
       newY = centerY;
     }
-  
+    // SHOW / HIDE GUIDES
+    if (vGuide && hGuide) {
+      vGuide.style.opacity = Math.abs(newX - centerX) < snapThreshold ? 1 : 0;
+      hGuide.style.opacity = Math.abs(newY - centerY) < snapThreshold ? 1 : 0;
+    }
     activeItem.style.left = newX + 'px';
     activeItem.style.top = newY + 'px';
   });
@@ -701,9 +706,12 @@ createGuides();
       saveState();   // <-- ADD HERE
     }
     activeItem = null;
+    if (vGuide && hGuide) {
+      vGuide.style.opacity = 0;
+      hGuide.style.opacity = 0;
+    }
   });
-    vGuide.style.opacity = Math.abs(newX - centerX) < snapThreshold ? 1 : 0;
-    hGuide.style.opacity = Math.abs(newY - centerY) < snapThreshold ? 1 : 0;
+   
 
   // --- DUAL LOADER ---
   async function loadPixabay(q = '') {
@@ -724,8 +732,7 @@ createGuides();
   }
 
   
-  // Init
-  loadPixabay();
+ 
   document.getElementById('gallerySearch').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
       loadPixabay(e.target.value);
@@ -766,12 +773,10 @@ createGuides();
 
   document.getElementById('submitDesign').addEventListener('click', () => alert('Design finalized! Sent to production.'));
   document.addEventListener('DOMContentLoaded', () => {
-
-  loadPixabay();
-  createGuides();
-  saveState();
-
-});
+    createGuides();
+    saveState();
+    loadPixabay();
+  });
 </script>
 </body>
 </html>
