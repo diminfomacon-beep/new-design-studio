@@ -226,11 +226,7 @@
         <div class="gallery-grid" id="pixabayGrid"></div>
     </div>
     
-    <div class="mini-gallery-container">
-        <div class="mini-gallery-title">OpenClipart (SVG)</div>
-        <div class="gallery-grid" id="openClipartGrid"></div>
-    </div>
-
+   
     <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
     <div class="control-group">
         <label>Upload Local Image</label>
@@ -566,34 +562,10 @@ fontColorPicker.on('change', (color, instance) => {
     } catch(e) {}
   }
 
-  async function loadOpenClipart(q = '') {
-    const grid = document.getElementById('openClipartGrid');
-    const url = q 
-        ? `https://openclipart.org/search/json/?query=${encodeURIComponent(q)}&amount=10`
-        : `https://openclipart.org/search/json/?sort=downloads&amount=10`;
-    try {
-        const res = await fetch(url);
-        const data = await res.json();
-        grid.innerHTML = '';
-        data.payload.forEach(clip => {
-            const el = document.createElement('img');
-            el.src = clip.svg.url_thumb; 
-            el.className = 'gallery-item';
-            el.onclick = () => createLayer('image', clip.svg.url);
-            grid.appendChild(el);
-        });
-    } catch(e) {}
-  }
-
-  document.getElementById('gallerySearch').addEventListener('input', (e) => {
-      loadPixabay(e.target.value);
-      loadOpenClipart(e.target.value);
-  });
-
+  
   // Init
   loadPixabay();
-  loadOpenClipart();
-
+  
   document.getElementById('addTextBtn').addEventListener('click', () => {
       const val = document.getElementById('textInput').value;
       if(val) createLayer('text', val);
