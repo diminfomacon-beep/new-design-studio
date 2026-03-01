@@ -131,6 +131,16 @@
     label { font-weight: 600; font-size: 11px; color: #666; text-transform: uppercase; }
     input, select { padding: 8px; border-radius: 6px; border: 1px solid #ddd; font-size: 13px;}
     
+    /* --- IMPROVED PICKR STYLING --- */
+    #bgPicker { 
+        border: 1px solid #ddd; 
+        border-radius: 6px; 
+        padding: 5px; 
+        background: white; 
+        display: inline-block;
+    }
+    .pcr-button { border-radius: 4px; border: 1px solid #eee; }
+
     .layer-manager {
         background: #f3f4f6; padding: 10px; border-radius: 8px; border: 1px solid #e5e7eb;
         max-height: 200px; overflow-y: auto;
@@ -206,7 +216,7 @@
     <div id="textEditor">
         <label style="color: var(--accent);">Text Style</label>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 5px; align-items: center;">
-            <div id="fontColorPicker"></div>
+            <div id="fontColorPicker" style="border: 1px solid #ddd; border-radius: 6px; padding: 5px; background: white;"></div>
             <select id="fontFamily">
                 <option value="Roboto">Default</option>
                 <option value="Lobster">Lobster</option>
