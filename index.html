@@ -32,7 +32,7 @@
       max-width: 1200px;
       width: 100%;
       display: grid;
-      grid-template-columns: 250px 1fr 300px;
+      grid-template-columns: 280px 1fr 300px;
       gap: 20px;
     }
 
@@ -42,14 +42,23 @@
       border-radius: 12px;
       padding: 15px;
       background: #f9fafb;
-      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
       max-height: 600px;
     }
-    .gallery-title { font-size: 14px; font-weight: bold; margin-bottom: 15px; color: #333; }
+    .gallery-header { margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; }
+    .gallery-title { font-size: 14px; font-weight: bold; color: #333; }
+    
+    .gallery-search, .gallery-filter {
+        padding: 6px; border-radius: 6px; border: 1px solid #ddd; font-size: 12px; width: 100%; box-sizing: border-box;
+    }
+
     .gallery-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
       gap: 10px;
+      overflow-y: auto;
+      padding-right: 5px;
     }
     .gallery-item {
       width: 60px; height: 60px;
@@ -58,9 +67,9 @@
       cursor: pointer;
       object-fit: contain;
       background: white;
-      transition: border-color 0.2s;
+      transition: all 0.2s;
     }
-    .gallery-item:hover { border-color: var(--accent); }
+    .gallery-item:hover { border-color: var(--accent); transform: scale(1.05); }
 
     /* PREVIEW */
     .preview-container {
@@ -131,13 +140,7 @@
     label { font-weight: 600; font-size: 11px; color: #666; text-transform: uppercase; }
     input, select { padding: 8px; border-radius: 6px; border: 1px solid #ddd; font-size: 13px;}
     
-    #bgPicker { 
-        border: 1px solid #ddd; 
-        border-radius: 6px; 
-        padding: 5px; 
-        background: white; 
-        display: inline-block;
-    }
+    #bgPicker { border: 1px solid #ddd; border-radius: 6px; padding: 5px; background: white; display: inline-block;}
     .pcr-button { border-radius: 4px; border: 1px solid #eee; }
 
     .layer-manager {
@@ -173,9 +176,18 @@
 <div class="studio-wrapper">
   
   <div class="gallery-panel">
-    <div class="gallery-title">Assets</div>
+    <div class="gallery-header">
+        <div class="gallery-title">Assets</div>
+        <input type="text" id="gallerySearch" class="gallery-search" placeholder="Search icons...">
+        <select id="galleryFilter" class="gallery-filter">
+            <option value="all">All Categories</option>
+            <option value="animals">Animals</option>
+            <option value="shapes">Shapes</option>
+            <option value="nature">Nature</option>
+        </select>
+    </div>
     <div class="gallery-grid" id="galleryGrid"></div>
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
     <div class="control-group">
         <label>Upload Image</label>
         <input type="file" id="imageInput" accept="image/*" />
@@ -218,12 +230,12 @@
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 5px; align-items: center;">
             <div id="fontColorPicker" style="border: 1px solid #ddd; border-radius: 6px; padding: 5px; background: white;"></div>
             <select id="fontFamily" style="grid-column: span 2;">
-                <option value="Roboto" style="font-family: Roboto;">Roboto (Sans-Serif)</option>
-                <option value="'Playfair Display'" style="font-family: 'Playfair Display';">Playfair (Serif)</option>
-                <option value="Lobster" style="font-family: Lobster;">Lobster (Script)</option>
-                <option value="'Dancing Script'" style="font-family: 'Dancing Script';">Dancing (Script)</option>
-                <option value="Montserrat" style="font-family: Montserrat;">Montserrat (Modern)</option>
-                <option value="Oswald" style="font-family: Oswald;">Oswald (Condensed)</option>
+                <option value="Roboto" style="font-family: Roboto;">Roboto</option>
+                <option value="'Playfair Display'" style="font-family: 'Playfair Display';">Playfair</option>
+                <option value="Lobster" style="font-family: Lobster;">Lobster</option>
+                <option value="'Dancing Script'" style="font-family: 'Dancing Script';">Dancing</option>
+                <option value="Montserrat" style="font-family: Montserrat;">Montserrat</option>
+                <option value="Oswald" style="font-family: Oswald;">Oswald</option>
                 <option value="'Press Start 2P'" style="font-family: 'Press Start 2P';">Pixel</option>
             </select>
             <button class="btn-icon" id="fontBold" style="grid-column: span 1;"><b>B</b></button>
@@ -282,21 +294,43 @@
       if(active) active.style.color = color.toHEXA().toString();
   });
 
-  // --- EXISTING FUNCTIONALITY ---
+  // --- UPDATED GALLERY LOGIC ---
   const galleryAssets = [
-      'https://cdn-icons-png.flaticon.com/128/1157/1157077.png',
-      'https://cdn-icons-png.flaticon.com/128/2921/2921820.png',
-      'https://cdn-icons-png.flaticon.com/128/3016/3016629.png'
+      { src: 'https://cdn-icons-png.flaticon.com/128/1157/1157077.png', tags: ['animals', 'cat'] },
+      { src: 'https://cdn-icons-png.flaticon.com/128/2921/2921820.png', tags: ['animals', 'dog'] },
+      { src: 'https://cdn-icons-png.flaticon.com/128/3016/3016629.png', tags: ['animals', 'fox'] },
+      { src: 'https://cdn-icons-png.flaticon.com/128/1828/1828741.png', tags: ['shapes', 'star'] },
+      { src: 'https://cdn-icons-png.flaticon.com/128/1828/1828555.png', tags: ['shapes', 'heart'] },
+      { src: 'https://cdn-icons-png.flaticon.com/128/2521/2521876.png', tags: ['nature', 'tree'] },
+      { src: 'https://cdn-icons-png.flaticon.com/128/1146/1146860.png', tags: ['nature', 'flower'] }
   ];
 
   const grid = document.getElementById('galleryGrid');
-  galleryAssets.forEach(src => {
-      const img = document.createElement('img');
-      img.src = src; img.className = 'gallery-item';
-      img.onclick = () => createLayer('image', src);
-      grid.appendChild(img);
-  });
+  const searchInput = document.getElementById('gallerySearch');
+  const filterSelect = document.getElementById('galleryFilter');
 
+  function renderGallery(filter = 'all', searchTerm = '') {
+      grid.innerHTML = '';
+      galleryAssets.forEach(asset => {
+          const matchesFilter = filter === 'all' || asset.tags.includes(filter);
+          const matchesSearch = asset.tags.some(tag => tag.includes(searchTerm.toLowerCase()));
+
+          if (matchesFilter && matchesSearch) {
+              const img = document.createElement('img');
+              img.src = asset.src; img.className = 'gallery-item';
+              img.onclick = () => createLayer('image', asset.src);
+              grid.appendChild(img);
+          }
+      });
+  }
+
+  searchInput.addEventListener('input', () => renderGallery(filterSelect.value, searchInput.value));
+  filterSelect.addEventListener('change', () => renderGallery(filterSelect.value, searchInput.value));
+
+  // Initial Render
+  renderGallery();
+
+  // --- EXISTING FUNCTIONALITY ---
   const productShape = document.getElementById('productShape');
   const layerList = document.getElementById('layerList');
   const textEditor = document.getElementById('textEditor');
