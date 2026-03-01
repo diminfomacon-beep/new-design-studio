@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - API Fonts</title>
+  <title>Custom Design Studio - API Fonts & Swatches</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -91,7 +91,13 @@
     .control-group { display: flex; flex-direction: column; gap: 3px; }
     label { font-weight: 600; font-size: 10px; color: #666; text-transform: uppercase; }
     input, select { padding: 6px; border-radius: 6px; border: 1px solid #ddd; font-size: 12px; }
-    #bgPicker { border: 1px solid #ddd; border-radius: 6px; padding: 3px; background: white; }
+    
+    /* Updated Color Picker Section */
+    .color-picker-wrapper { display: flex; align-items: center; gap: 5px; }
+    #bgPicker { border: 1px solid #ddd; border-radius: 6px; padding: 3px; background: white; width: 30px; height: 30px; }
+    .swatches-container { display: flex; gap: 3px; flex-wrap: wrap; flex: 1; }
+    .swatch { width: 20px; height: 20px; border-radius: 4px; border: 1px solid #ccc; cursor: pointer; transition: transform 0.1s; }
+    .swatch:hover { transform: scale(1.1); }
     
     .layer-manager { background: #f3f4f6; padding: 8px; border-radius: 8px; border: 1px solid #e5e7eb; max-height: 150px; overflow-y: auto; }
     .layer-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 6px; border-radius: 4px; margin-bottom: 4px; font-size: 11px; border: 1px solid #eee; }
@@ -149,10 +155,15 @@
         <label>Zoom</label>
         <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
     </div>
+    
     <div class="control-group">
         <label>Product Color</label>
-        <div id="bgPicker"></div>
+        <div class="color-picker-wrapper">
+            <div id="bgPicker"></div>
+            <div class="swatches-container" id="colorSwatches"></div>
+        </div>
     </div>
+
     <div class="control-group">
         <label>Add Text</label>
         <div style="display:flex; gap:3px;">
@@ -184,7 +195,7 @@
 
 <script>
   // --- CONFIGURATION ---
-  const GOOGLE_API_KEY = 'AIzaSyAq-9ivkRTYYP4olKp2Xfy50pi72CKJY2w'; // <--- PASTE KEY HERE
+  const GOOGLE_API_KEY = 'YOUR_API_KEY'; // <--- PASTE KEY HERE
   const PIXABAY_API_KEY = '54841320-2fc493da46915b0eb0a6f740c';
   let activeViewId = 'view-tshirt';
   let currentProduct = 'tshirt';
@@ -194,23 +205,34 @@
   const fontFamilySelect = document.getElementById('fontFamily');
   const textEditor = document.getElementById('textEditor');
 
+  // --- COLOR SWATCHES SETUP ---
+  const swatches = ['#ffffff', '#000000', '#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722', '#795548', '#9e9e9e'];
+  const swatchesContainer = document.getElementById('colorSwatches');
+  swatches.forEach(color => {
+      const swatch = document.createElement('div');
+      swatch.className = 'swatch';
+      swatch.style.backgroundColor = color;
+      swatch.onclick = () => {
+          document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color);
+          bgPicker.setColor(color);
+      };
+      swatchesContainer.appendChild(swatch);
+  });
+
   // --- GOOGLE FONTS API INTEGRATION ---
   async function populateFontDropdown() {
       try {
           const response = await fetch(`https://www.googleapis.com/webfonts/v1/webfonts?key=${GOOGLE_API_KEY}&sort=popularity`);
           const data = await response.json();
           fontFamilySelect.innerHTML = '';
-          // Limiting to top 50 for performance and responsiveness
           data.items.slice(0, 50).forEach(font => {
               const option = document.createElement('option');
               option.value = `'${font.family}', ${font.category}`;
               option.textContent = font.family;
-              
-              // LIVE PREVIEW STYLING (Works best in Firefox, fallback for Chrome/Safari)
               option.style.fontFamily = `'${font.family}'`;
-              
               fontFamilySelect.appendChild(option);
           });
+          loadAndApplyFont(fontFamilySelect.value);
       } catch (error) {
           console.error('Error fetching fonts:', error);
           fontFamilySelect.innerHTML = '<option>Error loading fonts</option>';
@@ -223,16 +245,11 @@
       link.href = `https://fonts.googleapis.com/css2?family=${fontName.replace(/ /g, '+')}&display=swap`;
       link.rel = 'stylesheet';
       document.head.appendChild(link);
-
       const activeLayerText = document.querySelector('.active-layer .design-text');
-      if (activeLayerText) {
-          activeLayerText.style.fontFamily = fontFamilyValue;
-      }
+      if (activeLayerText) activeLayerText.style.fontFamily = fontFamilyValue;
   }
 
-  fontFamilySelect.addEventListener('change', (e) => {
-      loadAndApplyFont(e.target.value);
-  });
+  fontFamilySelect.addEventListener('change', (e) => loadAndApplyFont(e.target.value));
 
   // --- CORE FUNCTIONALITY ---
   document.getElementById('productSelect').addEventListener('change', (e) => {
@@ -247,7 +264,7 @@
       document.querySelector('.active-product').style.transform = `scale(${e.target.value})`;
   });
 
-  // --- COLOR PICKERS ---
+  // --- ADVANCED COLOR PICKERS ---
   const createColorPicker = (selector, defaultColor) => {
       return Pickr.create({
           el: selector, theme: 'classic', default: defaultColor,
