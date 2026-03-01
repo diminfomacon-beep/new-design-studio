@@ -350,17 +350,25 @@
   const bgPicker = createPicker('#bgPicker', initialColor);
   const fontColorPicker = createPicker('#fontColorPicker', '#000000');
 
-  bgPicker.on('change', (color) => {
-      document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color.toRGBA().toString());
+  bgPicker.on('change', (color, instance) => {
+    // 1. Convert color to string
+    const colorStr = color.toRGBA().toString();
+    
+    // 2. Update the canvas product
+    document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = colorStr);
+    
+    // 3. Force the picker button to update its visual color
+    instance.setColor(colorStr);
   });
   
   bgPicker.on('save', (color) => {
       document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color.toRGBA().toString());
   });
 
-  fontColorPicker.on('change', (color) => {
-      const active = document.querySelector('.active-layer .design-text');
-      if(active) active.style.color = color.toRGBA().toString();
+  fontColorPicker.on('change', (color, instance) => {
+    const active = document.querySelector('.active-layer .design-text');
+    if(active) active.style.color = color.toRGBA().toString();
+    instance.setColor(color.toRGBA().toString());
   });
 
   document.getElementById('productSelect').addEventListener('change', (e) => {
