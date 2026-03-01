@@ -772,14 +772,26 @@
             const response = await fetch(endpoint);
             const data = await response.json();
             grid.innerHTML = '';
-            data.payload.forEach(clipart => {
-                const img = document.createElement('img');
-                img.src = clipart.svg.url_thumb; 
-                img.className = 'gallery-item';
-                img.onclick = () => createLayer('image', clipart.svg.url);
-                grid.appendChild(img);
-            });
-        } catch (error) { console.error(error); }
+            
+            if (data.payload) {
+                data.payload.forEach(clipart => {
+                    const img = document.createElement('img');
+                    
+                    // --- FIX: Force HTTPS on the image URLs ---
+                    const thumbUrl = clipart.svg.url_thumb.replace(/^http:/, 'https:');
+                    const fullUrl = clipart.svg.url.replace(/^http:/, 'https:');
+                    
+                    img.src = thumbUrl; 
+                    img.className = 'gallery-item';
+                    img.onclick = () => createLayer('image', fullUrl);
+                    
+                    grid.appendChild(img);
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching from OpenClipart:', error);
+            grid.innerHTML = '<p style="font-size:10px; color:red;">Failed to load</p>';
+        }
     }
     
     // --- INITIAL LOAD AND SEARCH EVENT ---
