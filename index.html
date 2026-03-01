@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Expanded Palette</title>
+  <title>Custom Design Studio - Font Options</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -26,7 +26,7 @@
     }
 
     .studio-wrapper {
-      background: #CAE4DB;
+      background: #ffffff;
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.1);
       padding: 15px;
@@ -203,7 +203,7 @@
     #textEditor { display: none; background: #f3f4f6; padding: 8px; border-radius: 8px; }
   </style>
   
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lobster&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Georgia&family=Lobster&family=Merriweather&family=Open+Sans&family=Pacifico&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -286,8 +286,15 @@
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 3px; align-items: center;">
             <div id="fontColorPicker" style="border: 1px solid #ddd; border-radius: 6px; padding: 2px; background: white; height: 20px;"></div>
             <select id="fontFamily" style="grid-column: span 2; padding: 4px;">
-                <option value="Roboto">Roboto</option>
-                <option value="'Playfair Display'">Playfair</option>
+                <option value="Roboto">Roboto (Sans)</option>
+                <option value="'Open Sans'">Open Sans</option>
+                <option value="Arial">Arial</option>
+                <option value="Georgia">Georgia (Serif)</option>
+                <option value="Merriweather">Merriweather</option>
+                <option value="'Playfair Display'">Playfair Display</option>
+                <option value="Lobster">Lobster (Script)</option>
+                <option value="Pacifico">Pacifico</option>
+                <option value="'Dancing Script'">Dancing Script</option>
             </select>
         </div>
     </div>
@@ -334,7 +341,7 @@
       document.getElementById(viewId).classList.add('active-view');
   }
 
-  // --- EXPANDED COLOR SWATCHES ---
+  // --- COLOR SWATCHES ---
   const swatches = [
       '#FFFFFF', '#F2F2F2', '#D9D9D9', '#BFBFBF', '#A6A6A6', '#808080', '#595959', '#404040', '#262626', '#000000',
       '#FFCCCC', '#FF9999', '#FF6666', '#FF3333', '#FF0000', '#CC0000', '#990000', '#660000', '#330000',
@@ -352,7 +359,7 @@
           el: selector,
           theme: 'classic', 
           default: defaultColor,
-          swatches: swatches, // EXPANDED SWATCHES
+          swatches: swatches,
           components: { 
               preview: true, 
               opacity: true, 
@@ -372,6 +379,12 @@
   fontColorPicker.on('change', (color) => {
       const active = document.querySelector('.active-layer .design-text');
       if(active) active.style.color = color.toRGBA().toString();
+  });
+  
+  // --- FONT FAMILY CHANGE ---
+  document.getElementById('fontFamily').addEventListener('change', (e) => {
+      const active = document.querySelector('.active-layer .design-text');
+      if(active) active.style.fontFamily = e.target.value;
   });
 
   // --- API ---
@@ -423,8 +436,9 @@
         const text = document.createElement('div');
         text.className = 'design-text';
         text.textContent = content;
-        text.style.fontSize = '14px';
+        text.style.fontSize = '24px';
         text.style.color = '#000000';
+        text.style.fontFamily = document.getElementById('fontFamily').value;
         layer.appendChild(text);
         addLayerToList(layerId, 'Text');
         textEditor.style.display = 'block';
@@ -470,6 +484,15 @@
       offset.x = e.clientX - rect.left;
       offset.y = e.clientY - rect.top;
       setActiveView(el.parentNode.id);
+      
+      // Update font selector to match active layer
+      const text = el.querySelector('.design-text');
+      if(text) {
+          textEditor.style.display = 'block';
+          document.getElementById('fontFamily').value = text.style.fontFamily.replace(/"/g, "'");
+      } else {
+          textEditor.style.display = 'none';
+      }
     });
   }
 
