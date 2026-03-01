@@ -337,10 +337,41 @@
       '#FFCCFF', '#FF99FF', '#FF66FF', '#FF33FF', '#FF00FF', '#CC00CC', '#990099', '#660066', '#330033'
   ];
 
-  const createPicker = (el, def) => Pickr.create({
-      el, theme: 'classic', default: def, swatches: extendedSwatches,
-      components: { preview: true, opacity: true, hue: true, interaction: { hex: true, input: true, save: true } }
-  });
+  // ... (rest of your script above)
+
+// --- UPDATED PICKR LOGIC ---
+// 1. Get the current background color of the active product to initialize the picker
+const activeView = document.querySelector('.product-view');
+const initialColor = window.getComputedStyle(activeView).backgroundColor;
+
+const createPicker = (el, def) => Pickr.create({
+    el, 
+    theme: 'classic', 
+    default: def, // This will now show the current color correctly
+    swatches: extendedSwatches,
+    components: { 
+        preview: true, 
+        opacity: true, 
+        hue: true, 
+        interaction: { hex: true, input: true, save: true } 
+    }
+});
+
+// Initialize with the current style
+const bgPicker = createPicker('#bgPicker', initialColor); 
+const fontColorPicker = createPicker('#fontColorPicker', '#000000');
+
+// 2. Update the product background when the color is changed or saved
+bgPicker.on('change', (color) => {
+    document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color.toRGBA().toString());
+});
+
+// Ensures the color stays applied after closing the picker
+bgPicker.on('save', (color) => {
+    document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color.toRGBA().toString());
+});
+
+// ... (rest of your script below)
 
   const bgPicker = createPicker('#bgPicker', '#ffffff');
   const fontColorPicker = createPicker('#fontColorPicker', '#000000');
