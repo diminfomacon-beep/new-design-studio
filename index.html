@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Multi-Product</title>
+  <title>Custom Design Studio - Zoomable</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -74,7 +74,7 @@
     }
     .gallery-item:hover { border-color: var(--accent); transform: scale(1.05); }
 
-    /* PREVIEW PANEL */
+    /* PREVIEW PANEL - UPDATED FOR CENTERING & ZOOM */
     .preview-container {
       background: #e5e7eb;
       border: 1px solid var(--border-color);
@@ -82,15 +82,21 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center; /* Center items vertically */
       padding: 10px;
       position: relative;
       min-height: 500px;
       gap: 15px;
+      overflow: hidden; /* Hide overflow when zoomed */
     }
 
     .product-stage {
         display: none;
         position: relative;
+        transform-origin: center;
+        transition: transform 0.1s ease-out; /* Smooth zoom */
+        align-items: center;
+        justify-content: center;
     }
     .product-stage.active-product {
         display: flex;
@@ -258,6 +264,11 @@
     </div>
     
     <div class="control-group">
+        <label>Zoom</label>
+        <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
+    </div>
+
+    <div class="control-group">
         <label>Color</label>
         <div id="bgPicker"></div>
     </div>
@@ -303,13 +314,19 @@
   // --- PRODUCT SWITCHER ---
   document.getElementById('productSelect').addEventListener('change', (e) => {
       currentProduct = e.target.value;
-      // Hide all stages
       document.querySelectorAll('.product-stage').forEach(s => s.classList.remove('active-product'));
-      // Show selected stage
       const stage = document.getElementById('stage-' + currentProduct);
       stage.classList.add('active-product');
-      // Set active view to first child of new stage
       setActiveView(stage.querySelector('.product-view').id);
+      // Reset zoom on product change
+      document.getElementById('zoomSlider').value = 1;
+      stage.style.transform = 'scale(1)';
+  });
+
+  // --- ZOOM FUNCTIONALITY ---
+  document.getElementById('zoomSlider').addEventListener('input', (e) => {
+      const scale = e.target.value;
+      document.querySelector('.active-product').style.transform = `scale(${scale})`;
   });
 
   function setActiveView(viewId) {
@@ -405,7 +422,6 @@
     makeDraggable(layer);
     makeResizable(layer, handle, type);
     
-    // Deactivate others
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
     layer.classList.add('active-layer');
   }
