@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Optimized Fonts</title>
+  <title>Custom Design Studio - Precise Text</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -26,7 +26,7 @@
     }
 
     .studio-wrapper {
-      background: #CAE4DB;
+      background: #ffffff;
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.1);
       padding: 15px;
@@ -37,7 +37,6 @@
       box-sizing: border-box;
     }
 
-    /* GALLERY PANEL */
     .gallery-panel {
       border: 1px solid var(--border-color);
       border-radius: 12px;
@@ -74,7 +73,6 @@
     }
     .gallery-item:hover { border-color: var(--accent); transform: scale(1.05); }
 
-    /* PREVIEW PANEL */
     .preview-container {
       background: #e5e7eb;
       border: 1px solid var(--border-color);
@@ -113,12 +111,10 @@
       transition: all 0.3s;
     }
 
-    /* PRODUCT SHAPES */
     .view-tshirt { width: 240px; height: 250px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
     .view-tumbler { width: 100px; height: 250px; border-radius: 10px; }
     .view-mug { width: 150px; height: 130px; border-radius: 10px 10px 50px 50px; }
 
-    /* LAYERS */
     .draggable {
       position: absolute;
       cursor: move;
@@ -152,7 +148,6 @@
     .draggable.active-layer .resize-handle { display: block; }
     .handle-br { bottom: -5px; right: -5px; }
 
-    /* CONTROLS PANEL */
     .controls-panel { display: flex; flex-direction: column; gap: 10px; }
     .control-group { display: flex; flex-direction: column; gap: 3px; }
     label { font-weight: 600; font-size: 10px; color: #666; text-transform: uppercase; }
@@ -186,6 +181,8 @@
     .btn-download { background: #d1fae5; color: #065f46; flex: 1; }
     
     #textEditor { display: none; background: #f3f4f6; padding: 8px; border-radius: 8px; }
+    .size-controls { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
+    .size-controls input { width: 50px; }
   </style>
   
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat:wght@400;900&family=Pacifico&family=Playfair+Display:wght@700&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
@@ -254,6 +251,11 @@
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 3px; align-items: center;">
             <div id="fontColorPicker" style="border: 1px solid #ddd; border-radius: 6px; padding: 2px; background: white; height: 20px;"></div>
             
+            <div class="size-controls">
+                <label style="font-size: 9px;">SIZE</label>
+                <input type="number" id="fontSizeInput" min="8" max="150" value="24">
+            </div>
+
             <select id="fontFamily" style="grid-column: span 2; padding: 4px;">
                 <option value="'Montserrat', sans-serif">Modern: Montserrat</option>
                 <option value="'Playfair Display', serif">Classic: Playfair</option>
@@ -293,7 +295,6 @@
   let activeViewId = 'view-tshirt';
   let currentProduct = 'tshirt';
 
-  // --- PRODUCT SWITCHER ---
   document.getElementById('productSelect').addEventListener('change', (e) => {
       currentProduct = e.target.value;
       document.querySelectorAll('.product-stage').forEach(s => s.classList.remove('active-product'));
@@ -305,39 +306,19 @@
   });
 
   document.getElementById('zoomSlider').addEventListener('input', (e) => {
-      const scale = e.target.value;
-      document.querySelector('.active-product').style.transform = `scale(${scale})`;
+      document.querySelector('.active-product').style.transform = `scale(${e.target.value})`;
   });
 
-  const swatches = [
-      '#FFFFFF', '#F2F2F2', '#D9D9D9', '#BFBFBF', '#A6A6A6', '#808080', '#595959', '#404040', '#262626', '#000000',
-      '#FFCCCC', '#FF9999', '#FF6666', '#FF3333', '#FF0000', '#CC0000', '#990000', '#660000', '#330000',
-      '#FFE5CC', '#FFCC99', '#FFB266', '#FF9933', '#FF8000', '#CC6600', '#994C00', '#663300', '#331900',
-      '#FFFFCC', '#FFFF99', '#FFFF66', '#FFFF33', '#FFFF00', '#CCCC00', '#999900', '#666600', '#333300',
-      '#CCFFCC', '#99FF99', '#66FF66', '#33FF33', '#00FF00', '#00CC00', '#009900', '#006600', '#003300',
-      '#CCFFFF', '#99FFFF', '#66FFFF', '#33FFFF', '#00FFFF', '#00CCCC', '#009999', '#006666', '#003333',
-      '#CCCCFF', '#9999FF', '#6666FF', '#3333FF', '#0000FF', '#0000CC', '#000099', '#000066', '#000033',
-      '#E5CCFF', '#CC99FF', '#B266FF', '#9933FF', '#8000FF', '#6600CC', '#4C0099', '#330066', '#190033',
-      '#FFCCFF', '#FF99FF', '#FF66FF', '#FF33FF', '#FF00FF', '#CC00CC', '#990099', '#660066', '#330033'
-  ];
-
-  const createColorPicker = (selector, defaultColor) => {
-      return Pickr.create({
-          el: selector,
-          theme: 'classic', 
-          default: defaultColor,
-          swatches: swatches,
-          components: { preview: true, opacity: true, hue: true, interaction: { hex: true, input: true, save: true } }
-      });
-  };
+  const swatches = ['#FFFFFF', '#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'];
+  const createColorPicker = (selector, defaultColor) => Pickr.create({
+      el: selector, theme: 'classic', default: defaultColor, swatches: swatches,
+      components: { preview: true, opacity: true, hue: true, interaction: { hex: true, input: true, save: true } }
+  });
 
   const bgPicker = createColorPicker('#bgPicker', '#ffffff');
   const fontColorPicker = createColorPicker('#fontColorPicker', '#000000');
 
-  bgPicker.on('change', (color) => {
-      document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color.toRGBA().toString());
-  });
-
+  bgPicker.on('change', (color) => document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color.toRGBA().toString()));
   fontColorPicker.on('change', (color) => {
       const active = document.querySelector('.active-layer .design-text');
       if(active) active.style.color = color.toRGBA().toString();
@@ -347,23 +328,30 @@
       const active = document.querySelector('.active-layer .design-text');
       if(active) active.style.fontFamily = e.target.value;
   });
+
+  // --- TEXT SIZE INPUT ---
+  document.getElementById('fontSizeInput').addEventListener('input', (e) => {
+      const active = document.querySelector('.active-layer');
+      if(active) {
+          const text = active.querySelector('.design-text');
+          if(text) {
+              const size = e.target.value;
+              text.style.fontSize = size + 'px';
+              // Update container width to fit text roughly
+              active.style.width = 'auto';
+              active.style.height = 'auto';
+          }
+      }
+  });
   
   document.getElementById('btnBold').addEventListener('click', (e) => {
       const active = document.querySelector('.active-layer .design-text');
-      if(active) {
-          const isBold = active.style.fontWeight === 'bold';
-          active.style.fontWeight = isBold ? 'normal' : 'bold';
-          e.target.classList.toggle('active');
-      }
+      if(active) active.style.fontWeight = active.style.fontWeight === 'bold' ? 'normal' : 'bold';
   });
 
   document.getElementById('btnItalic').addEventListener('click', (e) => {
       const active = document.querySelector('.active-layer .design-text');
-      if(active) {
-          const isItalic = active.style.fontStyle === 'italic';
-          active.style.fontStyle = isItalic ? 'normal' : 'italic';
-          e.target.classList.toggle('active');
-      }
+      if(active) active.style.fontStyle = active.style.fontStyle === 'italic' ? 'normal' : 'italic';
   });
 
   async function loadGallery(searchTerm = '') {
@@ -385,10 +373,7 @@
   document.getElementById('gallerySearch').addEventListener('input', (e) => loadGallery(e.target.value));
   loadGallery();
 
-  const layerList = document.getElementById('layerList');
-  const textEditor = document.getElementById('textEditor');
   let layerCount = 0;
-
   function createLayer(type, content) {
     layerCount++;
     const layerId = 'layer_' + layerCount;
@@ -396,26 +381,24 @@
     layer.id = layerId;
     layer.className = 'draggable active-layer';
     const activeView = document.getElementById(activeViewId);
-    layer.style.top = '100px';
-    layer.style.left = '50px';
+    layer.style.top = '100px'; layer.style.left = '50px';
     
     if (type === 'image') {
         const img = document.createElement('img');
-        img.src = content;
-        img.style.width = '50px'; 
+        img.src = content; img.style.width = '50px'; 
         layer.appendChild(img);
         addLayerToList(layerId, 'Image');
-        textEditor.style.display = 'none';
+        document.getElementById('textEditor').style.display = 'none';
     } else {
         const text = document.createElement('div');
         text.className = 'design-text';
         text.textContent = content;
         text.style.fontSize = '24px';
-        text.style.color = '#000000';
         text.style.fontFamily = document.getElementById('fontFamily').value;
         layer.appendChild(text);
         addLayerToList(layerId, 'Text');
-        textEditor.style.display = 'block';
+        document.getElementById('textEditor').style.display = 'block';
+        document.getElementById('fontSizeInput').value = 24;
     }
 
     const handle = document.createElement('div');
@@ -433,7 +416,7 @@
       item.className = 'layer-item';
       item.id = 'list_' + id;
       item.innerHTML = `<span>${name}</span><button class="btn-icon btn-delete" onclick="removeLayer('${id}')">X</button>`;
-      layerList.prepend(item);
+      document.getElementById('layerList').prepend(item);
   }
 
   function removeLayer(id) {
@@ -441,9 +424,7 @@
       document.getElementById('list_' + id).remove();
   }
 
-  let activeItem = null;
-  let offset = { x: 0, y: 0 };
-  let isResizing = false;
+  let activeItem = null, offset = { x: 0, y: 0 }, isResizing = false;
 
   function makeDraggable(el) {
     el.addEventListener('mousedown', (e) => {
@@ -457,51 +438,47 @@
       
       const text = el.querySelector('.design-text');
       if(text) {
-          textEditor.style.display = 'block';
+          document.getElementById('textEditor').style.display = 'block';
           document.getElementById('fontFamily').value = text.style.fontFamily.replace(/"/g, "'");
-          document.getElementById('btnBold').classList.toggle('active', text.style.fontWeight === 'bold');
-          document.getElementById('btnItalic').classList.toggle('active', text.style.fontStyle === 'italic');
+          document.getElementById('fontSizeInput').value = parseInt(text.style.fontSize);
       } else {
-          textEditor.style.display = 'none';
+          document.getElementById('textEditor').style.display = 'none';
       }
     });
   }
 
   function makeResizable(el, handle, type) {
       handle.addEventListener('mousedown', (e) => {
-          isResizing = true;
-          activeItem = el;
-          e.stopPropagation();
+          isResizing = true; activeItem = el; e.stopPropagation();
           document.addEventListener('mousemove', resize);
-          document.addEventListener('mouseup', () => {
-              isResizing = false;
-              document.removeEventListener('mousemove', resize);
-          });
+          document.addEventListener('mouseup', () => { isResizing = false; document.removeEventListener('mousemove', resize); });
       });
 
       function resize(e) {
           const elRect = el.getBoundingClientRect();
-          const newWidth = e.clientX - elRect.left;
-          const newHeight = e.clientY - elRect.top;
-          el.style.width = Math.max(15, newWidth) + 'px';
-          el.style.height = Math.max(15, newHeight) + 'px';
+          const nw = e.clientX - elRect.left, nh = e.clientY - elRect.top;
+          el.style.width = Math.max(15, nw) + 'px';
+          el.style.height = Math.max(15, nh) + 'px';
           if(type === 'image') el.querySelector('img').style.width = '100%';
-          else el.querySelector('.design-text').style.fontSize = Math.max(8, newWidth * 0.3) + 'px';
+          else {
+              const newSize = Math.max(8, Math.round(nw * 0.3));
+              el.querySelector('.design-text').style.fontSize = newSize + 'px';
+              document.getElementById('fontSizeInput').value = newSize;
+          }
       }
   }
 
   document.addEventListener('mousemove', (e) => {
     if (!activeItem || isResizing) return;
-    const container = activeItem.parentNode;
-    const containerRect = container.getBoundingClientRect();
-    activeItem.style.left = (e.clientX - containerRect.left - offset.x) + 'px';
-    activeItem.style.top = (e.clientY - containerRect.top - offset.y) + 'px';
+    const container = activeItem.parentNode.getBoundingClientRect();
+    activeItem.style.left = (e.clientX - container.left - offset.x) + 'px';
+    activeItem.style.top = (e.clientY - container.top - offset.y) + 'px';
   });
-  document.addEventListener('mouseup', () => { activeItem = null; });
+  document.addEventListener('mouseup', () => activeItem = null);
 
   document.getElementById('addTextBtn').addEventListener('click', () => {
-      const text = document.getElementById('textInput').value;
-      if(text) createLayer('text', text);
+      const val = document.getElementById('textInput').value;
+      if(val) createLayer('text', val);
   });
 
   document.getElementById('imageInput').addEventListener('change', (e) => {
@@ -518,7 +495,7 @@
     html2canvas(document.querySelector('.active-product'), { backgroundColor: null }).then(canvas => {
         const link = document.createElement('a');
         link.download = currentProduct + '-design.png';
-        link.href = canvas.toDataURL('image/png');
+        link.href = canvas.toDataURL();
         link.click();
     });
   });
