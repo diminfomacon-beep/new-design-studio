@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Print Design Studio - Adjusted Areas</title>
+  <title>Custom Print Design Studio - Final Proportions</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -128,14 +128,15 @@
       background-color: white;
       cursor: pointer;
       border: 3px solid transparent;
-      width: 200px;
+      /* UPDATED PROPORTIONS: WIDTH TO LENGTH */
+      width: 240px;
       height: 250px;
     }
     .product-view.active-view {
         border: 3px solid var(--accent);
     }
 
-    /* SHAPE */
+    /* SHAPE UPDATED FOR PROPORTIONS */
     .shape-tshirt { clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
 
     /* PRINT AREAS - UPDATED RESTRICTIONS */
@@ -146,20 +147,20 @@
         background: rgba(255,255,255,0.1);
     }
     
-    /* Front: Pocket Size - Moved to Right & Inward */
+    /* Front: Pocket Size */
     #viewFront .print-area {
         width: 45px;                
         height: 45px;
         top: 65px;                  
-        right: 35px;                /* Moved to Right side & padded */
+        right: 50px;                /* Adjusted for new width */
     }
 
-    /* Back: Upper 1/3 - Centered with Padding */
+    /* Back: Updated Smaller & Centered */
     #viewBack .print-area {
-        width: 120px;               /* Narrower for padding */
-        height: 70px;               
-        top: 30px;                  
-        left: 40px;                 /* Centered based on wrapper width */
+        width: 100px;               /* Smaller */
+        height: 60px;               
+        top: 40px;                  
+        left: 70px;                 /* Perfectly Centered */
     }
 
     /* LAYERS */
@@ -381,11 +382,10 @@
     layer.id = layerId;
     layer.className = 'draggable active-layer';
     
-    // Position layer in center of active print area
     const activeView = document.getElementById(activeViewId);
     const printArea = activeView.querySelector('.print-area');
-    layer.style.top = (printArea.offsetTop + printArea.offsetHeight/2 - 20) + 'px';
-    layer.style.left = (printArea.offsetLeft + printArea.offsetWidth/2 - 20) + 'px';
+    layer.style.top = (printArea.offsetTop + printArea.offsetHeight/2 - 15) + 'px';
+    layer.style.left = (printArea.offsetLeft + printArea.offsetWidth/2 - 15) + 'px';
     
     layer.dataset.type = type;
     
@@ -503,7 +503,6 @@
     let newX = e.clientX - containerRect.left - offset.x;
     let newY = e.clientY - containerRect.top - offset.y;
     
-    // Correctly calculate boundaries based on print-area position
     const minX = printArea.offsetLeft;
     const maxX = printArea.offsetLeft + printRect.width - activeItem.offsetWidth;
     const minY = printArea.offsetTop;
