@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Expanded Fonts</title>
+  <title>Custom Design Studio - Unlimited Area</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -116,28 +116,17 @@
         border: 3px solid var(--accent);
     }
 
-    /* PRODUCT SHAPES & PRINT AREAS */
+    /* PRODUCT SHAPES - DESIGN AREA RESTRICTIONS REMOVED */
     
     /* T-Shirt */
     .view-tshirt { width: 240px; height: 250px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
-    .print-area-tshirt-front { width: 45px; height: 45px; top: 65px; right: 50px; }
-    .print-area-tshirt-back { width: 100px; height: 60px; top: 40px; left: 70px; }
 
     /* Tumbler */
     .view-tumbler { width: 100px; height: 250px; border-radius: 10px; }
-    .print-area-tumbler { width: 70px; height: 180px; top: 35px; left: 15px; }
 
     /* Mug */
     .view-mug { width: 150px; height: 130px; border-radius: 10px 10px 50px 50px; }
-    .print-area-mug { width: 100px; height: 90px; top: 20px; left: 25px; }
 
-    .print-area {
-        position: absolute;
-        border: 2px dashed rgba(0,0,0,0.3);
-        pointer-events: none;
-        background: rgba(255,255,255,0.1);
-    }
-    
     /* LAYERS */
     .draggable {
       position: absolute;
@@ -207,7 +196,7 @@
     #textEditor { display: none; background: #f3f4f6; padding: 8px; border-radius: 8px; }
   </style>
   
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Dancing+Script:wght@400;700&family=Georgia&family=Lobster&family=Merriweather:wght@300;700&family=Montserrat:wght@400;700;900&family=Open+Sans:wght@400;700&family=Pacifico&family=Playfair+Display:ital,wght@400;700;900&family=Roboto:wght@400;700;900&family=Shadows+Into+Light&family=Special+Elite&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Cinzel&family=Creepster&family=Dancing+Script:wght@400;700&family=EB+Garamond&family=Fjalla+One&family=Georgia&family=Great+Vibes&family=Indie+Flower&family=Lobster&family=Merriweather:wght@300;700&family=Montserrat:wght@400;700;900&family=Oswald:wght@400;700&family=Pacifico&family=Playfair+Display:ital,wght@400;700;900&family=Poppins:wght@400;700&family=Press+Start+2P&family=Raleway:wght@400;700&family=Roboto:wght@400;700;900&family=Roboto+Condensed:wght@400;700&family=Rubik:wght@400;700&family=Shadows+Into+Light&family=Special+Elite&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -231,27 +220,18 @@
   </div>
 
   <div class="preview-container">
-    <label style="font-size: 12px; color: #333;">Click a side to edit</label>
+    <label style="font-size: 12px; color: #333;">Design Canvas</label>
     
     <div id="stage-tshirt" class="product-stage active-product">
-        <div id="view-tshirt-front" class="product-view view-tshirt active-view" onclick="setActiveView('view-tshirt-front')">
-            <div class="print-area print-area-tshirt-front"></div>
-        </div>
-        <div id="view-tshirt-back" class="product-view view-tshirt" onclick="setActiveView('view-tshirt-back')">
-            <div class="print-area print-area-tshirt-back"></div>
-        </div>
+        <div id="view-tshirt" class="product-view view-tshirt active-view"></div>
     </div>
 
     <div id="stage-tumbler" class="product-stage">
-        <div id="view-tumbler-front" class="product-view view-tumbler active-view" onclick="setActiveView('view-tumbler-front')">
-            <div class="print-area print-area-tumbler"></div>
-        </div>
+        <div id="view-tumbler" class="product-view view-tumbler"></div>
     </div>
 
     <div id="stage-mug" class="product-stage">
-        <div id="view-mug-front" class="product-view view-mug active-view" onclick="setActiveView('view-mug-front')">
-            <div class="print-area print-area-mug"></div>
-        </div>
+        <div id="view-mug" class="product-view view-mug"></div>
     </div>
   </div>
 
@@ -295,9 +275,14 @@
                     <option value="'Roboto', sans-serif">Roboto</option>
                     <option value="'Open Sans', sans-serif">Open Sans</option>
                     <option value="'Montserrat', sans-serif">Montserrat</option>
+                    <option value="'Poppins', sans-serif">Poppins</option>
+                    <option value="'Raleway', sans-serif">Raleway</option>
+                    <option value="'Rubik', sans-serif">Rubik</option>
+                    <option value="'Ubuntu', sans-serif">Ubuntu</option>
                 </optgroup>
                 <optgroup label="Classic Serif">
                     <option value="Georgia, serif">Georgia</option>
+                    <option value="'EB Garamond', serif">EB Garamond</option>
                     <option value="'Merriweather', serif">Merriweather</option>
                     <option value="'Playfair Display', serif">Playfair Display</option>
                 </optgroup>
@@ -306,11 +291,17 @@
                     <option value="'Pacifico', cursive">Pacifico</option>
                     <option value="'Dancing Script', cursive">Dancing Script</option>
                     <option value="'Shadows Into Light', cursive">Shadows Into Light</option>
+                    <option value="'Great Vibes', cursive">Great Vibes</option>
+                    <option value="'Indie Flower', cursive">Indie Flower</option>
                 </optgroup>
-                <optgroup label="Display & Bold">
+                <optgroup label="Display & Headline">
                     <option value="'Anton', sans-serif">Anton</option>
                     <option value="'Bangers', cursive">Bangers</option>
+                    <option value="'Cinzel', serif">Cinzel</option>
+                    <option value="'Fjalla One', sans-serif">Fjalla One</option>
                     <option value="'Special Elite', cursive">Special Elite</option>
+                    <option value="'Press Start 2P', cursive">Pixel</option>
+                    <option value="'Creepster', cursive">Creepster</option>
                 </optgroup>
             </select>
             
@@ -335,7 +326,7 @@
 
 <script>
   const PIXABAY_API_KEY = '54841320-2fc493da46915b0eb0a6f740c';
-  let activeViewId = 'view-tshirt-front';
+  let activeViewId = 'view-tshirt';
   let currentProduct = 'tshirt';
 
   // --- PRODUCT SWITCHER ---
@@ -344,7 +335,7 @@
       document.querySelectorAll('.product-stage').forEach(s => s.classList.remove('active-product'));
       const stage = document.getElementById('stage-' + currentProduct);
       stage.classList.add('active-product');
-      setActiveView(stage.querySelector('.product-view').id);
+      activeViewId = stage.querySelector('.product-view').id;
       document.getElementById('zoomSlider').value = 1;
       stage.style.transform = 'scale(1)';
   });
@@ -354,12 +345,6 @@
       const scale = e.target.value;
       document.querySelector('.active-product').style.transform = `scale(${scale})`;
   });
-
-  function setActiveView(viewId) {
-      activeViewId = viewId;
-      document.querySelectorAll('.product-view').forEach(v => v.classList.remove('active-view'));
-      document.getElementById(viewId).classList.add('active-view');
-  }
 
   // --- COLOR SWATCHES ---
   const swatches = [
@@ -458,15 +443,15 @@
     layer.className = 'draggable active-layer';
     
     const activeView = document.getElementById(activeViewId);
-    const printArea = activeView.querySelector('.print-area');
     
-    layer.style.top = (printArea.offsetTop + printArea.offsetHeight/2 - 15) + 'px';
-    layer.style.left = (printArea.offsetLeft + printArea.offsetWidth/2 - 15) + 'px';
+    // Default position to center of view
+    layer.style.top = '100px';
+    layer.style.left = '50px';
     
     if (type === 'image') {
         const img = document.createElement('img');
         img.src = content;
-        img.style.width = '30px'; 
+        img.style.width = '50px'; 
         layer.appendChild(img);
         addLayerToList(layerId, 'Image');
         textEditor.style.display = 'none';
@@ -521,18 +506,14 @@
       const rect = el.getBoundingClientRect();
       offset.x = e.clientX - rect.left;
       offset.y = e.clientY - rect.top;
-      setActiveView(el.parentNode.id);
       
       // --- SYNC EDITOR CONTROLS ---
       const text = el.querySelector('.design-text');
       if(text) {
           textEditor.style.display = 'block';
-          // Sync Font
           document.getElementById('fontFamily').value = text.style.fontFamily.replace(/"/g, "'");
-          // Sync Bold Button
           if(text.style.fontWeight === 'bold') document.getElementById('btnBold').classList.add('active');
           else document.getElementById('btnBold').classList.remove('active');
-          // Sync Italic Button
           if(text.style.fontStyle === 'italic') document.getElementById('btnItalic').classList.add('active');
           else document.getElementById('btnItalic').classList.remove('active');
       } else {
@@ -555,15 +536,11 @@
 
       function resize(e) {
           const container = el.parentNode;
-          const printArea = container.querySelector('.print-area');
-          const printRect = printArea.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
           const elRect = el.getBoundingClientRect();
           
-          const maxWidth = printRect.width - (elRect.left - printRect.left);
-          const maxHeight = printRect.height - (elRect.top - printRect.top);
-          
-          const newWidth = Math.min(e.clientX - elRect.left, maxWidth);
-          const newHeight = Math.min(e.clientY - elRect.top, maxHeight);
+          const newWidth = e.clientX - elRect.left;
+          const newHeight = e.clientY - elRect.top;
           
           el.style.width = Math.max(15, newWidth) + 'px';
           el.style.height = Math.max(15, newHeight) + 'px';
@@ -576,20 +553,14 @@
   document.addEventListener('mousemove', (e) => {
     if (!activeItem || isResizing) return;
     const container = activeItem.parentNode;
-    const printArea = container.querySelector('.print-area');
-    const printRect = printArea.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
     
     let newX = e.clientX - containerRect.left - offset.x;
     let newY = e.clientY - containerRect.top - offset.y;
     
-    const minX = printArea.offsetLeft;
-    const maxX = printArea.offsetLeft + printRect.width - activeItem.offsetWidth;
-    const minY = printArea.offsetTop;
-    const maxY = printArea.offsetTop + printRect.height - activeItem.offsetHeight;
-    
-    activeItem.style.left = Math.max(minX, Math.min(newX, maxX)) + 'px';
-    activeItem.style.top = Math.max(minY, Math.min(newY, maxY)) + 'px';
+    // No restrictions on placement
+    activeItem.style.left = newX + 'px';
+    activeItem.style.top = newY + 'px';
   });
   document.addEventListener('mouseup', () => { activeItem = null; });
 
