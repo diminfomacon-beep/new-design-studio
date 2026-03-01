@@ -132,11 +132,16 @@
         background: #f3f4f6; padding: 10px; border-radius: 8px; border: 1px solid #e5e7eb;
         max-height: 250px; overflow-y: auto;
     }
+    
+    /* Updated List Styling for Dragging */
     .layer-item {
         display: flex; justify-content: space-between; align-items: center;
-        background: white; padding: 5px 10px; border-radius: 4px; margin-bottom: 5px; font-size: 12px;
+        background: white; padding: 8px 10px; border-radius: 4px; margin-bottom: 5px; font-size: 12px;
         border: 1px solid #eee;
+        cursor: grab;
     }
+    .layer-item.dragging { opacity: 0.5; background: #e0e7ff; }
+    
     .layer-controls { display: flex; gap: 2px; }
     .btn-icon { background: #eee; border: none; padding: 2px 5px; border-radius: 3px; cursor: pointer; font-size: 10px; }
     .btn-delete { background: #fee2e2; color: #991b1b; }
@@ -195,7 +200,7 @@
     </div>
 
     <div class="layer-manager">
-        <label style="color: var(--accent); margin-bottom: 8px; display: block;">Active Layers</label>
+        <label style="color: var(--accent); margin-bottom: 8px; display: block;">Active Layers (Drag to Reorder)</label>
         <div id="layerList"></div>
     </div>
 
@@ -236,7 +241,6 @@
     layer.className = 'draggable active-layer';
     layer.style.top = '100px'; layer.style.left = '100px';
     
-    // Remove active class from others
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
     
     if (type === 'image') {
@@ -264,18 +268,27 @@
     makeResizable(layer, handle, type);
   }
 
+  // --- HTML5 DRAG & DROP LIST ---
   function addLayerToList(id, name) {
       const item = document.createElement('div');
       item.className = 'layer-item';
       item.id = 'list_' + id;
+      item.draggable = true; // Make item draggable
+      item.dataset.layerId = id; // Store link to layer
+
       item.innerHTML = `
         <span>${name}</span>
         <div class="layer-controls">
-            <button class="btn-icon" onclick="moveLayer('${id}', 'up')">▲</button>
-            <button class="btn-icon" onclick="moveLayer('${id}', 'down')">▼</button>
             <button class="btn-icon btn-delete" onclick="removeLayer('${id}')">X</button>
         </div>
       `;
+
+      // Drag Event Listeners
+      item.addEventListener('dragstart', handleDragStart);
+      item.addEventListener('dragover', handleDragOver);
+      item.addEventListener('drop', handleDrop);
+      item.addEventListener('dragend', handleDragEnd);
+
       layerList.prepend(item);
   }
 
@@ -284,27 +297,57 @@
       document.getElementById('list_' + id).remove();
   }
 
-  // --- REORDERING LOGIC ---
-  function moveLayer(id, direction) {
-      const el = document.getElementById(id);
-      const listItem = document.getElementById('list_' + id);
-      
-      if (direction === 'up') {
-          // Move in DOM (behind in stacking order)
-          if (el.nextSibling) {
-              el.parentNode.insertBefore(el, el.nextSibling.nextSibling);
-              listItem.parentNode.insertBefore(listItem, listItem.nextSibling.nextSibling);
-          }
-      } else {
-          // Move in DOM (front in stacking order)
-          if (el.previousSibling) {
-              el.parentNode.insertBefore(el, el.previousSibling);
-              listItem.parentNode.insertBefore(listItem, listItem.previousSibling);
-          }
-      }
+  // --- DRAG AND DROP HANDLERS ---
+  let draggedItem = null;
+
+  function handleDragStart(e) {
+      draggedItem = this;
+      e.dataTransfer.effectAllowed = 'move';
+      this.classList.add('dragging');
   }
 
-  // --- DRAG AND RESIZE ---
+  function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      return false;
+  }
+
+  function handleDrop(e) {
+      e.stopPropagation();
+      if (draggedItem !== this) {
+          // Reorder List
+          const allItems = Array.from(layerList.children);
+          const draggedIndex = allItems.indexOf(draggedItem);
+          const droppedIndex = allItems.indexOf(this);
+
+          if (draggedIndex < droppedIndex) {
+              this.after(draggedItem);
+          } else {
+              this.before(draggedItem);
+          }
+
+          // --- SYNC DOM ORDER WITH LIST ORDER ---
+          syncDomOrder();
+      }
+      return false;
+  }
+
+  function handleDragEnd(e) {
+      this.classList.remove('dragging');
+      draggedItem = null;
+  }
+
+  // Syncs the canvas Z-order with the list order
+  function syncDomOrder() {
+      const listItems = Array.from(layerList.children);
+      // Reverse list to match visual top-to-bottom with back-to-front
+      listItems.reverse().forEach(item => {
+          const layer = document.getElementById(item.dataset.layerId);
+          productShape.appendChild(layer); // Re-appending moves it to the top of the stack
+      });
+  }
+
+  // --- DRAG AND RESIZE ON CANVAS ---
   let activeItem = null;
   let offset = { x: 0, y: 0 };
   let isResizing = false;
@@ -319,9 +362,20 @@
       offset.x = e.clientX - rect.left;
       offset.y = e.clientY - rect.top;
       
-      // Bring to top of DOM for dragging
+      // Bring to top
       el.parentNode.appendChild(el);
+      // Sync list to match
+      syncListOrder();
     });
+  }
+
+  // Syncs list order with canvas stacking order
+  function syncListOrder() {
+      const layers = Array.from(productShape.children);
+      layers.forEach(layer => {
+          const listItem = document.getElementById('list_' + layer.id);
+          layerList.prepend(listItem); // Move list item to top
+      });
   }
 
   function makeResizable(el, handle, type) {
