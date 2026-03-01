@@ -106,6 +106,24 @@
       min-height: 500px;
       gap: 15px;
       overflow: hidden;
+      .guide-line {
+        position: absolute;
+        background: #3b82f6;
+        pointer-events: none;
+        opacity: 0;
+      }
+      .guide-vertical {
+        width: 2px;
+        height: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .guide-horizontal {
+        height: 2px;
+        width: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+      }
     }
 
     .product-stage {
@@ -196,6 +214,8 @@
 
     .btn-group { display: flex; gap: 8px; margin-top: 5px; }
     button { padding: 8px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: 12px;}
+    <button onclick="undo()">↶ Undo</button>
+    <button onclick="redo()">↷ Redo</button>
     
     .btn-style { background: #f3f4f6; color: #333; font-weight: bold; padding: 6px 10px; border: 1px solid #ddd;}
     .btn-style.active { background: var(--accent); color: white; border-color: var(--accent); }
@@ -409,6 +429,42 @@ fontColorPicker.on('change', (color, instance) => {
   });
 
   let layerCount = 0;
+  let historyStack = [];
+  let redoStack = [];
+
+  function saveState() {
+    const stage = document.getElementById(activeViewId);
+    historyStack.push(stage.innerHTML);
+    if (historyStack.length > 50) historyStack.shift();
+    redoStack = [];
+  }
+  function restoreState(state) {
+    const stage = document.getElementById(activeViewId);
+    stage.innerHTML = state;
+  
+    // Rebind drag + resize to restored elements
+    stage.querySelectorAll('.draggable').forEach(el => {
+      const handle = el.querySelector('.resize-handle');
+      makeDraggable(el);
+      makeResizable(el, handle, el.querySelector('img') ? 'image' : 'text');
+    });
+  }
+   let vGuide, hGuide;
+  
+  function createGuides() {
+    const preview = document.querySelector('.preview-container');
+  
+    vGuide = document.createElement('div');
+    vGuide.className = 'guide-line guide-vertical';
+  
+    hGuide = document.createElement('div');
+    hGuide.className = 'guide-line guide-horizontal';
+  
+    preview.appendChild(vGuide);
+    preview.appendChild(hGuide);
+  }
+
+createGuides();
  // --- REPLACE YOUR EXISTING createLayer FUNCTION WITH THIS ---
   function createLayer(type, content) {
       layerCount++;
@@ -454,6 +510,7 @@ fontColorPicker.on('change', (color, instance) => {
       
       document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
       layer.classList.add('active-layer');
+      saveState();
   }
   
   // --- ADD THIS NEW FUNCTION BELOW createLayer ---
@@ -500,8 +557,7 @@ fontColorPicker.on('change', (color, instance) => {
       item.innerHTML = `
         <span>${name}</span>
         <div>
-          <button class="btn-icon" onclick="bringForward('${id}')">↑</button>
-          <button class="btn-icon" onclick="sendBackward('${id}')">↓</button>
+          <button class="btn-icon" onclick="duplicateLayer('${id}')">⧉</button>
           <button class="btn-icon btn-delete" onclick="removeLayer('${id}')">✕</button>
         </div>
       `;
@@ -519,8 +575,27 @@ fontColorPicker.on('change', (color, instance) => {
   function removeLayer(id) {
     document.getElementById(id).remove();
     document.getElementById('list_' + id).remove();
+    saveState(); 
   }
-
+  function duplicateLayer(id) {
+    const original = document.getElementById(id);
+    const clone = original.cloneNode(true);
+  
+    layerCount++;
+    clone.id = 'layer_' + layerCount;
+  
+    clone.style.left = (parseInt(original.style.left) + 20) + 'px';
+    clone.style.top = (parseInt(original.style.top) + 20) + 'px';
+    clone.style.zIndex = layerCount;
+  
+    document.getElementById(activeViewId).appendChild(clone);
+  
+    const handle = clone.querySelector('.resize-handle');
+    makeDraggable(clone);
+    makeResizable(clone, handle, clone.querySelector('img') ? 'image' : 'text');
+  
+    saveState();
+  }
   let activeItem = null, offset = { x: 0, y: 0 }, isResizing = false;
 
   function makeDraggable(el) {
@@ -555,8 +630,13 @@ fontColorPicker.on('change', (color, instance) => {
       handle.addEventListener('mousedown', (e) => {
           isResizing = true; activeItem = el; e.stopPropagation();
           document.addEventListener('mousemove', resize);
-          document.addEventListener('mouseup', () => { isResizing = false; document.removeEventListener('mousemove', resize); });
-      });
+          document.addEventListener('mouseup', () => {
+            if (isResizing) {
+              saveState();   // <-- ADD HERE
+            }
+            isResizing = false;
+            document.removeEventListener('mousemove', resize);
+          });
 
       function resize(e) {
           const rect = el.getBoundingClientRect();
@@ -572,7 +652,19 @@ fontColorPicker.on('change', (color, instance) => {
           }
       }
   }
-
+ function undo() {
+    if (historyStack.length < 2) return;
+    const current = historyStack.pop();
+    redoStack.push(current);
+    restoreState(historyStack[historyStack.length - 1]);
+  }
+  
+  function redo() {
+    if (!redoStack.length) return;
+    const state = redoStack.pop();
+    historyStack.push(state);
+    restoreState(state);
+  }
   document.addEventListener('mousemove', (e) => {
     if (!activeItem || isResizing) return;
   
@@ -582,14 +674,36 @@ fontColorPicker.on('change', (color, instance) => {
     let newX = e.clientX - parentRect.left - offset.x;
     let newY = e.clientY - parentRect.top - offset.y;
   
-    // Keep inside product boundaries
+    // ----- BOUNDARY LIMITS -----
     newX = Math.max(0, Math.min(newX, parent.offsetWidth - activeItem.offsetWidth));
     newY = Math.max(0, Math.min(newY, parent.offsetHeight - activeItem.offsetHeight));
+  
+    // ----- CALCULATE TRUE CENTER -----
+    const centerX = (parent.offsetWidth - activeItem.offsetWidth) / 2;
+    const centerY = (parent.offsetHeight - activeItem.offsetHeight) / 2;
+  
+    const snapThreshold = 8;
+  
+    // ----- SNAP LOGIC -----
+    if (Math.abs(newX - centerX) < snapThreshold) {
+      newX = centerX;
+    }
+  
+    if (Math.abs(newY - centerY) < snapThreshold) {
+      newY = centerY;
+    }
   
     activeItem.style.left = newX + 'px';
     activeItem.style.top = newY + 'px';
   });
-  document.addEventListener('mouseup', () => activeItem = null);
+  document.addEventListener('mouseup', () => {
+    if (activeItem) {
+      saveState();   // <-- ADD HERE
+    }
+    activeItem = null;
+  });
+    vGuide.style.opacity = Math.abs(newX - centerX) < snapThreshold ? 1 : 0;
+    hGuide.style.opacity = Math.abs(newY - centerY) < snapThreshold ? 1 : 0;
 
   // --- DUAL LOADER ---
   async function loadPixabay(q = '') {
@@ -651,6 +765,13 @@ fontColorPicker.on('change', (color, instance) => {
   });
 
   document.getElementById('submitDesign').addEventListener('click', () => alert('Design finalized! Sent to production.'));
+  document.addEventListener('DOMContentLoaded', () => {
+
+  loadPixabay();
+  createGuides();
+  saveState();
+
+});
 </script>
 </body>
 </html>
