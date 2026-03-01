@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Minimalist</title>
+  <title>Custom Design Studio - Creative Fonts</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -109,20 +109,13 @@
       overflow: hidden;
       background-color: white;
       cursor: pointer;
-      /* REMOVED ACTIVE BORDER STYLE */
       border: 3px solid transparent; 
       transition: all 0.3s;
     }
 
     /* PRODUCT SHAPES */
-    
-    /* T-Shirt */
     .view-tshirt { width: 240px; height: 250px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
-
-    /* Tumbler */
     .view-tumbler { width: 100px; height: 250px; border-radius: 10px; }
-
-    /* Mug */
     .view-mug { width: 150px; height: 130px; border-radius: 10px 10px 50px 50px; }
 
     /* LAYERS */
@@ -137,6 +130,9 @@
       min-height: 20px;
       box-sizing: border-box;
       touch-action: none;
+      /* Improve text rendering */
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     .draggable.active-layer { border: 2px solid var(--accent); }
     .draggable img { max-width: 100%; max-height: 100%; pointer-events: none; }
@@ -194,7 +190,7 @@
     #textEditor { display: none; background: #f3f4f6; padding: 8px; border-radius: 8px; }
   </style>
   
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Cinzel&family=Creepster&family=Dancing+Script:wght@400;700&family=EB+Garamond&family=Fjalla+One&family=Georgia&family=Great+Vibes&family=Indie+Flower&family=Lobster&family=Merriweather:wght@300;700&family=Montserrat:wght@400;700;900&family=Oswald:wght@400;700&family=Pacifico&family=Playfair+Display:ital,wght@400;700;900&family=Poppins:wght@400;700&family=Press+Start+2P&family=Raleway:wght@400;700&family=Roboto:wght@400;700;900&family=Roboto+Condensed:wght@400;700&family=Rubik:wght@400;700&family=Shadows+Into+Light&family=Special+Elite&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Amatic+SC:wght@700&family=Bangers&family=Cinzel&family=Creepster&family=Dancing+Script:wght@400;700&family=EB+Garamond&family=Fjalla+One&family=Fredericka+the+Great&family=Georgia&family=Great+Vibes&family=Indie+Flower&family=Lobster&family=Merriweather:wght@300;700&family=Montserrat:wght@400;700;900&family=Oswald:wght@400;700&family=Pacifico&family=Permanent+Marker&family=Playfair+Display:ital,wght@400;700;900&family=Poppins:wght@400;700&family=Press+Start+2P&family=Raleway:wght@400;700&family=Roboto:wght@400;700;900&family=Rock+Salt&family=Rubik:wght@400;700&family=Shadows+Into+Light&family=Special+Elite&family=Spicy+Rice&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -218,6 +214,7 @@
   </div>
 
   <div class="preview-container">
+    
     <div id="stage-tshirt" class="product-stage active-product">
         <div id="view-tshirt" class="product-view view-tshirt"></div>
     </div>
@@ -267,37 +264,35 @@
             <div id="fontColorPicker" style="border: 1px solid #ddd; border-radius: 6px; padding: 2px; background: white; height: 20px;"></div>
             
             <select id="fontFamily" style="grid-column: span 2; padding: 4px;">
+                <optgroup label="Creative & Stylized">
+                    <option value="'Permanent Marker', cursive">Permanent Marker</option>
+                    <option value="'Rock Salt', cursive">Rock Salt</option>
+                    <option value="'Amatic SC', cursive">Amatic</option>
+                    <option value="'Fredericka the Great', cursive">Fredericka</option>
+                    <option value="'Spicy Rice', cursive">Spicy Rice</option>
+                    <option value="'Creepster', cursive">Creepster</option>
+                    <option value="'Bangers', cursive">Bangers</option>
+                </optgroup>
                 <optgroup label="Modern Sans-Serif">
                     <option value="'Roboto', sans-serif">Roboto</option>
-                    <option value="'Open Sans', sans-serif">Open Sans</option>
                     <option value="'Montserrat', sans-serif">Montserrat</option>
                     <option value="'Poppins', sans-serif">Poppins</option>
-                    <option value="'Raleway', sans-serif">Raleway</option>
-                    <option value="'Rubik', sans-serif">Rubik</option>
-                    <option value="'Ubuntu', sans-serif">Ubuntu</option>
                 </optgroup>
                 <optgroup label="Classic Serif">
                     <option value="Georgia, serif">Georgia</option>
-                    <option value="'EB Garamond', serif">EB Garamond</option>
-                    <option value="'Merriweather', serif">Merriweather</option>
                     <option value="'Playfair Display', serif">Playfair Display</option>
                 </optgroup>
                 <optgroup label="Script & Handwriting">
                     <option value="'Lobster', cursive">Lobster</option>
                     <option value="'Pacifico', cursive">Pacifico</option>
                     <option value="'Dancing Script', cursive">Dancing Script</option>
-                    <option value="'Shadows Into Light', cursive">Shadows Into Light</option>
-                    <option value="'Great Vibes', cursive">Great Vibes</option>
-                    <option value="'Indie Flower', cursive">Indie Flower</option>
+                    <option value="'Shadows Into Light', cursive">Shadows</option>
                 </optgroup>
                 <optgroup label="Display & Headline">
                     <option value="'Anton', sans-serif">Anton</option>
-                    <option value="'Bangers', cursive">Bangers</option>
-                    <option value="'Cinzel', serif">Cinzel</option>
                     <option value="'Fjalla One', sans-serif">Fjalla One</option>
                     <option value="'Special Elite', cursive">Special Elite</option>
                     <option value="'Press Start 2P', cursive">Pixel</option>
-                    <option value="'Creepster', cursive">Creepster</option>
                 </optgroup>
             </select>
             
