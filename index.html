@@ -170,8 +170,6 @@
     label { font-weight: 600; font-size: 10px; color: #666; text-transform: uppercase; }
     input, select { padding: 6px; border-radius: 6px; border: 1px solid #ddd; font-size: 12px;}
     
-    /* ... existing styles ... */
-
     /* --- UPDATED COLOR PICKER STYLES --- */
     #bgPicker .pcr-button, 
     #fontColorPicker .pcr-button {
@@ -180,7 +178,7 @@
         /* This replaces the solid color with a gradient/pattern icon */
         background: white url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2NjYyI+PHBhdGggZD0iTTIyIDEyYzAtMS4xLS45LTItMi0ySDRjLTEuMSAwLTIgLjktMiAyczAuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMnpNMTIgMmwtNiA2aDEybC02LTZ6bTAgMjBsNi02SDRsNiA2eiIvPjwvc3ZnPg==') no-repeat center / 16px;
     }
-    /* ... existing styles ... */
+  
 
     .layer-manager {
         background: #f3f4f6; padding: 8px; border-radius: 8px; border: 1px solid #e5e7eb;
@@ -410,7 +408,7 @@ fontColorPicker.on('change', (color, instance) => {
   });
 
   let layerCount = 0;
-  function createLayer(type, content) {
+ function createLayer(type, content) {
     layerCount++;
     const layerId = 'layer_' + layerCount;
     const layer = document.createElement('div');
@@ -426,16 +424,23 @@ fontColorPicker.on('change', (color, instance) => {
         addLayerToList(layerId, 'Icon');
         document.getElementById('textEditor').style.display = 'none';
     } else {
+        // --- THIS IS THE CORRECT SINGLE ELSE BLOCK ---
         const text = document.createElement('div');
         text.className = 'design-text';
         text.textContent = content;
         text.style.fontSize = '24px';
         text.style.fontFamily = document.getElementById('fontFamily').value;
         layer.appendChild(text);
+        
+        // --- THE NEW DOUBLE-CLICK HANDLER ---
+        text.addEventListener('dblclick', function(e) {
+            makeEditable(text);
+        });
+        
         addLayerToList(layerId, 'Text');
         document.getElementById('textEditor').style.display = 'block';
         document.getElementById('fontSizeInput').value = 24;
-    }
+    } // <-- Only one else block here
 
     const handle = document.createElement('div');
     handle.className = 'resize-handle handle-br';
@@ -485,6 +490,35 @@ fontColorPicker.on('change', (color, instance) => {
     });
   }
 
+  function makeEditable(textEl) {
+      const currentText = textEl.textContent;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = currentText;
+      input.style.font = window.getComputedStyle(textEl).font;
+      input.style.color = window.getComputedStyle(textEl).color;
+      input.style.textAlign = 'center';
+      input.style.width = '100%';
+      input.style.background = 'transparent';
+      input.style.border = '1px dashed #3b82f6';
+      
+      // Replace text div with input
+      textEl.style.display = 'none';
+      textEl.parentNode.appendChild(input);
+      input.focus();
+      
+      // Save on blur or enter
+      function saveText() {
+          textEl.textContent = input.value;
+          textEl.style.display = 'block';
+          input.remove();
+      }
+      
+      input.addEventListener('blur', saveText);
+      input.addEventListener('keypress', function(e) {
+          if(e.key === 'Enter') saveText();
+      });  
+  }
   function makeResizable(el, handle, type) {
       handle.addEventListener('mousedown', (e) => {
           isResizing = true; activeItem = el; e.stopPropagation();
