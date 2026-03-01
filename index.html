@@ -114,34 +114,10 @@
       border: 3px solid transparent; 
       transition: all 0.3s;
     }
-        /* Container for the mug and handle to sit side-by-side */
-    #stage-mug {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .mug-handle {
-        width: 40px;
-        height: 80px;
-        border: 12px solid #ffffff; /* Matches the default mug color */
-        border-left: 0;
-        border-radius: 0 50px 50px 0;
-        position: absolute;
-        right: -20px; /* Adjust this to pull the handle closer or further */
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 0; /* Keeps it behind the mug body */
-    }
-    
-    .view-mug {
-        position: relative;
-        z-index: 1; /* Ensures text/images stay on the mug body */
-    }
+      
     .view-tshirt { width: 240px; height: 250px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
     .view-tumbler { width: 100px; height: 250px; border-radius: 10px; }
-    
+    .view-mug { width: 150px; height: 130px; border-radius: 10px 10px 50px 50px; }
 
     /* DRAGGABLES */
     .draggable {
