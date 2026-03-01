@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>Custom Print Design Studio - Full Editor</title>
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+
   <style>
     :root {
       --primary: #111827;
@@ -127,6 +131,10 @@
     label { font-weight: 600; font-size: 11px; color: #666; text-transform: uppercase; }
     input, select { padding: 8px; border-radius: 6px; border: 1px solid #ddd; font-size: 13px;}
     
+    /* Center the Pickr button */
+    .color-picker-container { display: flex; align-items: center; gap: 10px; }
+    .pcr-button { width: 40px; height: 36px; border-radius: 6px; }
+
     .layer-manager {
         background: #f3f4f6; padding: 10px; border-radius: 8px; border: 1px solid #e5e7eb;
         max-height: 200px; overflow-y: auto;
@@ -150,7 +158,6 @@
     .btn-action { background: #dbeafe; color: #1e40af; }
     .btn-download { background: #d1fae5; color: #065f46; }
     
-    /* Text Editor Specific */
     #textEditor { display: none; background: #f3f4f6; padding: 10px; border-radius: 8px; }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Lobster&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -188,8 +195,8 @@
     </div>
 
     <div class="control-group">
-      <label>Product Color</label>
-      <input type="color" id="bgColor" value="#ffffff">
+        <label>Product Color</label>
+        <div id="bgPicker"></div>
     </div>
 
     <div class="control-group">
@@ -202,8 +209,8 @@
     
     <div id="textEditor">
         <label style="color: var(--accent);">Text Style</label>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 5px;">
-            <input type="color" id="fontColor" value="#000000">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 5px; align-items: center;">
+            <div id="fontColorPicker"></div>
             <select id="fontFamily">
                 <option value="Roboto">Default</option>
                 <option value="Lobster">Lobster</option>
@@ -229,6 +236,40 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
+  // --- INITIALIZE PICKR ---
+  const createColorPicker = (selector, defaultColor) => {
+      return Pickr.create({
+          el: selector,
+          theme: 'classic', // or 'monolith', or 'nano'
+          default: defaultColor,
+          swatches: ['#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'],
+          components: {
+              preview: true,
+              opacity: true,
+              hue: true,
+              interaction: {
+                  hex: true,
+                  input: true,
+                  save: true
+              }
+          }
+      });
+  };
+
+  const bgPicker = createColorPicker('#bgPicker', '#ffffff');
+  const fontColorPicker = createColorPicker('#fontColorPicker', '#000000');
+
+  // --- PICKR EVENTS ---
+  bgPicker.on('change', (color) => {
+      productShape.style.backgroundColor = color.toHEXA().toString();
+  });
+
+  fontColorPicker.on('change', (color) => {
+      const active = document.querySelector('.active-layer .design-text');
+      if(active) active.style.color = color.toHEXA().toString();
+  });
+
+  // --- EXISTING LOGIC ---
   const galleryAssets = [
       'https://cdn-icons-png.flaticon.com/128/1157/1157077.png',
       'https://cdn-icons-png.flaticon.com/128/2921/2921820.png',
@@ -256,7 +297,7 @@
     layer.id = layerId;
     layer.className = 'draggable active-layer';
     layer.style.top = '100px'; layer.style.left = '100px';
-    layer.dataset.type = type; // Store type for styling
+    layer.dataset.type = type;
     
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
     
@@ -266,7 +307,7 @@
         img.style.width = '100px'; 
         layer.appendChild(img);
         addLayerToList(layerId, 'Image');
-        textEditor.style.display = 'none'; // Hide text editor
+        textEditor.style.display = 'none';
     } else {
         const text = document.createElement('div');
         text.className = 'design-text';
@@ -276,7 +317,7 @@
         text.style.color = '#000000';
         layer.appendChild(text);
         addLayerToList(layerId, 'Text');
-        textEditor.style.display = 'block'; // Show text editor
+        textEditor.style.display = 'block';
     }
 
     const handle = document.createElement('div');
@@ -289,10 +330,6 @@
   }
 
   // --- TEXT CUSTOMIZATION ---
-  document.getElementById('fontColor').addEventListener('input', (e) => {
-      const active = document.querySelector('.active-layer .design-text');
-      if(active) active.style.color = e.target.value;
-  });
   document.getElementById('fontFamily').addEventListener('change', (e) => {
       const active = document.querySelector('.active-layer .design-text');
       if(active) active.style.fontFamily = e.target.value;
@@ -306,7 +343,7 @@
       if(active) active.style.fontStyle = active.style.fontStyle === 'italic' ? 'normal' : 'italic';
   });
 
-  // --- HTML5 DRAG & DROP LIST ---
+  // --- DRAG & DROP LIST ---
   function addLayerToList(id, name) {
       const item = document.createElement('div');
       item.className = 'layer-item';
@@ -379,7 +416,7 @@
       });
   }
 
-  // --- DRAG AND RESIZE ON CANVAS ---
+  // --- DRAG AND RESIZE ---
   let activeItem = null;
   let offset = { x: 0, y: 0 };
   let isResizing = false;
@@ -391,9 +428,11 @@
       document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
       el.classList.add('active-layer');
       
-      // Update Editor Panel
       if(el.dataset.type === 'text') {
           textEditor.style.display = 'block';
+          // Sync picker to current text color
+          const textDiv = el.querySelector('.design-text');
+          fontColorPicker.setColor(textDiv.style.color);
       } else {
           textEditor.style.display = 'none';
       }
@@ -411,7 +450,7 @@
       const layers = Array.from(productShape.children);
       layers.forEach(layer => {
           const listItem = document.getElementById('list_' + layer.id);
-          layerList.prepend(listItem);
+          if(listItem) layerList.prepend(listItem);
       });
   }
 
@@ -475,8 +514,6 @@
     }
   });
 
-  document.getElementById('bgColor').addEventListener('input', (e) => productShape.style.backgroundColor = e.target.value);
-  
   document.getElementById('productType').addEventListener('change', (e) => {
     productShape.className = 'product-stage ' + 
       (e.target.value === 'Ornament' ? 'shape-ornament' : 
@@ -485,6 +522,9 @@
 
   // --- PNG DOWNLOAD ---
   document.getElementById('downloadBtn').addEventListener('click', () => {
+    // Temporarily remove borders for clean export
+    document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
+    
     html2canvas(productShape, { backgroundColor: null }).then(canvas => {
         const link = document.createElement('a');
         link.download = 'design.png';
@@ -504,7 +544,7 @@
       'entry.2141379241': productType.value,
       'entry.1449325312': "Multiple Layers: " + layerSummary,
       'entry.1145569502': 'See Layout Summary',
-      'entry.125041649': bgColor.value
+      'entry.125041649': bgPicker.getColor().toHEXA().toString()
     });
     window.open(baseUrl + params.toString(), "_blank");
   });
