@@ -342,15 +342,18 @@
   const activeView = document.querySelector('.product-view');
   const initialColor = window.getComputedStyle(activeView).backgroundColor;
   
-  const createPicker = (el, def) => Pickr.create({
-      el, theme: 'classic', default: def, swatches: extendedSwatches,
-      components: { preview: true, opacity: true, hue: true, interaction: { hex: true, input: true, save: true } }
-  });
+  // ... (keep the rest of your script)
 
-  const bgPicker = createPicker('#bgPicker', initialColor);
-  const fontColorPicker = createPicker('#fontColorPicker', '#000000');
+const createPicker = (el, def) => Pickr.create({
+    el, theme: 'classic', default: def, swatches: extendedSwatches,
+    components: { preview: true, opacity: true, hue: true, interaction: { hex: true, input: true, save: true } }
+});
 
-  bgPicker.on('change', (color, instance) => {
+const bgPicker = createPicker('#bgPicker', '#ffffff');
+const fontColorPicker = createPicker('#fontColorPicker', '#000000');
+
+// --- UPDATED COLOR PICKER LOGIC ---
+bgPicker.on('change', (color, instance) => {
     // 1. Convert color to string
     const colorStr = color.toRGBA().toString();
     
@@ -359,18 +362,16 @@
     
     // 3. Force the picker button to update its visual color
     instance.setColor(colorStr);
-  });
-  
-  bgPicker.on('save', (color) => {
-      document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color.toRGBA().toString());
-  });
+});
+// --- END UPDATED LOGIC ---
 
-  fontColorPicker.on('change', (color, instance) => {
+fontColorPicker.on('change', (color, instance) => {
     const active = document.querySelector('.active-layer .design-text');
     if(active) active.style.color = color.toRGBA().toString();
     instance.setColor(color.toRGBA().toString());
-  });
+});
 
+// ... (rest of your script)
   document.getElementById('productSelect').addEventListener('change', (e) => {
       currentProduct = e.target.value;
       document.querySelectorAll('.product-stage').forEach(s => s.classList.remove('active-product'));
