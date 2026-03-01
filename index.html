@@ -54,7 +54,28 @@
     .gallery-search {
         padding: 5px; border-radius: 6px; border: 1px solid #ddd; font-size: 11px; width: 100%; box-sizing: border-box;
     }
-
+    .alignment-guide {
+        position: absolute;
+        background-color: var(--accent);
+        display: none;
+        z-index: 100;
+    }
+    
+    #guide-h {
+        height: 1px;
+        width: 100%;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+    }
+    
+    #guide-v {
+        width: 1px;
+        height: 100%;
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%);
+    }
     .mini-gallery-container {
         margin-bottom: 10px;
         height: 200px; /* Fixed height for each gallery */
@@ -89,21 +110,21 @@
         background: white;
     }
     .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-      gap: 8px;
-      overflow-y: auto;
-      padding-right: 5px;
-      flex-grow: 1;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        gap: 8px;
+        overflow-y: auto;
+        padding-right: 5px;
+        flex-grow: 1;
     }
     .gallery-item {
-      width: 50px; height: 50px;
-      border: 2px solid #eee;
-      border-radius: 8px;
-      cursor: pointer;
-      object-fit: contain;
-      background: white;
-      transition: all 0.2s;
+        width: 50px; height: 50px;
+        border: 2px solid #eee;
+        border-radius: 8px;
+        cursor: pointer;
+        object-fit: contain;
+        background: white;
+        transition: all 0.2s;
     }
     .gallery-item:hover { border-color: var(--accent); transform: scale(1.05); }
 
@@ -215,9 +236,16 @@
     }
     
     .layer-item {
-        display: flex; justify-content: space-between; align-items: center;
-        background: white; padding: 6px 8px; border-radius: 4px; margin-bottom: 4px; font-size: 11px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        padding: 6px 8px;
+        border-radius: 4px;
+        margin-bottom: 4px;
+        font-size: 11px;
         border: 1px solid #eee;
+        cursor: default;
     }
     
     .btn-icon { background: #eee; border: none; padding: 2px 5px; border-radius: 3px; cursor: pointer; font-size: 9px; }
@@ -244,7 +272,7 @@
 
 <div class="studio-wrapper">
   
-  <div class="gallery-panel">
+ <div class="gallery-panel">
     <div class="gallery-header">
         <div class="gallery-title">Asset Search</div>
         <input type="text" id="gallerySearch" class="gallery-search" placeholder="Search all libraries...">
@@ -268,15 +296,19 @@
 </div>
   
   <div class="preview-container">
-    <div id="stage-tshirt" class="product-stage active-product">
-        <div id="view-tshirt" class="product-view view-tshirt"></div>
+    <div id="view-tshirt" class="product-view view-tshirt">
+        <div id="guide-h" class="alignment-guide"></div>
+        <div id="guide-v" class="alignment-guide"></div>
     </div>
     <div id="stage-tumbler" class="product-stage">
         <div id="view-tumbler" class="product-view view-tumbler"></div>
+        <div id="guide-h" class="alignment-guide"></div>
+        <div id="guide-v" class="alignment-guide"></div>
     </div>
     <div id="stage-mug" class="product-stage">
-        <div class="mug-handle"></div>
         <div id="view-mug" class="product-view view-mug"></div>
+        <div id="guide-h" class="alignment-guide"></div>
+        <div id="guide-v" class="alignment-guide"></div>
     </div>
   </div>
 
@@ -309,8 +341,8 @@
             <button class="btn-action" id="addTextBtn">Add</button>
         </div>
     </div>
-    
-    <div id="textEditor">
+      
+   <div id="textEditor">
         <div class="size-row">
             <div style="flex:1">
                 <label>Text Color</label>
@@ -321,23 +353,37 @@
                 <input type="number" id="fontSizeInput" min="8" max="200" value="24">
             </div>
         </div>
-
+        
+        <div class="control-group" style="margin-bottom: 8px;">
+            <label>Rotation</label>
+            <input type="range" id="rotationSlider" min="0" max="360" value="0">
+            <label>Outline Width</label>
+            <input type="range" id="outlineWidthSlider" min="0" max="10" step="1" value="0">
+        </div>
+        
+        <div class="control-group" style="margin-bottom: 8px;">
+            <label>Opacity</label>
+            <input type="range" id="opacitySlider" min="0" max="1" step="0.01" value="1">
+        </div>
+    
+        <div class="control-group" style="margin-bottom: 8px;">
+            <label>Drop Shadow</label>
+        <select id="shadowSelect">
+            <option value="none">None</option>
+            <option value="small">Small</option>
+            <option value="large">Large</option>
+        </select>
+          <label>Flip</label>
+            <div style="display:flex; gap:5px;">
+                <button id="btnFlipH" class="btn-style" style="flex:1" title="Flip Horizontal">↔</button>
+                <button id="btnFlipV" class="btn-style" style="flex:1" title="Flip Vertical">↕</button>
+            </div>
+        </div>
+    
         <div class="control-group">
             <label>Font Family</label>
             <select id="fontFamily">
-                <option value="'Montserrat', sans-serif">Modern: Montserrat</option>
-                <option value="'Playfair Display', serif">Classic: Playfair</option>
-                <option value="'Pacifico', cursive">Script: Pacifico</option>
-                <option value="'Lobster', cursive">Bold Script: Lobster</option>
-                <option value="'Bungee', cursive">Block: Bungee</option>
-                <option value="'Anton', sans-serif">Impact: Anton</option>
-                <option value="'Bangers', cursive">Comic: Bangers</option>
-                <option value="'Rock Salt', cursive">Handwritten: Rock Salt</option>
-                <option value="'Monoton', cursive">Retro: Monoton</option>
-                <option value="'Special Elite', cursive">Typewriter: Special Elite</option>
-                <option value="'Creepster', cursive">Horror: Creepster</option>
-                <option value="'Press Start 2P', cursive">Pixel: Press Start</option>
-            </select>
+                </select>
         </div>
         
         <div style="display:flex; gap:5px; margin-top:5px;">
@@ -345,12 +391,6 @@
             <button id="btnItalic" class="btn-style" style="flex:1">I</button>
         </div>
     </div>
-
-    <div class="layer-manager">
-        <label style="color: var(--accent); margin-bottom: 5px; display: block; font-size: 10px;">Active Layers</label>
-        <div id="layerList"></div>
-    </div>
-
     <div class="btn-group">
         <button class="btn-download" id="downloadBtn">💾 Save PNG</button>
         <button class="btn-style" id="clearCanvasBtn" style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;">🗑️ Clear</button>
@@ -430,6 +470,55 @@
       if(activeText) activeText.style.fontWeight = activeText.style.fontWeight === 'bold' ? 'normal' : 'bold';
   });
 
+    // --- TEXT STYLE LOGIC ---
+  const outlineSlider = document.getElementById('outlineWidthSlider');
+  const shadowSelect = document.getElementById('shadowSelect');
+  
+  outlineSlider.addEventListener('input', (e) => {
+      const activeText = document.querySelector('.active-layer .design-text');
+      if (activeText) {
+          const width = e.target.value;
+          // Sets a black outline. You could add another picker for outline color!
+          activeText.style.webkitTextStroke = `${width}px black`;
+      }
+  });
+  
+  shadowSelect.addEventListener('change', (e) => {
+      const activeText = document.querySelector('.active-layer .design-text');
+      if (activeText) {
+          const value = e.target.value;
+          if (value === 'small') {
+              activeText.style.textShadow = '2px 2px 2px rgba(0,0,0,0.5)';
+          } else if (value === 'large') {
+              activeText.style.textShadow = '4px 4px 5px rgba(0,0,0,0.7)';
+          } else {
+              activeText.style.textShadow = 'none';
+          }
+      }
+  });
+  
+  // --- UPDATE DRAGGABLE SYNC ---
+  function makeDraggable(el) {
+      el.addEventListener('mousedown', (e) => {
+          // ... existing logic ...
+          
+          const text = el.querySelector('.design-text');
+          if(text) {
+              document.getElementById('textEditor').style.display = 'block';
+              // ... sync font size/family ...
+  
+              // Sync Styles
+              const stroke = text.style.webkitTextStroke;
+              outlineSlider.value = stroke ? parseInt(stroke) : 0;
+              
+              const shadow = text.style.textShadow;
+              if (shadow.includes('4px')) shadowSelect.value = 'large';
+              else if (shadow.includes('2px')) shadowSelect.value = 'small';
+              else shadowSelect.value = 'none';
+          }
+          // ...
+      });
+  }
   // LAYER ENGINE
   let layerCount = 0;
   function createLayer(type, content) {
@@ -468,14 +557,68 @@
     
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
     layer.classList.add('active-layer');
-  }
+   }
 
   function addLayerToList(id, name) {
-      const item = document.createElement('div');
-      item.className = 'layer-item';
-      item.id = 'list_' + id;
-      item.innerHTML = `<span>${name}</span><button class="btn-icon btn-delete" onclick="removeLayer('${id}')">✕</button>`;
-      document.getElementById('layerList').prepend(item);
+    const item = document.createElement('div');
+    item.className = 'layer-item';
+    item.id = 'list_' + id;
+    
+    const btnContainer = document.createElement('div');
+    btnContainer.style.display = 'flex';
+    btnContainer.style.gap = '2px';
+
+    // Bring to Front Button
+    const btnFront = document.createElement('button');
+    btnFront.className = 'btn-icon';
+    btnFront.innerHTML = '▲';
+    btnFront.title = 'Bring to Front';
+    btnFront.onclick = (e) => {
+        e.stopPropagation();
+        const layer = document.getElementById(id);
+        layer.parentNode.appendChild(layer); 
+    };
+
+    // Send to Back Button
+    const btnBack = document.createElement('button');
+    btnBack.className = 'btn-icon';
+    btnBack.innerHTML = '▼';
+    btnBack.title = 'Send to Back';
+    btnBack.onclick = (e) => {
+        e.stopPropagation();
+        const layer = document.getElementById(id);
+        layer.parentNode.prepend(layer);
+    };
+
+    // --- Add Duplicate Button ---
+    const btnDuplicate = document.createElement('button');
+    btnDuplicate.className = 'btn-icon';
+    btnDuplicate.innerHTML = '⧉'; // Duplicate icon
+    btnDuplicate.title = 'Duplicate';
+    btnDuplicate.onclick = (e) => {
+        e.stopPropagation();
+        duplicateLayer(id);
+    };
+
+    // Delete Button
+    const btnDelete = document.createElement('button');
+    btnDelete.className = 'btn-icon btn-delete';
+    btnDelete.innerHTML = '✕';
+    btnDelete.onclick = (e) => {
+        e.stopPropagation();
+        removeLayer(id);
+    };
+
+    // Assemble buttons
+    btnContainer.appendChild(btnBack);
+    btnContainer.appendChild(btnFront);
+    btnContainer.appendChild(btnDuplicate); // Add to container
+    btnContainer.appendChild(btnDelete);
+
+    item.innerHTML = `<span>${name}</span>`;
+    item.appendChild(btnContainer);
+    
+    document.getElementById('layerList').prepend(item);
   }
 
   function removeLayer(id) {
@@ -486,49 +629,103 @@
   // DRAG & RESIZE
   let activeItem = null, offset = { x: 0, y: 0 }, isResizing = false;
 
+   // --- UPDATE EXISTING DRAGGABLE LOGIC ---
   function makeDraggable(el) {
-    el.addEventListener('mousedown', (e) => {
-      if (isResizing) return;
-      activeItem = el;
-      document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
-      el.classList.add('active-layer');
-      const rect = el.getBoundingClientRect();
-      const parentRect = el.parentNode.getBoundingClientRect();
-      offset.x = e.clientX - rect.left;
-      offset.y = e.clientY - rect.top;
-      
-      const text = el.querySelector('.design-text');
-      if(text) {
+      el.addEventListener('mousedown', (e) => {
+          if (isResizing) return;
+          activeItem = el;
+          document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
+          el.classList.add('active-layer');
+          const rect = el.getBoundingClientRect();
+          const parentRect = el.parentNode.getBoundingClientRect();
+          offset.x = e.clientX - rect.left;
+          offset.y = e.clientY - rect.top;
+          
+          // Update Editor Values
+          const text = el.querySelector('.design-text');
+          
+          // Show editor for both text and images to allow flipping/opacity
           document.getElementById('textEditor').style.display = 'block';
-          document.getElementById('fontSizeInput').value = parseInt(text.style.fontSize);
-          document.getElementById('fontFamily').value = text.style.fontFamily.replace(/"/g, "'");
-      } else {
-          document.getElementById('textEditor').style.display = 'none';
-      }
-    });
+  
+          if(text) {
+              document.getElementById('fontSizeInput').value = parseInt(text.style.fontSize);
+              document.getElementById('fontFamily').value = text.style.fontFamily.replace(/"/g, "'");
+              // Hide specific text controls if necessary, or keep them
+          }
+          
+          // Sync sliders based on current layer style
+          const transform = el.style.transform;
+          const rotateMatch = transform.match(/rotate\(([^deg)]+)deg\)/);
+          document.getElementById('rotationSlider').value = rotateMatch ? rotateMatch[1] : 0;
+          
+          document.getElementById('opacitySlider').value = el.style.opacity || 1;
+      });
   }
 
   function makeResizable(el, handle, type) {
-      handle.addEventListener('mousedown', (e) => {
-          isResizing = true; activeItem = el; e.stopPropagation();
-          document.addEventListener('mousemove', resize);
-          document.addEventListener('mouseup', () => { isResizing = false; document.removeEventListener('mousemove', resize); });
-      });
+    handle.addEventListener('mousedown', (e) => {
+        isResizing = true; activeItem = el; e.stopPropagation();
+        document.addEventListener('mousemove', resize);
+        document.addEventListener('mouseup', () => { isResizing = false; document.removeEventListener('mousemove', resize); });
+  });
 
-      function resize(e) {
-          const rect = el.getBoundingClientRect();
-          const nw = e.clientX - rect.left, nh = e.clientY - rect.top;
-          el.style.width = Math.max(20, nw) + 'px';
-          el.style.height = Math.max(20, nh) + 'px';
-          if(type === 'image') el.querySelector('img').style.width = '100%';
-          else {
-              const newSize = Math.max(8, Math.round(nw * 0.35));
-              el.querySelector('.design-text').style.fontSize = newSize + 'px';
-              document.getElementById('fontSizeInput').value = newSize;
-          }
-      }
+  function duplicateLayer(id) {
+    const originalLayer = document.getElementById(id);
+    const container = originalLayer.parentNode;
+    
+    // Clone the layer and its children
+    const clone = originalLayer.cloneNode(true);
+    
+    // Create new unique ID
+    layerCount++;
+    const newId = 'layer_' + layerCount;
+    clone.id = newId;
+    
+    // Offset the position slightly
+    const top = parseInt(clone.style.top);
+    const left = parseInt(clone.style.left);
+    clone.style.top = (top + 20) + 'px';
+    clone.style.left = (left + 20) + 'px';
+    
+    // Add to container
+    container.appendChild(clone);
+    
+    // Set up dragging/resizing for new clone
+    const handle = clone.querySelector('.resize-handle');
+    const type = clone.querySelector('img') ? 'image' : 'text';
+    makeDraggable(clone);
+    makeResizable(clone, handle, type);
+    
+    // Add to layer list
+    const name = type === 'image' ? 'Icon' : 'Text';
+    addLayerToList(newId, name);
+    
+    // Select the new clone
+    document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
+    clone.classList.add('active-layer');
   }
+  function resize(e) {
+      const rect = el.getBoundingClientRect();
+      const nw = e.clientX - rect.left, nh = e.clientY - rect.top;
+      el.style.width = Math.max(20, nw) + 'px';
+      el.style.height = Math.max(20, nh) + 'px';
+      if(type === 'image') el.querySelector('img').style.width = '100%';
+      else {
+          const newSize = Math.max(8, Math.round(nw * 0.35));
+          el.querySelector('.design-text').style.fontSize = newSize + 'px';
+          document.getElementById('fontSizeInput').value = newSize;
+        }
+      }
+    }
 
+  document.getElementById('rotationSlider').addEventListener('input', (e) => {
+    const activeLayer = document.querySelector('.active-layer');
+    if (activeLayer) {
+        const rotation = e.target.value;
+        // Apply rotation, preserving potential scaling transforms if necessary
+        activeLayer.style.transform = `rotate(${rotation}deg)`;
+    }
+  });
   document.addEventListener('mousemove', (e) => {
     if (!activeItem || isResizing) return;
     const parent = activeItem.parentNode.getBoundingClientRect();
@@ -587,36 +784,141 @@
     loadPixabay();
     loadOpenClipart();
 
-  document.getElementById('imageInput').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (ev) => createLayer('image', ev.target.result);
-      reader.readAsDataURL(file);
-    }
-  });
-
-  document.getElementById('downloadBtn').addEventListener('click', () => {
-    document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
-    html2canvas(document.querySelector('.active-product'), { backgroundColor: null }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = currentProduct + '-mockup.png';
-        link.href = canvas.toDataURL();
-        link.click();
+    document.getElementById('imageInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => createLayer('image', ev.target.result);
+        reader.readAsDataURL(file);
+      }
     });
-  });
-  document.getElementById('clearCanvasBtn').addEventListener('click', () => {
-    if (confirm('Are you sure you want to remove all designs?')) {
-        // Remove all draggable layers from the current product
-        document.querySelectorAll('.active-product .draggable').forEach(el => el.remove());
-        // Clear the layer list manager
-        document.getElementById('layerList').innerHTML = '';
-        // Hide the text editor
-        document.getElementById('textEditor').style.display = 'none';
-    }
-  });
+  
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
+      html2canvas(document.querySelector('.active-product'), { backgroundColor: null }).then(canvas => {
+          const link = document.createElement('a');
+          link.download = currentProduct + '-mockup.png';
+          link.href = canvas.toDataURL();
+          link.click();
+      });
+    });
+    document.getElementById('clearCanvasBtn').addEventListener('click', () => {
+      if (confirm('Are you sure you want to remove all designs?')) {
+          // Remove all draggable layers from the current product
+          document.querySelectorAll('.active-product .draggable').forEach(el => el.remove());
+          // Clear the layer list manager
+          document.getElementById('layerList').innerHTML = '';
+          // Hide the text editor
+          document.getElementById('textEditor').style.display = 'none';
+      }
+    });
+    document.addEventListener('mousemove', (e) => {
+      if (!activeItem || isResizing) return;
+      
+      const parent = activeItem.parentNode.getBoundingClientRect();
+      const newX = e.clientX - parent.left - offset.x;
+      const newY = e.clientY - parent.top - offset.y;
+      
+      activeItem.style.left = newX + 'px';
+      activeItem.style.top = newY + 'px';
+      
+      // Alignment Guide Logic
+      const itemRect = activeItem.getBoundingClientRect();
+      const parentRect = parent;
+      
+      const itemCenterX = itemRect.left + itemRect.width / 2;
+      const itemCenterY = itemRect.top + itemRect.height / 2;
+      const parentCenterX = parentRect.left + parentRect.width / 2;
+      const parentCenterY = parentRect.top + parentRect.height / 2;
+      
+      const hGuide = activeItem.parentNode.querySelector('#guide-h');
+      const vGuide = activeItem.parentNode.querySelector('#guide-v');
+      
+      // Threshold for snapping/showing guide (pixels)
+      const threshold = 5; 
+      
+      if (Math.abs(itemCenterX - parentCenterX) < threshold) {
+          vGuide.style.display = 'block';
+      } else {
+          vGuide.style.display = 'none';
+      }
+      
+      if (Math.abs(itemCenterY - parentCenterY) < threshold) {
+          hGuide.style.display = 'block';
+      } else {
+          hGuide.style.display = 'none';
+      }
+    });
+  
+    // Hide guides when dragging stops
+    document.addEventListener('mouseup', () => {
+        activeItem = null;
+        document.querySelectorAll('.alignment-guide').forEach(g => g.style.display = 'none');
+    });
 
-  document.getElementById('submitDesign').addEventListener('click', () => alert('Design finalized! Sent to production.'));
+    // --- FLIP LOGIC ---
+    document.getElementById('btnFlipH').addEventListener('click', () => {
+        const activeLayer = document.querySelector('.active-layer');
+        if (activeLayer) {
+            // Toggle horizontal flip using scaleX
+            const currentTransform = activeLayer.style.transform;
+            activeLayer.style.transform = currentTransform.includes('scaleX(-1)') 
+                ? currentTransform.replace('scaleX(-1)', '') 
+                : currentTransform + ' scaleX(-1)';
+        }
+    });
+    
+    document.getElementById('btnFlipV').addEventListener('click', () => {
+        const activeLayer = document.querySelector('.active-layer');
+        if (activeLayer) {
+            // Toggle vertical flip using scaleY
+            const currentTransform = activeLayer.style.transform;
+            activeLayer.style.transform = currentTransform.includes('scaleY(-1)') 
+                ? currentTransform.replace('scaleY(-1)', '') 
+                : currentTransform + ' scaleY(-1)';
+        }
+    });
+    // --- OPACITY LOGIC ---
+document.getElementById('opacitySlider').addEventListener('input', (e) => {
+    const activeLayer = document.querySelector('.active-layer');
+    if (activeLayer) {
+        activeLayer.style.opacity = e.target.value;
+    }
+});
+
+// --- UPDATE EXISTING DRAGGABLE LOGIC ---
+function makeDraggable(el) {
+    el.addEventListener('mousedown', (e) => {
+        if (isResizing) return;
+        activeItem = el;
+        document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
+        el.classList.add('active-layer');
+        const rect = el.getBoundingClientRect();
+        const parentRect = el.parentNode.getBoundingClientRect();
+        offset.x = e.clientX - rect.left;
+        offset.y = e.clientY - rect.top;
+        
+        // Update Editor Values
+        const text = el.querySelector('.design-text');
+        
+        // Show editor for both text and images to allow flipping/opacity
+        document.getElementById('textEditor').style.display = 'block';
+
+        if(text) {
+            document.getElementById('fontSizeInput').value = parseInt(text.style.fontSize);
+            document.getElementById('fontFamily').value = text.style.fontFamily.replace(/"/g, "'");
+            // Hide specific text controls if necessary, or keep them
+        }
+        
+        // Sync sliders based on current layer style
+        const transform = el.style.transform;
+        const rotateMatch = transform.match(/rotate\(([^deg)]+)deg\)/);
+        document.getElementById('rotationSlider').value = rotateMatch ? rotateMatch[1] : 0;
+        
+        document.getElementById('opacitySlider').value = el.style.opacity || 1;
+    });
+  }
+    document.getElementById('submitDesign').addEventListener('click', () => alert('Design finalized! Sent to production.'));
 </script>
 </body>
 </html>
