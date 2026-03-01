@@ -51,7 +51,7 @@
     .gallery-header { margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px; }
     .gallery-title { font-size: 13px; font-weight: bold; color: #333; }
     
-    .gallery-search, .gallery-filter {
+    .gallery-search {
         padding: 5px; border-radius: 6px; border: 1px solid #ddd; font-size: 11px; width: 100%; box-sizing: border-box;
     }
 
@@ -206,13 +206,6 @@
     <div class="gallery-header">
         <div class="gallery-title">Assets (Pixabay)</div>
         <input type="text" id="gallerySearch" class="gallery-search" placeholder="Search icons...">
-        <select id="galleryFilter" class="gallery-filter">
-            <option value="all">All</option>
-            <option value="animals">Animals</option>
-            <option value="shapes">Shapes</option>
-            <option value="nature">Nature</option>
-            <option value="transportation">Transport</option>
-        </select>
     </div>
     
     <div id="galleryLoader" class="gallery-loader">
@@ -322,8 +315,8 @@
       if(active) active.style.color = color.toHEXA().toString();
   });
 
-  // --- API INTEGRATION WITH SPINNER ---
-  async function loadGallery(category = 'all', searchTerm = '') {
+  // --- API INTEGRATION WITH UPDATES ---
+  async function loadGallery(searchTerm = '') {
     const grid = document.getElementById('galleryGrid');
     const loader = document.getElementById('galleryLoader');
     
@@ -331,8 +324,8 @@
     loader.style.display = 'block';
     grid.innerHTML = ''; 
 
-    // Construct URL - 'image_type=vector' filters for clean icons/graphics
-    const apiUrl = `https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(searchTerm)}&category=${category}&image_type=vector&per_page=50`;
+    // Updated API URL: image_type=all for accuracy, safesearch enabled
+    const apiUrl = `https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(searchTerm)}&image_type=all&safesearch=true&per_page=50`;
 
     try {
         const response = await fetch(apiUrl);
@@ -348,19 +341,16 @@
             grid.appendChild(img);
         });
     } catch (error) {
-        grid.innerHTML = '<p style="font-size:11px; color:red; padding: 5px;">Error loading images. Check API Key.</p>';
+        grid.innerHTML = '<p style="font-size:11px; color:red; padding: 5px;">Error loading images.</p>';
     } finally {
         // Hide spinner
         loader.style.display = 'none';
     }
   }
 
-  // Event Listeners for Search/Filter
+  // Event Listener for Search
   document.getElementById('gallerySearch').addEventListener('input', (e) => {
-      loadGallery(document.getElementById('galleryFilter').value, e.target.value);
-  });
-  document.getElementById('galleryFilter').addEventListener('change', (e) => {
-      loadGallery(e.target.value, document.getElementById('gallerySearch').value);
+      loadGallery(e.target.value);
   });
 
   // Initial Render
