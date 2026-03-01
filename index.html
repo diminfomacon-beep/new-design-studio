@@ -75,30 +75,30 @@
     .gallery-item:hover { border-color: var(--accent); transform: scale(1.05); }
 
     /* Container for the mug and handle to sit side-by-side */
-#stage-mug {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mug-handle {
-    width: 40px;
-    height: 80px;
-    border: 12px solid #ccc; /* Matches the default mug color */
-    border-left: 0;
-    border-radius: 0 50px 50px 0;
-    position: absolute;
-    right: -30px; /* Adjust this to pull the handle closer or further */
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 0; /* Keeps it behind the mug body */
-}
-
-.view-mug {
-    position: relative;
-    z-index: 1; /* Ensures text/images stay on the mug body */
-}
+      #stage-mug {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+      
+      .mug-handle {
+          width: 40px;
+          height: 80px;
+          border: 12px solid #ccc; /* Matches the default mug color */
+          border-left: 0;
+          border-radius: 0 50px 50px 0;
+          position: absolute;
+          right: -30px; /* Adjust this to pull the handle closer or further */
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 0; /* Keeps it behind the mug body */
+      }
+      
+      .view-mug {
+          position: relative;
+          z-index: 1; /* Ensures text/images stay on the mug body */
+      }
 
      .preview-container {
         background-color: #e5e7eb; /* The base gray color */
