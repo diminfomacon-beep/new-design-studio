@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Print Design Studio - Limited Areas</title>
+  <title>Custom Print Design Studio - Adjusted Areas</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -146,20 +146,20 @@
         background: rgba(255,255,255,0.1);
     }
     
-    /* Front: Pocket Size */
+    /* Front: Pocket Size - Moved to Right & Inward */
     #viewFront .print-area {
-        width: 50px;                
-        height: 50px;
-        top: 60px;                  /* Down from neck */
-        left: 30px;                 /* Towards left side */
+        width: 45px;                
+        height: 45px;
+        top: 65px;                  
+        right: 35px;                /* Moved to Right side & padded */
     }
 
-    /* Back: Upper 1/3 */
+    /* Back: Upper 1/3 - Centered with Padding */
     #viewBack .print-area {
-        width: 140px;               /* Not full width */
-        height: 70px;               /* 1/3rd height */
-        top: 30px;                  /* Top area */
-        left: 30px;                 /* Centered */
+        width: 120px;               /* Narrower for padding */
+        height: 70px;               
+        top: 30px;                  
+        left: 40px;                 /* Centered based on wrapper width */
     }
 
     /* LAYERS */
@@ -380,7 +380,13 @@
     const layer = document.createElement('div');
     layer.id = layerId;
     layer.className = 'draggable active-layer';
-    layer.style.top = '70px'; layer.style.left = '40px';
+    
+    // Position layer in center of active print area
+    const activeView = document.getElementById(activeViewId);
+    const printArea = activeView.querySelector('.print-area');
+    layer.style.top = (printArea.offsetTop + printArea.offsetHeight/2 - 20) + 'px';
+    layer.style.left = (printArea.offsetLeft + printArea.offsetWidth/2 - 20) + 'px';
+    
     layer.dataset.type = type;
     
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
@@ -388,7 +394,7 @@
     if (type === 'image') {
         const img = document.createElement('img');
         img.src = content;
-        img.style.width = '40px'; 
+        img.style.width = '30px'; 
         layer.appendChild(img);
         addLayerToList(layerId, 'Image');
         textEditor.style.display = 'none';
@@ -396,7 +402,7 @@
         const text = document.createElement('div');
         text.className = 'design-text';
         text.textContent = content;
-        text.style.fontSize = '16px';
+        text.style.fontSize = '14px';
         text.style.fontFamily = 'Roboto';
         text.style.color = '#000000';
         layer.appendChild(text);
@@ -408,7 +414,7 @@
     handle.className = 'resize-handle handle-br';
     layer.appendChild(handle);
     
-    document.getElementById(activeViewId).appendChild(layer);
+    activeView.appendChild(layer);
     makeDraggable(layer);
     makeResizable(layer, handle, type);
   }
@@ -466,16 +472,16 @@
           const container = el.parentNode;
           const printArea = container.querySelector('.print-area');
           const printRect = printArea.getBoundingClientRect();
-          const containerRect = container.getBoundingClientRect();
+          const elRect = el.getBoundingClientRect();
           
-          const maxWidth = printRect.width - (el.getBoundingClientRect().left - printRect.left);
-          const maxHeight = printRect.height - (el.getBoundingClientRect().top - printRect.top);
+          const maxWidth = printRect.width - (elRect.left - printRect.left);
+          const maxHeight = printRect.height - (elRect.top - printRect.top);
           
-          const newWidth = Math.min(e.clientX - el.getBoundingClientRect().left, maxWidth);
-          const newHeight = Math.min(e.clientY - el.getBoundingClientRect().top, maxHeight);
+          const newWidth = Math.min(e.clientX - elRect.left, maxWidth);
+          const newHeight = Math.min(e.clientY - elRect.top, maxHeight);
           
-          el.style.width = Math.max(10, newWidth) + 'px';
-          el.style.height = Math.max(10, newHeight) + 'px';
+          el.style.width = Math.max(15, newWidth) + 'px';
+          el.style.height = Math.max(15, newHeight) + 'px';
           
           if(type === 'image') {
               el.querySelector('img').style.width = '100%';
@@ -497,6 +503,7 @@
     let newX = e.clientX - containerRect.left - offset.x;
     let newY = e.clientY - containerRect.top - offset.y;
     
+    // Correctly calculate boundaries based on print-area position
     const minX = printArea.offsetLeft;
     const maxX = printArea.offsetLeft + printRect.width - activeItem.offsetWidth;
     const minY = printArea.offsetTop;
