@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Print Design Studio</title>
+  <title>Custom Print Design Studio - Front & Back</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -98,23 +98,27 @@
         100% { transform: rotate(360deg); }
     }
 
-    /* PREVIEW PANEL */
+    /* PREVIEW PANEL - UPDATED FOR FRONT/BACK */
     .preview-container {
       background: #e5e7eb;
-      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36z8gGiMAEYIIgAXgAlABGAJYAWgB9/woDAAAAAElFTkSuQmCC');
       border: 1px solid var(--border-color);
       border-radius: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       padding: 10px;
       position: relative;
       min-height: 500px;
+      gap: 15px;
     }
 
-    .product-stage {
-      transition: background-color 0.3s;
+    .shirt-wrapper {
+        display: flex;
+        gap: 10px;
+    }
+
+    .product-view {
+      transition: all 0.3s;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -122,11 +126,24 @@
       position: relative;
       overflow: hidden;
       background-color: white;
+      cursor: pointer;
+      border: 3px solid transparent;
+    }
+    .product-view.active-view {
+        border: 3px solid var(--accent);
     }
 
-    .shape-tshirt { width: 300px; height: 300px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
-    .shape-ornament { width: 250px; height: 250px; border-radius: 50%; }
-    .shape-tumbler { width: 150px; height: 280px; border-radius: 10px 10px 30px 30px; }
+    /* Print area constraint */
+    .print-area {
+        position: absolute;
+        width: 150px;
+        height: 200px;
+        border: 2px dashed rgba(0,0,0,0.2);
+        pointer-events: none;
+    }
+
+    /* Shapes */
+    .shape-tshirt { width: 200px; height: 250px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
 
     /* LAYERS */
     .draggable {
@@ -223,25 +240,23 @@
   </div>
 
   <div class="preview-container">
-    <div id="productShape" class="product-stage shape-tshirt">
+    <label style="font-size: 12px; color: #333;">Click a side to edit</label>
+    <div class="shirt-wrapper">
+        <div id="viewFront" class="product-view shape-tshirt active-view" onclick="setActiveView('viewFront')">
+            <div class="print-area"></div>
+        </div>
+        <div id="viewBack" class="product-view shape-tshirt" onclick="setActiveView('viewBack')">
+            <div class="print-area"></div>
+        </div>
     </div>
-    <p style="font-size: 9px; color: #555; margin-top: 8px; font-weight:bold;">DRAG/RESIZE ITEMS</p>
+    <p style="font-size: 9px; color: #555; font-weight:bold;">DRAG/RESIZE ITEMS WITHIN DASHED AREA</p>
   </div>
 
   <div class="controls-panel">
     <h3 style="margin:0; font-size: 16px;">Editor</h3>
     
     <div class="control-group">
-      <label>Product</label>
-      <select id="productType">
-        <option value="T-Shirt">T-Shirt</option>
-        <option value="Ornament">Ornament</option>
-        <option value="Tumbler">Tumbler</option>
-      </select>
-    </div>
-
-    <div class="control-group">
-        <label>Product Color</label>
+        <label>Shirt Color</label>
         <div id="bgPicker"></div>
     </div>
 
@@ -261,8 +276,6 @@
                 <option value="Roboto" style="font-family: Roboto;">Roboto</option>
                 <option value="'Playfair Display'" style="font-family: 'Playfair Display';">Playfair</option>
                 <option value="Lobster" style="font-family: Lobster;">Lobster</option>
-                <option value="'Dancing Script'" style="font-family: 'Dancing Script';">Dancing</option>
-                <option value="'Press Start 2P'" style="font-family: 'Press Start 2P';">Pixel</option>
             </select>
             <button class="btn-icon" id="fontBold" style="grid-column: span 1;"><b>B</b></button>
             <button class="btn-icon" id="fontItalic" style="grid-column: span 1;"><i>I</i></button>
@@ -284,30 +297,31 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-  // --- PIXABAY API KEY CONFIGURATION ---
   const PIXABAY_API_KEY = '54841320-2fc493da46915b0eb0a6f740c';
+  let activeViewId = 'viewFront';
 
-  // --- COLOR PICKER INITIALIZATION ---
+  // --- VIEW MANAGEMENT ---
+  function setActiveView(viewId) {
+      activeViewId = viewId;
+      document.querySelectorAll('.product-view').forEach(v => v.classList.remove('active-view'));
+      document.getElementById(viewId).classList.add('active-view');
+  }
+
+  // --- COLOR PICKER ---
   const createColorPicker = (selector, defaultColor) => {
       return Pickr.create({
           el: selector,
           theme: 'classic', 
           default: defaultColor,
-          components: {
-              preview: true,
-              opacity: true,
-              hue: true,
-              interaction: { hex: true, input: true, save: true }
-          }
+          components: { preview: true, opacity: true, hue: true, interaction: { hex: true, input: true, save: true } }
       });
   };
 
   const bgPicker = createColorPicker('#bgPicker', '#ffffff');
   const fontColorPicker = createColorPicker('#fontColorPicker', '#000000');
 
-  // --- PICKR EVENTS ---
   bgPicker.on('change', (color) => {
-      productShape.style.backgroundColor = color.toHEXA().toString();
+      document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color.toHEXA().toString());
   });
 
   fontColorPicker.on('change', (color) => {
@@ -315,49 +329,33 @@
       if(active) active.style.color = color.toHEXA().toString();
   });
 
-  // --- API INTEGRATION WITH UPDATES ---
+  // --- API INTEGRATION ---
   async function loadGallery(searchTerm = '') {
     const grid = document.getElementById('galleryGrid');
     const loader = document.getElementById('galleryLoader');
-    
-    // Show spinner, clear grid
     loader.style.display = 'block';
     grid.innerHTML = ''; 
 
-    // Updated API URL: image_type=all for accuracy, safesearch enabled
-    const apiUrl = `https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(searchTerm)}&image_type=all&safesearch=true&per_page=50`;
+    const apiUrl = `https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(searchTerm)}&image_type=all&safesearch=true&per_page=30`;
 
     try {
         const response = await fetch(apiUrl);
         const data = await response.json();
-
         data.hits.forEach(image => {
             const img = document.createElement('img');
             img.src = image.previewURL;
             img.className = 'gallery-item';
-            img.alt = image.tags;
-            // When clicked, use the high-res version
             img.onclick = () => createLayer('image', image.largeImageURL);
             grid.appendChild(img);
         });
-    } catch (error) {
-        grid.innerHTML = '<p style="font-size:11px; color:red; padding: 5px;">Error loading images.</p>';
-    } finally {
-        // Hide spinner
-        loader.style.display = 'none';
-    }
+    } catch (error) { grid.innerHTML = '<p style="font-size:11px; color:red;">Error.</p>'; } 
+      finally { loader.style.display = 'none'; }
   }
 
-  // Event Listener for Search
-  document.getElementById('gallerySearch').addEventListener('input', (e) => {
-      loadGallery(e.target.value);
-  });
-
-  // Initial Render
+  document.getElementById('gallerySearch').addEventListener('input', (e) => loadGallery(e.target.value));
   loadGallery();
 
-  // --- EXISTING LAYER FUNCTIONALITY ---
-  const productShape = document.getElementById('productShape');
+  // --- LAYER FUNCTIONALITY ---
   const layerList = document.getElementById('layerList');
   const textEditor = document.getElementById('textEditor');
   let layerCount = 0;
@@ -369,7 +367,7 @@
     const layer = document.createElement('div');
     layer.id = layerId;
     layer.className = 'draggable active-layer';
-    layer.style.top = '50px'; layer.style.left = '50px';
+    layer.style.top = '25px'; layer.style.left = '25px';
     layer.dataset.type = type;
     
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
@@ -377,7 +375,7 @@
     if (type === 'image') {
         const img = document.createElement('img');
         img.src = content;
-        img.style.width = '80px'; 
+        img.style.width = '60px'; 
         layer.appendChild(img);
         addLayerToList(layerId, 'Image');
         textEditor.style.display = 'none';
@@ -397,45 +395,21 @@
     handle.className = 'resize-handle handle-br';
     layer.appendChild(handle);
     
-    productShape.appendChild(layer);
+    document.getElementById(activeViewId).appendChild(layer);
     makeDraggable(layer);
     makeResizable(layer, handle, type);
   }
 
-  // --- TEXT CUSTOMIZATION ---
-  document.getElementById('fontFamily').addEventListener('change', (e) => {
-      const active = document.querySelector('.active-layer .design-text');
-      if(active) active.style.fontFamily = e.target.value;
-  });
-  document.getElementById('fontBold').addEventListener('click', (e) => {
-      const active = document.querySelector('.active-layer .design-text');
-      if(active) active.style.fontWeight = active.style.fontWeight === 'bold' ? 'normal' : 'bold';
-  });
-  document.getElementById('fontItalic').addEventListener('click', (e) => {
-      const active = document.querySelector('.active-layer .design-text');
-      if(active) active.style.fontStyle = active.style.fontStyle === 'italic' ? 'normal' : 'italic';
-  });
-
-  // --- DRAG & DROP LIST (LAYERS) ---
+  // --- LAYER MANAGEMENT ---
   function addLayerToList(id, name) {
       const item = document.createElement('div');
       item.className = 'layer-item';
       item.id = 'list_' + id;
-      item.draggable = true;
       item.dataset.layerId = id;
-
       item.innerHTML = `
         <span>${name}</span>
-        <div class="layer-controls">
-            <button class="btn-icon btn-delete" onclick="removeLayer('${id}')">X</button>
-        </div>
+        <button class="btn-icon btn-delete" onclick="removeLayer('${id}')">X</button>
       `;
-
-      item.addEventListener('dragstart', handleDragStart);
-      item.addEventListener('dragover', handleDragOver);
-      item.addEventListener('drop', handleDrop);
-      item.addEventListener('dragend', handleDragEnd);
-
       layerList.prepend(item);
   }
 
@@ -445,32 +419,7 @@
       textEditor.style.display = 'none';
   }
 
-  let draggedItem = null;
-  function handleDragStart(e) { draggedItem = this; this.classList.add('dragging'); }
-  function handleDragOver(e) { e.preventDefault(); return false; }
-  function handleDrop(e) {
-      e.stopPropagation();
-      if (draggedItem !== this) {
-          const allItems = Array.from(layerList.children);
-          const draggedIndex = allItems.indexOf(draggedItem);
-          const droppedIndex = allItems.indexOf(this);
-          if (draggedIndex < droppedIndex) this.after(draggedItem);
-          else this.before(draggedItem);
-          syncDomOrder();
-      }
-      return false;
-  }
-  function handleDragEnd(e) { this.classList.remove('dragging'); draggedItem = null; }
-
-  function syncDomOrder() {
-      const listItems = Array.from(layerList.children);
-      listItems.reverse().forEach(item => {
-          const layer = document.getElementById(item.dataset.layerId);
-          productShape.appendChild(layer);
-      });
-  }
-
-  // --- DRAG AND RESIZE ON STAGE ---
+  // --- DRAG & RESIZE (With Boundary Checks) ---
   let activeItem = null;
   let offset = { x: 0, y: 0 };
   let isResizing = false;
@@ -482,29 +431,13 @@
       document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
       el.classList.add('active-layer');
       
-      if(el.dataset.type === 'text') {
-          textEditor.style.display = 'block';
-          const textDiv = el.querySelector('.design-text');
-          fontColorPicker.setColor(textDiv.style.color);
-      } else {
-          textEditor.style.display = 'none';
-      }
-
       const rect = el.getBoundingClientRect();
       offset.x = e.clientX - rect.left;
       offset.y = e.clientY - rect.top;
       
-      el.parentNode.appendChild(el);
-      syncListOrder();
+      // Update active view to parent of clicked item
+      setActiveView(el.parentNode.id);
     });
-  }
-
-  function syncListOrder() {
-      const layers = Array.from(productShape.children);
-      layers.forEach(layer => {
-          const listItem = document.getElementById('list_' + layer.id);
-          if(listItem) layerList.prepend(listItem);
-      });
   }
 
   function makeResizable(el, handle, type) {
@@ -520,39 +453,49 @@
       });
 
       function resize(e) {
-          const rect = el.getBoundingClientRect();
-          const newWidth = e.clientX - rect.left;
-          const newHeight = e.clientY - rect.top;
+          const container = el.parentNode;
+          const containerRect = container.getBoundingClientRect();
+          const printArea = container.querySelector('.print-area').getBoundingClientRect();
+          
+          const newWidth = Math.min(e.clientX - el.getBoundingClientRect().left, printArea.width);
+          const newHeight = Math.min(e.clientY - el.getBoundingClientRect().top, printArea.height);
           
           el.style.width = newWidth + 'px';
           el.style.height = newHeight + 'px';
           
           if(type === 'image') {
-              const img = el.querySelector('img');
-              if(img) img.style.width = '100%';
+              el.querySelector('img').style.width = '100%';
           } else {
               const textDiv = el.querySelector('.design-text');
-              if(textDiv) {
-                  const newFontSize = newWidth * 0.25; 
-                  textDiv.style.fontSize = Math.max(10, newFontSize) + 'px';
-              }
+              textDiv.style.fontSize = Math.max(10, newWidth * 0.25) + 'px';
           }
       }
   }
 
   document.addEventListener('mousemove', (e) => {
     if (!activeItem || isResizing) return;
-    const containerRect = productShape.getBoundingClientRect();
+    
+    const container = activeItem.parentNode;
+    const containerRect = container.getBoundingClientRect();
+    const printArea = container.querySelector('.print-area');
+    const printRect = printArea.getBoundingClientRect();
+    
+    // Calculate boundaries relative to the print area
     let newX = e.clientX - containerRect.left - offset.x;
     let newY = e.clientY - containerRect.top - offset.y;
-    newX = Math.max(0, Math.min(newX, containerRect.width - activeItem.offsetWidth));
-    newY = Math.max(0, Math.min(newY, containerRect.height - activeItem.offsetHeight));
-    activeItem.style.left = newX + 'px';
-    activeItem.style.top = newY + 'px';
+    
+    // Constrain to print area
+    const minX = printArea.offsetLeft;
+    const maxX = printArea.offsetLeft + printRect.width - activeItem.offsetWidth;
+    const minY = printArea.offsetTop;
+    const maxY = printArea.offsetTop + printRect.height - activeItem.offsetHeight;
+    
+    activeItem.style.left = Math.max(minX, Math.min(newX, maxX)) + 'px';
+    activeItem.style.top = Math.max(minY, Math.min(newY, maxY)) + 'px';
   });
   document.addEventListener('mouseup', () => { activeItem = null; });
 
-  // --- CONTROLS ---
+  // --- CONTROLS & DOWNLOAD ---
   document.getElementById('addTextBtn').addEventListener('click', () => {
       const text = document.getElementById('textInput').value;
       if(text) createLayer('text', text);
@@ -567,32 +510,22 @@
     }
   });
 
-  document.getElementById('productType').addEventListener('change', (e) => {
-    productShape.className = 'product-stage ' + 
-      (e.target.value === 'Ornament' ? 'shape-ornament' : 
-       e.target.value === 'Tumbler' ? 'shape-tumbler' : 'shape-tshirt');
-  });
-
-  // --- PNG DOWNLOAD ---
   document.getElementById('downloadBtn').addEventListener('click', () => {
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
-    
-    html2canvas(productShape, { backgroundColor: null }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = 'design.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+    // Download front and back
+    ['viewFront', 'viewBack'].forEach(viewId => {
+        html2canvas(document.getElementById(viewId), { backgroundColor: null }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = viewId + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
     });
   });
 
-  // --- SUBMIT ---
   document.getElementById('submitDesign').addEventListener('click', () => {
     const baseUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSd5FvoEdzSMsDMcg0Bwqok-fIrxrFldzu1wvw91pqc-0ccMHA/viewform?';
-    const params = new URLSearchParams({
-      'entry.2141379241': productType.value,
-      'entry.125041649': bgPicker.getColor().toHEXA().toString()
-    });
-    window.open(baseUrl + params.toString(), "_blank");
+    window.open(baseUrl, "_blank");
   });
 </script>
 </body>
