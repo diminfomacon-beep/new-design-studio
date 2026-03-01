@@ -28,7 +28,7 @@
       max-width: 1200px;
       width: 100%;
       display: grid;
-      grid-template-columns: 250px 1fr 300px; /* Gallery | Preview | Controls */
+      grid-template-columns: 250px 1fr 300px;
       gap: 20px;
     }
 
@@ -58,16 +58,17 @@
     }
     .gallery-item:hover { border-color: var(--accent); }
 
-    /* PREVIEW */
+    /* PREVIEW CONTAINER - NOW DISTINCT */
     .preview-container {
-      background: #fdfdfd;
+      background: #e5e7eb; /* Darker background */
+      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36z8gGiMAEYIIgAXgAlABGAJYAWgB9/woDAAAAAElFTkSuQmCC'); /* Subtle texture */
       border: 1px solid var(--border-color);
       border-radius: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 10px;
+      padding: 20px;
       position: relative;
       min-height: 500px;
       overflow: hidden;
@@ -78,10 +79,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2); /* Stronger shadow */
       position: relative;
       overflow: hidden;
-      background-size: cover;
     }
 
     .shape-tshirt { width: 350px; height: 350px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
@@ -144,8 +144,8 @@
 
   <div class="preview-container">
     <div id="productShape" class="product-stage shape-tshirt" style="background-color: #ffffff;">
-      </div>
-    <p style="font-size: 10px; color: #999; margin-top: 10px;">DRAG ITEMS TO POSITION</p>
+    </div>
+    <p style="font-size: 10px; color: #555; margin-top: 10px; font-weight:bold;">DRAG ITEMS TO POSITION</p>
   </div>
 
   <div class="controls-panel">
@@ -218,12 +218,12 @@
     const layer = document.createElement('div');
     layer.id = layerId;
     layer.className = 'draggable';
-    layer.style.top = '50px'; layer.style.left = '50px';
+    layer.style.top = '100px'; layer.style.left = '100px';
     
     if (type === 'image') {
         const img = document.createElement('img');
         img.src = content;
-        img.style.width = '100px'; // Default size
+        img.style.width = '100px'; 
         layer.appendChild(img);
         addLayerToList(layerId, 'Image');
     } else {
@@ -273,7 +273,6 @@
     const containerRect = productShape.getBoundingClientRect();
     let newX = e.clientX - containerRect.left - offset.x;
     let newY = e.clientY - containerRect.top - offset.y;
-    // Simple boundary check
     newX = Math.max(0, Math.min(newX, containerRect.width - activeItem.offsetWidth));
     newY = Math.max(0, Math.min(newY, containerRect.height - activeItem.offsetHeight));
     activeItem.style.left = newX + 'px';
@@ -317,7 +316,6 @@
   // --- SUBMIT ---
   document.getElementById('submitDesign').addEventListener('click', () => {
     const baseUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSd5FvoEdzSMsDMcg0Bwqok-fIrxrFldzu1wvw91pqc-0ccMHA/viewform?';
-    // For multiple layers, we send a summary to the form
     const layers = document.querySelectorAll('.draggable');
     let layerSummary = "";
     layers.forEach(l => layerSummary += `[${l.id}: T${l.style.top} L${l.style.left}] `);
