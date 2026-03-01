@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Font Options</title>
+  <title>Custom Design Studio - Fixed Fonts</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -203,7 +203,7 @@
     #textEditor { display: none; background: #f3f4f6; padding: 8px; border-radius: 8px; }
   </style>
   
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Georgia&family=Lobster&family=Merriweather&family=Open+Sans&family=Pacifico&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Georgia&family=Lobster&family=Merriweather&family=Open+Sans&family=Pacifico&family=Roboto:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -286,15 +286,15 @@
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 3px; align-items: center;">
             <div id="fontColorPicker" style="border: 1px solid #ddd; border-radius: 6px; padding: 2px; background: white; height: 20px;"></div>
             <select id="fontFamily" style="grid-column: span 2; padding: 4px;">
-                <option value="Roboto">Roboto (Sans)</option>
-                <option value="'Open Sans'">Open Sans</option>
-                <option value="Arial">Arial</option>
-                <option value="Georgia">Georgia (Serif)</option>
-                <option value="Merriweather">Merriweather</option>
-                <option value="'Playfair Display'">Playfair Display</option>
-                <option value="Lobster">Lobster (Script)</option>
-                <option value="Pacifico">Pacifico</option>
-                <option value="'Dancing Script'">Dancing Script</option>
+                <option value="'Roboto', sans-serif">Roboto (Sans)</option>
+                <option value="'Open Sans', sans-serif">Open Sans</option>
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="Georgia, serif">Georgia (Serif)</option>
+                <option value="'Merriweather', serif">Merriweather</option>
+                <option value="'Playfair Display', serif">Playfair Display</option>
+                <option value="'Lobster', cursive">Lobster (Script)</option>
+                <option value="'Pacifico', cursive">Pacifico</option>
+                <option value="'Dancing Script', cursive">Dancing Script</option>
             </select>
         </div>
     </div>
@@ -485,11 +485,13 @@
       offset.y = e.clientY - rect.top;
       setActiveView(el.parentNode.id);
       
-      // Update font selector to match active layer
+      // --- FIXED FONT SYNC ---
       const text = el.querySelector('.design-text');
       if(text) {
           textEditor.style.display = 'block';
-          document.getElementById('fontFamily').value = text.style.fontFamily.replace(/"/g, "'");
+          // Clean up the fontFamily string to match the option value
+          let currentFont = text.style.fontFamily.replace(/"/g, "'");
+          document.getElementById('fontFamily').value = currentFont;
       } else {
           textEditor.style.display = 'none';
       }
