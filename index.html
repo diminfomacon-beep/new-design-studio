@@ -131,10 +131,6 @@
     label { font-weight: 600; font-size: 11px; color: #666; text-transform: uppercase; }
     input, select { padding: 8px; border-radius: 6px; border: 1px solid #ddd; font-size: 13px;}
     
-    /* Center the Pickr button */
-    .color-picker-container { display: flex; align-items: center; gap: 10px; }
-    .pcr-button { width: 40px; height: 36px; border-radius: 6px; }
-
     .layer-manager {
         background: #f3f4f6; padding: 10px; border-radius: 8px; border: 1px solid #e5e7eb;
         max-height: 200px; overflow-y: auto;
@@ -236,13 +232,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-  // --- INITIALIZE PICKR ---
+  // --- UPDATED PICKR CONFIGURATION ---
   const createColorPicker = (selector, defaultColor) => {
       return Pickr.create({
           el: selector,
-          theme: 'classic', // or 'monolith', or 'nano'
+          theme: 'classic',
           default: defaultColor,
-          swatches: ['#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'],
+          // Expanded Palette for better variety
+          swatches: [
+              '#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF',
+              '#FF5733', '#C70039', '#900C3F', '#581845', '#DAF7A6', '#FFC300', '#FF5733', '#C70039',
+              '#33FF57', '#3357FF', '#FF33A8', '#33FFA8', '#A833FF', '#FF8C33', '#8C33FF', '#33FF8C',
+              '#808080', '#A9A9A9', '#D3D3D3', '#F5F5F5', '#FFE4E1', '#E6E6FA', '#F0F8FF', '#F0FFF0'
+          ],
           components: {
               preview: true,
               opacity: true,
@@ -430,7 +432,6 @@
       
       if(el.dataset.type === 'text') {
           textEditor.style.display = 'block';
-          // Sync picker to current text color
           const textDiv = el.querySelector('.design-text');
           fontColorPicker.setColor(textDiv.style.color);
       } else {
@@ -522,7 +523,6 @@
 
   // --- PNG DOWNLOAD ---
   document.getElementById('downloadBtn').addEventListener('click', () => {
-    // Temporarily remove borders for clean export
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
     
     html2canvas(productShape, { backgroundColor: null }).then(canvas => {
