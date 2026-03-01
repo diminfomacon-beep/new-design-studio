@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Print Design Studio - Final Proportions</title>
+  <title>Custom Design Studio - Multi-Product</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -74,30 +74,6 @@
     }
     .gallery-item:hover { border-color: var(--accent); transform: scale(1.05); }
 
-    /* LOADER STYLES */
-    .gallery-loader {
-        display: none;
-        text-align: center;
-        padding: 20px;
-        font-size: 12px;
-        color: #666;
-    }
-
-    .spinner {
-        border: 3px solid #f3f3f3;
-        border-top: 3px solid var(--accent);
-        border-radius: 50%;
-        width: 20px;
-        height: 20px;
-        animation: spin 1s linear infinite;
-        margin: 0 auto 5px auto;
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
     /* PREVIEW PANEL */
     .preview-container {
       background: #e5e7eb;
@@ -112,34 +88,43 @@
       gap: 15px;
     }
 
-    .shirt-wrapper {
+    .product-stage {
+        display: none;
+        position: relative;
+    }
+    .product-stage.active-product {
         display: flex;
         gap: 10px;
     }
 
     .product-view {
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
       position: relative;
       overflow: hidden;
       background-color: white;
       cursor: pointer;
       border: 3px solid transparent;
-      /* UPDATED PROPORTIONS: WIDTH TO LENGTH */
-      width: 240px;
-      height: 250px;
+      transition: all 0.3s;
     }
     .product-view.active-view {
         border: 3px solid var(--accent);
     }
 
-    /* SHAPE UPDATED FOR PROPORTIONS */
-    .shape-tshirt { clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
+    /* PRODUCT SHAPES & PRINT AREAS */
+    
+    /* T-Shirt */
+    .view-tshirt { width: 240px; height: 250px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
+    .print-area-tshirt-front { width: 45px; height: 45px; top: 65px; right: 50px; }
+    .print-area-tshirt-back { width: 100px; height: 60px; top: 40px; left: 70px; }
 
-    /* PRINT AREAS - UPDATED RESTRICTIONS */
+    /* Tumbler */
+    .view-tumbler { width: 100px; height: 250px; border-radius: 10px; }
+    .print-area-tumbler { width: 70px; height: 180px; top: 35px; left: 15px; }
+
+    /* Mug */
+    .view-mug { width: 150px; height: 130px; border-radius: 10px 10px 50px 50px; }
+    .print-area-mug { width: 100px; height: 90px; top: 20px; left: 25px; }
+
     .print-area {
         position: absolute;
         border: 2px dashed rgba(0,0,0,0.3);
@@ -147,22 +132,6 @@
         background: rgba(255,255,255,0.1);
     }
     
-    /* Front: Pocket Size */
-    #viewFront .print-area {
-        width: 45px;                
-        height: 45px;
-        top: 65px;                  
-        right: 50px;                /* Adjusted for new width */
-    }
-
-    /* Back: Updated Smaller & Centered */
-    #viewBack .print-area {
-        width: 100px;               /* Smaller */
-        height: 60px;               
-        top: 40px;                  
-        left: 70px;                 /* Perfectly Centered */
-    }
-
     /* LAYERS */
     .draggable {
       position: absolute;
@@ -203,7 +172,6 @@
     input, select { padding: 6px; border-radius: 6px; border: 1px solid #ddd; font-size: 12px;}
     
     #bgPicker { border: 1px solid #ddd; border-radius: 6px; padding: 3px; background: white; display: inline-block;}
-    .pcr-button { border-radius: 4px; border: 1px solid #eee; width: 100%; height: 25px; }
 
     .layer-manager {
         background: #f3f4f6; padding: 8px; border-radius: 8px; border: 1px solid #e5e7eb;
@@ -216,9 +184,7 @@
         border: 1px solid #eee;
         cursor: grab;
     }
-    .layer-item.dragging { opacity: 0.5; background: #e0e7ff; }
     
-    .layer-controls { display: flex; gap: 2px; }
     .btn-icon { background: #eee; border: none; padding: 2px 5px; border-radius: 3px; cursor: pointer; font-size: 9px; }
     .btn-delete { background: #fee2e2; color: #991b1b; }
 
@@ -231,7 +197,7 @@
     #textEditor { display: none; background: #f3f4f6; padding: 8px; border-radius: 8px; }
   </style>
   
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lobster&family=Press+Start+2P&family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;700&family=Dancing+Script:wght@400;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lobster&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -243,10 +209,7 @@
         <input type="text" id="gallerySearch" class="gallery-search" placeholder="Search icons...">
     </div>
     
-    <div id="galleryLoader" class="gallery-loader">
-        <div class="spinner"></div>
-        Fetching images...
-    </div>
+    <div id="galleryLoader" style="display:none; font-size:12px; text-align:center;">Loading...</div>
     
     <div class="gallery-grid" id="galleryGrid"></div>
     
@@ -259,27 +222,48 @@
 
   <div class="preview-container">
     <label style="font-size: 12px; color: #333;">Click a side to edit</label>
-    <div class="shirt-wrapper">
-        <div id="viewFront" class="product-view shape-tshirt active-view" onclick="setActiveView('viewFront')">
-            <div class="print-area"></div>
+    
+    <div id="stage-tshirt" class="product-stage active-product">
+        <div id="view-tshirt-front" class="product-view view-tshirt active-view" onclick="setActiveView('view-tshirt-front')">
+            <div class="print-area print-area-tshirt-front"></div>
         </div>
-        <div id="viewBack" class="product-view shape-tshirt" onclick="setActiveView('viewBack')">
-            <div class="print-area"></div>
+        <div id="view-tshirt-back" class="product-view view-tshirt" onclick="setActiveView('view-tshirt-back')">
+            <div class="print-area print-area-tshirt-back"></div>
         </div>
     </div>
-    <p style="font-size: 9px; color: #555; font-weight:bold;">DRAG/RESIZE WITHIN DASHED AREA</p>
+
+    <div id="stage-tumbler" class="product-stage">
+        <div id="view-tumbler-front" class="product-view view-tumbler active-view" onclick="setActiveView('view-tumbler-front')">
+            <div class="print-area print-area-tumbler"></div>
+        </div>
+    </div>
+
+    <div id="stage-mug" class="product-stage">
+        <div id="view-mug-front" class="product-view view-mug active-view" onclick="setActiveView('view-mug-front')">
+            <div class="print-area print-area-mug"></div>
+        </div>
+    </div>
   </div>
 
   <div class="controls-panel">
     <h3 style="margin:0; font-size: 16px;">Editor</h3>
     
     <div class="control-group">
-        <label>Shirt Color</label>
+        <label>Select Product</label>
+        <select id="productSelect">
+            <option value="tshirt">T-Shirt</option>
+            <option value="tumbler">Tumbler</option>
+            <option value="mug">Mug</option>
+        </select>
+    </div>
+    
+    <div class="control-group">
+        <label>Color</label>
         <div id="bgPicker"></div>
     </div>
 
     <div class="control-group">
-        <label>Add Text Layer</label>
+        <label>Add Text</label>
         <div style="display:flex; gap:3px;">
             <input type="text" id="textInput" placeholder="Enter text..." value="Text" style="flex:1"/>
             <button class="btn-action" id="addTextBtn">Add</button>
@@ -291,12 +275,9 @@
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 3px; align-items: center;">
             <div id="fontColorPicker" style="border: 1px solid #ddd; border-radius: 6px; padding: 2px; background: white; height: 20px;"></div>
             <select id="fontFamily" style="grid-column: span 2; padding: 4px;">
-                <option value="Roboto" style="font-family: Roboto;">Roboto</option>
-                <option value="'Playfair Display'" style="font-family: 'Playfair Display';">Playfair</option>
-                <option value="Lobster" style="font-family: Lobster;">Lobster</option>
+                <option value="Roboto">Roboto</option>
+                <option value="'Playfair Display'">Playfair</option>
             </select>
-            <button class="btn-icon" id="fontBold" style="grid-column: span 1;"><b>B</b></button>
-            <button class="btn-icon" id="fontItalic" style="grid-column: span 1;"><i>I</i></button>
         </div>
     </div>
 
@@ -316,7 +297,20 @@
 
 <script>
   const PIXABAY_API_KEY = '54841320-2fc493da46915b0eb0a6f740c';
-  let activeViewId = 'viewFront';
+  let activeViewId = 'view-tshirt-front';
+  let currentProduct = 'tshirt';
+
+  // --- PRODUCT SWITCHER ---
+  document.getElementById('productSelect').addEventListener('change', (e) => {
+      currentProduct = e.target.value;
+      // Hide all stages
+      document.querySelectorAll('.product-stage').forEach(s => s.classList.remove('active-product'));
+      // Show selected stage
+      const stage = document.getElementById('stage-' + currentProduct);
+      stage.classList.add('active-product');
+      // Set active view to first child of new stage
+      setActiveView(stage.querySelector('.product-view').id);
+  });
 
   function setActiveView(viewId) {
       activeViewId = viewId;
@@ -324,12 +318,13 @@
       document.getElementById(viewId).classList.add('active-view');
   }
 
+  // --- COLOR PICKER ---
   const createColorPicker = (selector, defaultColor) => {
       return Pickr.create({
           el: selector,
           theme: 'classic', 
           default: defaultColor,
-          components: { preview: true, opacity: true, hue: true, interaction: { hex: true, input: true, save: true } }
+          components: { preview: true, interaction: { hex: true, save: true } }
       });
   };
 
@@ -345,17 +340,14 @@
       if(active) active.style.color = color.toHEXA().toString();
   });
 
+  // --- API ---
   async function loadGallery(searchTerm = '') {
     const grid = document.getElementById('galleryGrid');
-    const loader = document.getElementById('galleryLoader');
-    loader.style.display = 'block';
-    grid.innerHTML = ''; 
-
-    const apiUrl = `https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(searchTerm)}&image_type=all&safesearch=true&per_page=30`;
-
+    const apiUrl = `https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(searchTerm)}&image_type=all&per_page=15`;
     try {
         const response = await fetch(apiUrl);
         const data = await response.json();
+        grid.innerHTML = '';
         data.hits.forEach(image => {
             const img = document.createElement('img');
             img.src = image.previewURL;
@@ -363,13 +355,12 @@
             img.onclick = () => createLayer('image', image.largeImageURL);
             grid.appendChild(img);
         });
-    } catch (error) { grid.innerHTML = '<p style="font-size:11px; color:red;">Error.</p>'; } 
-      finally { loader.style.display = 'none'; }
+    } catch (error) {}
   }
-
   document.getElementById('gallerySearch').addEventListener('input', (e) => loadGallery(e.target.value));
   loadGallery();
 
+  // --- LAYERS ---
   const layerList = document.getElementById('layerList');
   const textEditor = document.getElementById('textEditor');
   let layerCount = 0;
@@ -377,19 +368,16 @@
   function createLayer(type, content) {
     layerCount++;
     const layerId = 'layer_' + layerCount;
-    
     const layer = document.createElement('div');
     layer.id = layerId;
     layer.className = 'draggable active-layer';
     
     const activeView = document.getElementById(activeViewId);
     const printArea = activeView.querySelector('.print-area');
+    
+    // Position layer in center of print area
     layer.style.top = (printArea.offsetTop + printArea.offsetHeight/2 - 15) + 'px';
     layer.style.left = (printArea.offsetLeft + printArea.offsetWidth/2 - 15) + 'px';
-    
-    layer.dataset.type = type;
-    
-    document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
     
     if (type === 'image') {
         const img = document.createElement('img');
@@ -403,7 +391,6 @@
         text.className = 'design-text';
         text.textContent = content;
         text.style.fontSize = '14px';
-        text.style.fontFamily = 'Roboto';
         text.style.color = '#000000';
         layer.appendChild(text);
         addLayerToList(layerId, 'Text');
@@ -417,26 +404,26 @@
     activeView.appendChild(layer);
     makeDraggable(layer);
     makeResizable(layer, handle, type);
+    
+    // Deactivate others
+    document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
+    layer.classList.add('active-layer');
   }
 
   function addLayerToList(id, name) {
       const item = document.createElement('div');
       item.className = 'layer-item';
       item.id = 'list_' + id;
-      item.dataset.layerId = id;
-      item.innerHTML = `
-        <span>${name}</span>
-        <button class="btn-icon btn-delete" onclick="removeLayer('${id}')">X</button>
-      `;
+      item.innerHTML = `<span>${name}</span><button class="btn-icon btn-delete" onclick="removeLayer('${id}')">X</button>`;
       layerList.prepend(item);
   }
 
   function removeLayer(id) {
       document.getElementById(id).remove();
       document.getElementById('list_' + id).remove();
-      textEditor.style.display = 'none';
   }
 
+  // --- DRAG/RESIZE LOGIC ---
   let activeItem = null;
   let offset = { x: 0, y: 0 };
   let isResizing = false;
@@ -447,11 +434,9 @@
       activeItem = el;
       document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
       el.classList.add('active-layer');
-      
       const rect = el.getBoundingClientRect();
       offset.x = e.clientX - rect.left;
       offset.y = e.clientY - rect.top;
-      
       setActiveView(el.parentNode.id);
     });
   }
@@ -483,22 +468,17 @@
           el.style.width = Math.max(15, newWidth) + 'px';
           el.style.height = Math.max(15, newHeight) + 'px';
           
-          if(type === 'image') {
-              el.querySelector('img').style.width = '100%';
-          } else {
-              const textDiv = el.querySelector('.design-text');
-              textDiv.style.fontSize = Math.max(8, newWidth * 0.3) + 'px';
-          }
+          if(type === 'image') el.querySelector('img').style.width = '100%';
+          else el.querySelector('.design-text').style.fontSize = Math.max(8, newWidth * 0.3) + 'px';
       }
   }
 
   document.addEventListener('mousemove', (e) => {
     if (!activeItem || isResizing) return;
-    
     const container = activeItem.parentNode;
-    const containerRect = container.getBoundingClientRect();
     const printArea = container.querySelector('.print-area');
     const printRect = printArea.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
     
     let newX = e.clientX - containerRect.left - offset.x;
     let newY = e.clientY - containerRect.top - offset.y;
@@ -529,19 +509,17 @@
 
   document.getElementById('downloadBtn').addEventListener('click', () => {
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
-    ['viewFront', 'viewBack'].forEach(viewId => {
-        html2canvas(document.getElementById(viewId), { backgroundColor: null }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = viewId + '.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        });
+    // Download only the active stage
+    html2canvas(document.querySelector('.active-product'), { backgroundColor: null }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = currentProduct + '-design.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
     });
   });
 
   document.getElementById('submitDesign').addEventListener('click', () => {
-    const baseUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSd5FvoEdzSMsDMcg0Bwqok-fIrxrFldzu1wvw91pqc-0ccMHA/viewform?';
-    window.open(baseUrl, "_blank");
+    alert('Design Submitted!');
   });
 </script>
 </body>
