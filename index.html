@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Robust Fonts</title>
+  <title>Custom Design Studio - API Fonts</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -45,33 +45,14 @@
       background: #f9fafb;
       display: flex;
       flex-direction: column;
-      height: 550px;
+      height: 600px;
       overflow: hidden;
     }
     .gallery-header { margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px; }
     .gallery-title { font-size: 13px; font-weight: bold; color: #333; }
-    
-    .gallery-search {
-        padding: 5px; border-radius: 6px; border: 1px solid #ddd; font-size: 11px; width: 100%; box-sizing: border-box;
-    }
-
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-      gap: 8px;
-      overflow-y: auto;
-      padding-right: 5px;
-      flex-grow: 1;
-    }
-    .gallery-item {
-      width: 50px; height: 50px;
-      border: 2px solid #eee;
-      border-radius: 8px;
-      cursor: pointer;
-      object-fit: contain;
-      background: white;
-      transition: all 0.2s;
-    }
+    .gallery-search { padding: 5px; border-radius: 6px; border: 1px solid #ddd; font-size: 11px; width: 100%; box-sizing: border-box; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap: 8px; overflow-y: auto; flex-grow: 1; }
+    .gallery-item { width: 50px; height: 50px; border: 2px solid #eee; border-radius: 8px; cursor: pointer; object-fit: contain; background: white; transition: all 0.2s; }
     .gallery-item:hover { border-color: var(--accent); transform: scale(1.05); }
 
     /* PREVIEW PANEL */
@@ -89,68 +70,19 @@
       gap: 15px;
       overflow: hidden;
     }
-
-    .product-stage {
-        display: none;
-        position: relative;
-        transform-origin: center;
-        transition: transform 0.1s ease-out;
-        align-items: center;
-        justify-content: center;
-    }
-    .product-stage.active-product {
-        display: flex;
-        gap: 10px;
-    }
-
-    .product-view {
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      position: relative;
-      overflow: hidden;
-      background-color: white;
-      cursor: pointer;
-      border: 3px solid transparent; 
-      transition: all 0.3s;
-    }
-
-    /* PRODUCT SHAPES */
-    .view-tshirt { width: 240px; height: 250px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
-    .view-tumbler { width: 100px; height: 250px; border-radius: 10px; }
-    .view-mug { width: 150px; height: 130px; border-radius: 10px 10px 50px 50px; }
+    .product-stage { display: none; position: relative; transition: transform 0.1s ease-out; align-items: center; justify-content: center; }
+    .product-stage.active-product { display: flex; }
+    .product-view { box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; overflow: hidden; background-color: white; cursor: pointer; }
+    .view-tshirt { width: 300px; height: 350px; clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 85% 35%, 85% 100%, 15% 100%, 15% 35%, 0% 20%); }
+    .view-tumbler { width: 120px; height: 300px; border-radius: 10px; }
+    .view-mug { width: 180px; height: 160px; border-radius: 10px 10px 50px 50px; }
 
     /* LAYERS */
-    .draggable {
-      position: absolute;
-      cursor: move;
-      border: 2px solid transparent;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 20px;
-      min-height: 20px;
-      box-sizing: border-box;
-      touch-action: none;
-      /* Improve text rendering */
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
+    .draggable { position: absolute; cursor: move; border: 2px solid transparent; display: flex; align-items: center; justify-content: center; box-sizing: border-box; touch-action: none; -webkit-font-smoothing: antialiased; }
     .draggable.active-layer { border: 2px solid var(--accent); }
     .draggable img { max-width: 100%; max-height: 100%; pointer-events: none; }
-    
-    .design-text { 
-        text-align: center; 
-        pointer-events: none;
-        word-break: break-word;
-        display: block;
-        width: 100%;
-        line-height: 1.2;
-    }
-
-    /* RESIZE HANDLES */
-    .resize-handle {
-        width: 10px; height: 10px; background: white; border: 2px solid var(--accent);
-        position: absolute; display: none; cursor: nwse-resize;
-    }
+    .design-text { text-align: center; pointer-events: none; word-break: break-word; display: block; width: 100%; line-height: 1.2; }
+    .resize-handle { width: 10px; height: 10px; background: white; border: 2px solid var(--accent); position: absolute; display: none; cursor: nwse-resize; }
     .draggable.active-layer .resize-handle { display: block; }
     .handle-br { bottom: -5px; right: -5px; }
 
@@ -158,39 +90,21 @@
     .controls-panel { display: flex; flex-direction: column; gap: 10px; }
     .control-group { display: flex; flex-direction: column; gap: 3px; }
     label { font-weight: 600; font-size: 10px; color: #666; text-transform: uppercase; }
-    input, select { padding: 6px; border-radius: 6px; border: 1px solid #ddd; font-size: 12px;}
+    input, select { padding: 6px; border-radius: 6px; border: 1px solid #ddd; font-size: 12px; }
+    #bgPicker { border: 1px solid #ddd; border-radius: 6px; padding: 3px; background: white; }
     
-    #bgPicker { border: 1px solid #ddd; border-radius: 6px; padding: 3px; background: white; display: inline-block;}
-
-    .layer-manager {
-        background: #f3f4f6; padding: 8px; border-radius: 8px; border: 1px solid #e5e7eb;
-        max-height: 150px; overflow-y: auto;
-    }
-    
-    .layer-item {
-        display: flex; justify-content: space-between; align-items: center;
-        background: white; padding: 6px 8px; border-radius: 4px; margin-bottom: 4px; font-size: 11px;
-        border: 1px solid #eee;
-        cursor: grab;
-    }
-    
-    .btn-icon { background: #eee; border: none; padding: 2px 5px; border-radius: 3px; cursor: pointer; font-size: 9px; }
+    .layer-manager { background: #f3f4f6; padding: 8px; border-radius: 8px; border: 1px solid #e5e7eb; max-height: 150px; overflow-y: auto; }
+    .layer-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 6px; border-radius: 4px; margin-bottom: 4px; font-size: 11px; border: 1px solid #eee; }
+    .btn-icon { background: #eee; border: none; padding: 2px 5px; border-radius: 3px; cursor: pointer; }
     .btn-delete { background: #fee2e2; color: #991b1b; }
-
-    .btn-group { display: flex; gap: 8px; margin-top: 5px; }
-    button { padding: 8px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: 12px;}
-    
-    .btn-style { background: #f3f4f6; color: #333; font-weight: bold; padding: 6px 10px; font-size: 14px; border: 1px solid #ddd;}
-    .btn-style.active { background: var(--accent); color: white; border-color: var(--accent); }
-    
+    .btn-group { display: flex; gap: 8px; }
+    button { padding: 8px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: 12px; }
     .btn-primary { background: var(--primary); color: white; flex: 1; }
     .btn-action { background: #dbeafe; color: #1e40af; }
-    .btn-download { background: #d1fae5; color: #065f46; flex: 1; }
     
     #textEditor { display: none; background: #f3f4f6; padding: 8px; border-radius: 8px; }
+    #fontFamily { font-size: 12px; }
   </style>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Amatic+SC:wght@700&family=Bangers&family=Cinzel&family=Creepster&family=Dancing+Script:wght@400;700&family=EB+Garamond&family=Fjalla+One&family=Fredericka+the+Great&family=Georgia&family=Great+Vibes&family=Indie+Flower&family=Lobster&family=Merriweather:wght@300;700&family=Montserrat:wght@400;700;900&family=Oswald:wght@400;700&family=Pacifico&family=Permanent+Marker&family=Playfair+Display:ital,wght@400;700;900&family=Poppins:wght@400;700&family=Press+Start+2P&family=Raleway:wght@400;700&family=Roboto:wght@400;700;900&family=Rock+Salt&family=Rubik:wght@400;700&family=Shadows+Into+Light&family=Special+Elite&family=Spicy+Rice&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -198,31 +112,24 @@
   
   <div class="gallery-panel">
     <div class="gallery-header">
-        <div class="gallery-title">Assets (Pixabay)</div>
+        <div class="gallery-title">Assets</div>
         <input type="text" id="gallerySearch" class="gallery-search" placeholder="Search icons...">
     </div>
-    
-    <div id="galleryLoader" style="display:none; font-size:12px; text-align:center;">Loading...</div>
-    
     <div class="gallery-grid" id="galleryGrid"></div>
-    
     <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
     <div class="control-group">
-        <label>Upload Local Image</label>
+        <label>Upload Image</label>
         <input type="file" id="imageInput" accept="image/*" style="padding: 3px;" />
     </div>
   </div>
 
   <div class="preview-container">
-    
     <div id="stage-tshirt" class="product-stage active-product">
         <div id="view-tshirt" class="product-view view-tshirt"></div>
     </div>
-
     <div id="stage-tumbler" class="product-stage">
         <div id="view-tumbler" class="product-view view-tumbler"></div>
     </div>
-
     <div id="stage-mug" class="product-stage">
         <div id="view-mug" class="product-view view-mug"></div>
     </div>
@@ -230,84 +137,44 @@
 
   <div class="controls-panel">
     <h3 style="margin:0; font-size: 16px;">Editor</h3>
-    
     <div class="control-group">
-        <label>Select Product</label>
+        <label>Product</label>
         <select id="productSelect">
             <option value="tshirt">T-Shirt</option>
             <option value="tumbler">Tumbler</option>
             <option value="mug">Mug</option>
         </select>
     </div>
-    
     <div class="control-group">
         <label>Zoom</label>
         <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
     </div>
-
     <div class="control-group">
         <label>Product Color</label>
         <div id="bgPicker"></div>
     </div>
-
     <div class="control-group">
         <label>Add Text</label>
         <div style="display:flex; gap:3px;">
-            <input type="text" id="textInput" placeholder="Enter text..." value="Text" style="flex:1"/>
+            <input type="text" id="textInput" placeholder="Enter text..." value="Hello" style="flex:1"/>
             <button class="btn-action" id="addTextBtn">Add</button>
         </div>
     </div>
     
     <div id="textEditor">
         <label style="color: var(--accent); font-size: 10px;">Text Style</label>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 3px; align-items: center;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 3px;">
             <div id="fontColorPicker" style="border: 1px solid #ddd; border-radius: 6px; padding: 2px; background: white; height: 20px;"></div>
-            
-            <select id="fontFamily" style="grid-column: span 2; padding: 4px;">
-                <optgroup label="Creative & Stylized">
-                    <option value="'Permanent Marker', cursive">Permanent Marker</option>
-                    <option value="'Rock Salt', cursive">Rock Salt</option>
-                    <option value="'Amatic SC', cursive">Amatic</option>
-                    <option value="'Fredericka the Great', cursive">Fredericka</option>
-                    <option value="'Spicy Rice', cursive">Spicy Rice</option>
-                    <option value="'Creepster', cursive">Creepster</option>
-                    <option value="'Bangers', cursive">Bangers</option>
-                </optgroup>
-                <optgroup label="Modern Sans-Serif">
-                    <option value="'Roboto', sans-serif">Roboto</option>
-                    <option value="'Montserrat', sans-serif">Montserrat</option>
-                    <option value="'Poppins', sans-serif">Poppins</option>
-                </optgroup>
-                <optgroup label="Classic Serif">
-                    <option value="Georgia, serif">Georgia</option>
-                    <option value="'Playfair Display', serif">Playfair Display</option>
-                </optgroup>
-                <optgroup label="Script & Handwriting">
-                    <option value="'Lobster', cursive">Lobster</option>
-                    <option value="'Pacifico', cursive">Pacifico</option>
-                    <option value="'Dancing Script', cursive">Dancing Script</option>
-                    <option value="'Shadows Into Light', cursive">Shadows</option>
-                </optgroup>
-                <optgroup label="Display & Headline">
-                    <option value="'Anton', sans-serif">Anton</option>
-                    <option value="'Fjalla One', sans-serif">Fjalla One</option>
-                    <option value="'Special Elite', cursive">Special Elite</option>
-                    <option value="'Press Start 2P', cursive">Pixel</option>
-                </optgroup>
-            </select>
-            
-            <button id="btnBold" class="btn-style" title="Bold">B</button>
-            <button id="btnItalic" class="btn-style" title="Italic"><em>I</em></button>
+            <select id="fontFamily" style="grid-column: span 2; padding: 4px;"></select>
         </div>
     </div>
 
     <div class="layer-manager">
-        <label style="color: var(--accent); margin-bottom: 5px; display: block; font-size: 10px;">Layers</label>
+        <label style="color: var(--accent); font-size: 10px;">Layers</label>
         <div id="layerList"></div>
     </div>
 
     <div class="btn-group">
-        <button class="btn-download" id="downloadBtn">💾 PNG</button>
         <button class="btn-primary" id="submitDesign">Submit</button>
     </div>
   </div>
@@ -316,52 +183,75 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
+  // --- CONFIGURATION ---
+  const GOOGLE_API_KEY = 'AIzaSyAq-9ivkRTYYP4olKp2Xfy50pi72CKJY2w'; // <--- PASTE KEY HERE
   const PIXABAY_API_KEY = '54841320-2fc493da46915b0eb0a6f740c';
   let activeViewId = 'view-tshirt';
   let currentProduct = 'tshirt';
+  let layerCount = 0;
 
-  // --- PRODUCT SWITCHER ---
+  // --- INITIALIZATION ---
+  const fontFamilySelect = document.getElementById('fontFamily');
+  const textEditor = document.getElementById('textEditor');
+
+  // --- GOOGLE FONTS API INTEGRATION ---
+  async function populateFontDropdown() {
+      try {
+          const response = await fetch(`https://www.googleapis.com/webfonts/v1/webfonts?key=${GOOGLE_API_KEY}&sort=popularity`);
+          const data = await response.json();
+          fontFamilySelect.innerHTML = '';
+          // Limiting to top 50 for performance and responsiveness
+          data.items.slice(0, 50).forEach(font => {
+              const option = document.createElement('option');
+              option.value = `'${font.family}', ${font.category}`;
+              option.textContent = font.family;
+              
+              // LIVE PREVIEW STYLING (Works best in Firefox, fallback for Chrome/Safari)
+              option.style.fontFamily = `'${font.family}'`;
+              
+              fontFamilySelect.appendChild(option);
+          });
+      } catch (error) {
+          console.error('Error fetching fonts:', error);
+          fontFamilySelect.innerHTML = '<option>Error loading fonts</option>';
+      }
+  }
+
+  function loadAndApplyFont(fontFamilyValue) {
+      const fontName = fontFamilyValue.split(',')[0].replace(/'/g, '');
+      const link = document.createElement('link');
+      link.href = `https://fonts.googleapis.com/css2?family=${fontName.replace(/ /g, '+')}&display=swap`;
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
+
+      const activeLayerText = document.querySelector('.active-layer .design-text');
+      if (activeLayerText) {
+          activeLayerText.style.fontFamily = fontFamilyValue;
+      }
+  }
+
+  fontFamilySelect.addEventListener('change', (e) => {
+      loadAndApplyFont(e.target.value);
+  });
+
+  // --- CORE FUNCTIONALITY ---
   document.getElementById('productSelect').addEventListener('change', (e) => {
       currentProduct = e.target.value;
       document.querySelectorAll('.product-stage').forEach(s => s.classList.remove('active-product'));
       const stage = document.getElementById('stage-' + currentProduct);
       stage.classList.add('active-product');
       activeViewId = stage.querySelector('.product-view').id;
-      document.getElementById('zoomSlider').value = 1;
-      stage.style.transform = 'scale(1)';
   });
 
-  // --- ZOOM FUNCTIONALITY ---
   document.getElementById('zoomSlider').addEventListener('input', (e) => {
-      const scale = e.target.value;
-      document.querySelector('.active-product').style.transform = `scale(${scale})`;
+      document.querySelector('.active-product').style.transform = `scale(${e.target.value})`;
   });
 
-  // --- COLOR SWATCHES ---
-  const swatches = [
-      '#FFFFFF', '#F2F2F2', '#D9D9D9', '#BFBFBF', '#A6A6A6', '#808080', '#595959', '#404040', '#262626', '#000000',
-      '#FFCCCC', '#FF9999', '#FF6666', '#FF3333', '#FF0000', '#CC0000', '#990000', '#660000', '#330000',
-      '#FFE5CC', '#FFCC99', '#FFB266', '#FF9933', '#FF8000', '#CC6600', '#994C00', '#663300', '#331900',
-      '#FFFFCC', '#FFFF99', '#FFFF66', '#FFFF33', '#FFFF00', '#CCCC00', '#999900', '#666600', '#333300',
-      '#CCFFCC', '#99FF99', '#66FF66', '#33FF33', '#00FF00', '#00CC00', '#009900', '#006600', '#003300',
-      '#CCFFFF', '#99FFFF', '#66FFFF', '#33FFFF', '#00FFFF', '#00CCCC', '#009999', '#006666', '#003333',
-      '#CCCCFF', '#9999FF', '#6666FF', '#3333FF', '#0000FF', '#0000CC', '#000099', '#000066', '#000033',
-      '#E5CCFF', '#CC99FF', '#B266FF', '#9933FF', '#8000FF', '#6600CC', '#4C0099', '#330066', '#190033',
-      '#FFCCFF', '#FF99FF', '#FF66FF', '#FF33FF', '#FF00FF', '#CC00CC', '#990099', '#660066', '#330033'
-  ];
-
+  // --- COLOR PICKERS ---
   const createColorPicker = (selector, defaultColor) => {
       return Pickr.create({
-          el: selector,
-          theme: 'classic', 
-          default: defaultColor,
-          swatches: swatches,
-          components: { 
-              preview: true, 
-              opacity: true, 
-              hue: true, 
-              interaction: { hex: true, input: true, save: true } 
-          }
+          el: selector, theme: 'classic', default: defaultColor,
+          components: { preview: true, hue: true, interaction: { input: true, save: true } }
       });
   };
 
@@ -369,47 +259,23 @@
   const fontColorPicker = createColorPicker('#fontColorPicker', '#000000');
 
   bgPicker.on('change', (color) => {
-      document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color.toRGBA().toString());
+      document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color.toHEXA().toString());
   });
 
   fontColorPicker.on('change', (color) => {
-      const active = document.querySelector('.active-layer .design-text');
-      if(active) active.style.color = color.toRGBA().toString();
-  });
-  
-  // --- FONT SETTINGS CHANGE ---
-  document.getElementById('fontFamily').addEventListener('change', (e) => {
-      const active = document.querySelector('.active-layer .design-text');
-      if(active) active.style.fontFamily = e.target.value;
-  });
-  
-  document.getElementById('btnBold').addEventListener('click', (e) => {
-      const active = document.querySelector('.active-layer .design-text');
-      if(active) {
-          const isBold = active.style.fontWeight === 'bold';
-          active.style.fontWeight = isBold ? 'normal' : 'bold';
-          e.target.classList.toggle('active');
-      }
+      const activeText = document.querySelector('.active-layer .design-text');
+      if(activeText) activeText.style.color = color.toHEXA().toString();
   });
 
-  document.getElementById('btnItalic').addEventListener('click', (e) => {
-      const active = document.querySelector('.active-layer .design-text');
-      if(active) {
-          const isItalic = active.style.fontStyle === 'italic';
-          active.style.fontStyle = isItalic ? 'normal' : 'italic';
-          e.target.classList.toggle('active');
-      }
-  });
-
-  // --- API ---
-  async function loadGallery(searchTerm = '') {
+  // --- ASSET GALLERY (PIXABAY) ---
+  async function loadGallery(searchTerm = 'logo') {
     const grid = document.getElementById('galleryGrid');
-    const apiUrl = `https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(searchTerm)}&image_type=all&per_page=15`;
+    const apiUrl = `https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(searchTerm)}&image_type=vector`;
     try {
         const response = await fetch(apiUrl);
         const data = await response.json();
         grid.innerHTML = '';
-        data.hits.forEach(image => {
+        data.hits.slice(0, 15).forEach(image => {
             const img = document.createElement('img');
             img.src = image.previewURL;
             img.className = 'gallery-item';
@@ -419,55 +285,43 @@
     } catch (error) {}
   }
   document.getElementById('gallerySearch').addEventListener('input', (e) => loadGallery(e.target.value));
-  loadGallery();
-
-  // --- LAYERS ---
-  const layerList = document.getElementById('layerList');
-  const textEditor = document.getElementById('textEditor');
-  let layerCount = 0;
-
+  
+  // --- LAYERS & MANIPULATION ---
   function createLayer(type, content) {
     layerCount++;
     const layerId = 'layer_' + layerCount;
     const layer = document.createElement('div');
     layer.id = layerId;
     layer.className = 'draggable active-layer';
-    
-    const activeView = document.getElementById(activeViewId);
-    
-    // Default position to center of view
-    layer.style.top = '100px';
-    layer.style.left = '50px';
+    layer.style.top = '50px'; layer.style.left = '50px';
     
     if (type === 'image') {
         const img = document.createElement('img');
         img.src = content;
-        img.style.width = '50px'; 
         layer.appendChild(img);
-        addLayerToList(layerId, 'Image');
         textEditor.style.display = 'none';
     } else {
         const text = document.createElement('div');
         text.className = 'design-text';
         text.textContent = content;
         text.style.fontSize = '24px';
-        text.style.color = '#000000';
-        text.style.fontFamily = document.getElementById('fontFamily').value;
+        text.style.fontFamily = fontFamilySelect.value;
         layer.appendChild(text);
-        addLayerToList(layerId, 'Text');
         textEditor.style.display = 'block';
+        loadAndApplyFont(fontFamilySelect.value);
     }
 
     const handle = document.createElement('div');
     handle.className = 'resize-handle handle-br';
     layer.appendChild(handle);
     
-    activeView.appendChild(layer);
+    document.getElementById(activeViewId).appendChild(layer);
     makeDraggable(layer);
     makeResizable(layer, handle, type);
     
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
     layer.classList.add('active-layer');
+    addLayerToList(layerId, type === 'image' ? 'Image' : 'Text');
   }
 
   function addLayerToList(id, name) {
@@ -475,7 +329,7 @@
       item.className = 'layer-item';
       item.id = 'list_' + id;
       item.innerHTML = `<span>${name}</span><button class="btn-icon btn-delete" onclick="removeLayer('${id}')">X</button>`;
-      layerList.prepend(item);
+      document.getElementById('layerList').prepend(item);
   }
 
   function removeLayer(id) {
@@ -483,10 +337,8 @@
       document.getElementById('list_' + id).remove();
   }
 
-  // --- DRAG/RESIZE LOGIC ---
-  let activeItem = null;
-  let offset = { x: 0, y: 0 };
-  let isResizing = false;
+  // --- DRAG & RESIZE LOGIC ---
+  let activeItem = null, offset = { x: 0, y: 0 }, isResizing = false;
 
   function makeDraggable(el) {
     el.addEventListener('mousedown', (e) => {
@@ -495,143 +347,50 @@
       document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
       el.classList.add('active-layer');
       const rect = el.getBoundingClientRect();
-      offset.x = e.clientX - rect.left;
-      offset.y = e.clientY - rect.top;
-      
-      // --- SYNC EDITOR CONTROLS ---
-      const text = el.querySelector('.design-text');
-      if(text) {
-          textEditor.style.display = 'block';
-          document.getElementById('fontFamily').value = text.style.fontFamily.replace(/"/g, "'");
-          if(text.style.fontWeight === 'bold') document.getElementById('btnBold').classList.add('active');
-          else document.getElementById('btnBold').classList.remove('active');
-          if(text.style.fontStyle === 'italic') document.getElementById('btnItalic').classList.add('active');
-          else document.getElementById('btnItalic').classList.remove('active');
-      } else {
-          textEditor.style.display = 'none';
-      }
+      offset.x = e.clientX - rect.left; offset.y = e.clientY - rect.top;
+      textEditor.style.display = el.querySelector('.design-text') ? 'block' : 'none';
     });
   }
 
   function makeResizable(el, handle, type) {
       handle.addEventListener('mousedown', (e) => {
-          isResizing = true;
-          activeItem = el;
-          e.stopPropagation();
+          isResizing = true; activeItem = el; e.stopPropagation();
           document.addEventListener('mousemove', resize);
           document.addEventListener('mouseup', () => {
-              isResizing = false;
-              document.removeEventListener('mousemove', resize);
+              isResizing = false; document.removeEventListener('mousemove', resize);
           });
       });
-
       function resize(e) {
-          const container = el.parentNode;
-          const containerRect = container.getBoundingClientRect();
           const elRect = el.getBoundingClientRect();
-          
           const newWidth = e.clientX - elRect.left;
-          const newHeight = e.clientY - elRect.top;
-          
-          el.style.width = Math.max(15, newWidth) + 'px';
-          el.style.height = Math.max(15, newHeight) + 'px';
-          
-          if(type === 'image') el.querySelector('img').style.width = '100%';
-          else el.querySelector('.design-text').style.fontSize = Math.max(8, newWidth * 0.3) + 'px';
+          el.style.width = Math.max(20, newWidth) + 'px';
+          if(type === 'text') el.querySelector('.design-text').style.fontSize = Math.max(10, newWidth * 0.4) + 'px';
       }
   }
 
   document.addEventListener('mousemove', (e) => {
     if (!activeItem || isResizing) return;
-    const container = activeItem.parentNode;
-    const containerRect = container.getBoundingClientRect();
-    
-    let newX = e.clientX - containerRect.left - offset.x;
-    let newY = e.clientY - containerRect.top - offset.y;
-    
-    activeItem.style.left = newX + 'px';
-    activeItem.style.top = newY + 'px';
+    const containerRect = activeItem.parentNode.getBoundingClientRect();
+    activeItem.style.left = (e.clientX - containerRect.left - offset.x) + 'px';
+    activeItem.style.top = (e.clientY - containerRect.top - offset.y) + 'px';
   });
   document.addEventListener('mouseup', () => { activeItem = null; });
 
+  // --- EVENTS ---
   document.getElementById('addTextBtn').addEventListener('click', () => {
       const text = document.getElementById('textInput').value;
       if(text) createLayer('text', text);
   });
-
   document.getElementById('imageInput').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (ev) => createLayer('image', ev.target.result);
-      reader.readAsDataURL(file);
-    }
+    const reader = new FileReader();
+    reader.onload = (ev) => createLayer('image', ev.target.result);
+    if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
   });
+  document.getElementById('submitDesign').addEventListener('click', () => alert('Design Submitted!'));
 
-  document.getElementById('downloadBtn').addEventListener('click', () => {
-    document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
-    html2canvas(document.querySelector('.active-product'), { backgroundColor: null }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = currentProduct + '-design.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    });
-  });
-
-  document.getElementById('submitDesign').addEventListener('click', () => {
-    alert('Design Submitted!');
-  });
-    // --- GOOGLE FONTS API INTEGRATION ---
-  const GOOGLE_API_KEY = 'AIzaSyAq-9ivkRTYYP4olKp2Xfy50pi72CKJY2w'; // <--- PUT YOUR KEY HERE
-  const fontFamilySelect = document.getElementById('fontFamily');
-  
-  // 1. Fetch the list of fonts from Google
-  async function populateFontDropdown() {
-      try {
-          const response = await fetch(`https://www.googleapis.com/webfonts/v1/webfonts?key=${GOOGLE_API_KEY}&sort=popularity`);
-          const data = await response.json();
-  
-          // Clear existing static options
-          fontFamilySelect.innerHTML = '';
-  
-          // Add fonts from API (limiting to 100 for better performance)
-          data.items.slice(0, 100).forEach(font => {
-              const option = document.createElement('option');
-              option.value = `'${font.family}', ${font.category}`;
-              option.textContent = font.family;
-              fontFamilySelect.appendChild(option);
-          });
-          
-          // Load the default font immediately
-          loadAndApplyFont(fontFamilySelect.value);
-      } catch (error) {
-          console.error('Error fetching fonts:', error);
-      }
-  }
-  
-  // 2. Load the font dynamically when changed
-  function loadAndApplyFont(fontFamilyValue) {
-      const fontFamily = fontFamilyValue.split(',')[0].replace(/'/g, '');
-      
-      // Create a new <link> tag for the specific font
-      const link = document.createElement('link');
-      link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/ /g, '+')}&display=swap`;
-      link.rel = 'stylesheet';
-      document.head.appendChild(link);
-  
-      // Apply to the active layer
-      const activeLayerText = document.querySelector('.active-layer .design-text');
-      if (activeLayerText) {
-          activeLayerText.style.fontFamily = fontFamilyValue;
-      }
-  }
-  
-  fontFamilySelect.addEventListener('change', (e) => {
-      loadAndApplyFont(e.target.value);
-  });
-  
-  // Run this function on page load
+  // --- STARTUP ---
   populateFontDropdown();
+  loadGallery();
 </script>
 </body>
 </html>
