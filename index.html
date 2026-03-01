@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Improved Text</title>
+  <title>Custom Design Studio - Expanded Fonts</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -207,7 +207,7 @@
     #textEditor { display: none; background: #f3f4f6; padding: 8px; border-radius: 8px; }
   </style>
   
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Georgia&family=Lobster&family=Merriweather&family=Open+Sans&family=Pacifico&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Dancing+Script:wght@400;700&family=Georgia&family=Lobster&family=Merriweather:wght@300;700&family=Montserrat:wght@400;700;900&family=Open+Sans:wght@400;700&family=Pacifico&family=Playfair+Display:ital,wght@400;700;900&family=Roboto:wght@400;700;900&family=Shadows+Into+Light&family=Special+Elite&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -291,19 +291,31 @@
             <div id="fontColorPicker" style="border: 1px solid #ddd; border-radius: 6px; padding: 2px; background: white; height: 20px;"></div>
             
             <select id="fontFamily" style="grid-column: span 2; padding: 4px;">
-                <option value="'Roboto', sans-serif">Roboto (Sans)</option>
-                <option value="'Open Sans', sans-serif">Open Sans</option>
-                <option value="Arial, sans-serif">Arial</option>
-                <option value="Georgia, serif">Georgia (Serif)</option>
-                <option value="'Merriweather', serif">Merriweather</option>
-                <option value="'Playfair Display', serif">Playfair Display</option>
-                <option value="'Lobster', cursive">Lobster (Script)</option>
-                <option value="'Pacifico', cursive">Pacifico</option>
-                <option value="'Dancing Script', cursive">Dancing Script</option>
+                <optgroup label="Modern Sans-Serif">
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Open Sans', sans-serif">Open Sans</option>
+                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                </optgroup>
+                <optgroup label="Classic Serif">
+                    <option value="Georgia, serif">Georgia</option>
+                    <option value="'Merriweather', serif">Merriweather</option>
+                    <option value="'Playfair Display', serif">Playfair Display</option>
+                </optgroup>
+                <optgroup label="Script & Handwriting">
+                    <option value="'Lobster', cursive">Lobster</option>
+                    <option value="'Pacifico', cursive">Pacifico</option>
+                    <option value="'Dancing Script', cursive">Dancing Script</option>
+                    <option value="'Shadows Into Light', cursive">Shadows Into Light</option>
+                </optgroup>
+                <optgroup label="Display & Bold">
+                    <option value="'Anton', sans-serif">Anton</option>
+                    <option value="'Bangers', cursive">Bangers</option>
+                    <option value="'Special Elite', cursive">Special Elite</option>
+                </optgroup>
             </select>
             
-            <button id="btnBold" class="btn-style">B</button>
-            <button id="btnItalic" class="btn-style"><em>I</em></button>
+            <button id="btnBold" class="btn-style" title="Bold">B</button>
+            <button id="btnItalic" class="btn-style" title="Italic"><em>I</em></button>
         </div>
     </div>
 
