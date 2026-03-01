@@ -339,15 +339,22 @@
       '#FFCCFF', '#FF99FF', '#FF66FF', '#FF33FF', '#FF00FF', '#CC00CC', '#990099', '#660066', '#330033'
   ];
 
+  const activeView = document.querySelector('.product-view');
+  const initialColor = window.getComputedStyle(activeView).backgroundColor;
+  
   const createPicker = (el, def) => Pickr.create({
       el, theme: 'classic', default: def, swatches: extendedSwatches,
       components: { preview: true, opacity: true, hue: true, interaction: { hex: true, input: true, save: true } }
   });
 
-  const bgPicker = createPicker('#bgPicker', '#ffffff');
+  const bgPicker = createPicker('#bgPicker', initialColor);
   const fontColorPicker = createPicker('#fontColorPicker', '#000000');
 
   bgPicker.on('change', (color) => {
+      document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color.toRGBA().toString());
+  });
+  
+  bgPicker.on('save', (color) => {
       document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = color.toRGBA().toString());
   });
 
