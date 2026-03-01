@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Zoomable</title>
+  <title>Custom Design Studio - Solid Colors</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -318,7 +318,6 @@
       const stage = document.getElementById('stage-' + currentProduct);
       stage.classList.add('active-product');
       setActiveView(stage.querySelector('.product-view').id);
-      // Reset zoom on product change
       document.getElementById('zoomSlider').value = 1;
       stage.style.transform = 'scale(1)';
   });
@@ -335,13 +334,18 @@
       document.getElementById(viewId).classList.add('active-view');
   }
 
-  // --- COLOR PICKER ---
+  // --- SOLID COLOR PICKERS ---
   const createColorPicker = (selector, defaultColor) => {
       return Pickr.create({
           el: selector,
           theme: 'classic', 
           default: defaultColor,
-          components: { preview: true, interaction: { hex: true, save: true } }
+          components: { 
+              preview: true, 
+              opacity: false, // REMOVED OPACITY
+              hue: true, 
+              interaction: { hex: true, input: true, save: true } 
+          }
       });
   };
 
@@ -392,7 +396,6 @@
     const activeView = document.getElementById(activeViewId);
     const printArea = activeView.querySelector('.print-area');
     
-    // Position layer in center of print area
     layer.style.top = (printArea.offsetTop + printArea.offsetHeight/2 - 15) + 'px';
     layer.style.left = (printArea.offsetLeft + printArea.offsetWidth/2 - 15) + 'px';
     
@@ -525,7 +528,6 @@
 
   document.getElementById('downloadBtn').addEventListener('click', () => {
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
-    // Download only the active stage
     html2canvas(document.querySelector('.active-product'), { backgroundColor: null }).then(canvas => {
         const link = document.createElement('a');
         link.download = currentProduct + '-design.png';
