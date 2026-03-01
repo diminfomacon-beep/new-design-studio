@@ -398,9 +398,14 @@ fontColorPicker.on('change', (color, instance) => {
       if(activeText) activeText.style.fontFamily = e.target.value;
   });
 
-  document.getElementById('btnBold').addEventListener('click', () => {
-      const activeText = document.querySelector('.active-layer .design-text');
-      if(activeText) activeText.style.fontWeight = activeText.style.fontWeight === 'bold' ? 'normal' : 'bold';
+  document.getElementById('btnBold').addEventListener('click', (e) => {
+    const activeText = document.querySelector('.active-layer .design-text');
+    if(!activeText) return;
+  
+    const isBold = activeText.style.fontWeight === 'bold';
+    activeText.style.fontWeight = isBold ? 'normal' : 'bold';
+  
+    e.target.classList.toggle('active');
   });
 
   let layerCount = 0;
@@ -443,6 +448,7 @@ fontColorPicker.on('change', (color, instance) => {
       handle.className = 'resize-handle handle-br';
       layer.appendChild(handle);
       activeView.appendChild(layer);
+      layer.style.zIndex = layerCount;
       makeDraggable(layer);
       makeResizable(layer, handle, type);
       
@@ -491,13 +497,28 @@ fontColorPicker.on('change', (color, instance) => {
       const item = document.createElement('div');
       item.className = 'layer-item';
       item.id = 'list_' + id;
-      item.innerHTML = `<span>${name}</span><button class="btn-icon btn-delete" onclick="removeLayer('${id}')">✕</button>`;
+      item.innerHTML = `
+        <span>${name}</span>
+        <div>
+          <button class="btn-icon" onclick="bringForward('${id}')">↑</button>
+          <button class="btn-icon" onclick="sendBackward('${id}')">↓</button>
+          <button class="btn-icon btn-delete" onclick="removeLayer('${id}')">✕</button>
+        </div>
+      `;
       document.getElementById('layerList').prepend(item);
   }
-
+  function bringForward(id) {
+    const layer = document.getElementById(id);
+    layer.style.zIndex = ++layerCount;
+  }
+    
+  function sendBackward(id) {
+    const layer = document.getElementById(id);
+    layer.style.zIndex = 1;
+  }
   function removeLayer(id) {
-      document.getElementById(id).remove();
-      document.getElementById('list_' + id).remove();
+    document.getElementById(id).remove();
+    document.getElementById('list_' + id).remove();
   }
 
   let activeItem = null, offset = { x: 0, y: 0 }, isResizing = false;
@@ -508,6 +529,7 @@ fontColorPicker.on('change', (color, instance) => {
       activeItem = el;
       document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
       el.classList.add('active-layer');
+      el.style.zIndex = ++layerCount;
       const rect = el.getBoundingClientRect();
       const parentRect = el.parentNode.getBoundingClientRect();
       offset.x = e.clientX - rect.left;
@@ -516,11 +538,15 @@ fontColorPicker.on('change', (color, instance) => {
       const text = el.querySelector('.design-text');
       if(text) {
           document.getElementById('textEditor').style.display = 'block';
-          document.getElementById('fontSizeInput').value = parseInt(text.style.fontSize);
+          document.getElementById('fontSizeInput').value = parseInt(window.getComputedStyle(text).fontSize);
           document.getElementById('fontFamily').value = text.style.fontFamily.replace(/"/g, "'");
       } else {
           document.getElementById('textEditor').style.display = 'none';
       }
+    });
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
+      el.classList.add('active-layer');
     });
   }
 
@@ -539,7 +565,8 @@ fontColorPicker.on('change', (color, instance) => {
           el.style.height = Math.max(20, nh) + 'px';
           if(type === 'image') el.querySelector('img').style.width = '100%';
           else {
-              const newSize = Math.max(8, Math.round(nw * 0.35));
+              const scaleFactor = nw / 60;
+              const newSize = Math.max(8, Math.round(24 * scaleFactor));
               el.querySelector('.design-text').style.fontSize = newSize + 'px';
               document.getElementById('fontSizeInput').value = newSize;
           }
@@ -585,12 +612,23 @@ fontColorPicker.on('change', (color, instance) => {
   
   // Init
   loadPixabay();
+  document.getElementById('gallerySearch').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      loadPixabay(e.target.value);
+    }
+  });
   
   document.getElementById('addTextBtn').addEventListener('click', () => {
       const val = document.getElementById('textInput').value;
       if(val) createLayer('text', val);
   });
-
+  
+  document.getElementById('textInput').addEventListener('keypress', (e) => {
+    if(e.key === 'Enter') {
+      document.getElementById('addTextBtn').click();
+    }
+  });
+  
   document.getElementById('imageInput').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -602,7 +640,9 @@ fontColorPicker.on('change', (color, instance) => {
 
   document.getElementById('downloadBtn').addEventListener('click', () => {
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
-    html2canvas(document.querySelector('.active-product'), { backgroundColor: null }).then(canvas => {
+  const productView = document.getElementById(activeViewId);
+
+  html2canvas(productView, {backgroundColor: null, scale: 2 }).then(canvas => {
         const link = document.createElement('a');
         link.download = currentProduct + '-mockup.png';
         link.href = canvas.toDataURL();
