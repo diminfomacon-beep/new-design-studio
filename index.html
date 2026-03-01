@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Design Studio - Dual Gallery</title>
+  <title>Custom Design Studio - Single Gallery</title>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -31,56 +31,58 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.1);
       padding: 15px;
       width: 100%;
+      max-width: 1200px;
       display: grid;
-      grid-template-columns: 240px 1fr 240px;
+      /* Adjusted grid to 3 columns, with the gallery on the left */
+      grid-template-columns: 280px 1fr 280px;
       gap: 15px;
       box-sizing: border-box;
     }
 
-    /* GALLERY PANELS */
+    /* GALLERY PANEL */
     .gallery-panel {
       border: 1px solid var(--border-color);
       border-radius: 12px;
-      padding: 10px;
+      padding: 15px;
       background: #f9fafb;
       display: flex;
       flex-direction: column;
-      height: 600px;
+      height: 650px;
       overflow: hidden;
     }
-    .gallery-header { margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px; }
-    .gallery-title { font-size: 13px; font-weight: bold; color: #333; }
+    .gallery-header { margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; }
+    .gallery-title { font-size: 14px; font-weight: bold; color: #333; }
     
     .gallery-search {
-        padding: 5px; border-radius: 6px; border: 1px solid #ddd; font-size: 11px; width: 100%; box-sizing: border-box;
+        padding: 8px; border-radius: 6px; border: 1px solid #ddd; font-size: 12px; width: 100%; box-sizing: border-box;
     }
 
     .mini-gallery-container {
-        margin-bottom: 10px;
-        height: 200px;
         display: flex;
         flex-direction: column;
+        flex-grow: 1;
+        overflow: hidden;
     }
 
     .mini-gallery-title {
-        font-size: 10px;
+        font-size: 11px;
         color: var(--accent);
         text-transform: uppercase;
         font-weight: bold;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
     }
 
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
-      gap: 5px;
+      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      gap: 8px;
       overflow-y: auto;
       padding-right: 5px;
       flex-grow: 1;
     }
     .gallery-item {
-      width: 45px; 
-      height: 45px;
+      width: 60px; 
+      height: 60px;
       border: 1px solid #eee;
       border-radius: 6px;
       cursor: pointer;
@@ -174,7 +176,7 @@
 
     .layer-manager {
         background: #f3f4f6; padding: 8px; border-radius: 8px; border: 1px solid #e5e7eb;
-        max-height: 120px; overflow-y: auto;
+        max-height: 150px; overflow-y: auto;
     }
     
     .layer-item {
@@ -209,21 +211,16 @@
   
   <div class="gallery-panel">
     <div class="gallery-header">
-        <div class="gallery-title">Asset Search</div>
-        <input type="text" id="gallerySearch" class="gallery-search" placeholder="Search all libraries...">
+        <div class="gallery-title">Asset Library</div>
+        <input type="text" id="gallerySearch" class="gallery-search" placeholder="Search vectors...">
     </div>
     
     <div class="mini-gallery-container">
-        <div class="mini-gallery-title">Pixabay (Vector)</div>
+        <div class="mini-gallery-title">Pixabay Graphics</div>
         <div class="gallery-grid" id="pixabayGrid"></div>
     </div>
-    
-    <div class="mini-gallery-container">
-        <div class="mini-gallery-title">OpenClipart (SVG)</div>
-        <div class="gallery-grid" id="openClipartGrid"></div>
-    </div>
 
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
     <div class="control-group">
         <label>Upload Local Image</label>
         <input type="file" id="imageInput" accept="image/*" style="padding: 3px;" />
@@ -323,6 +320,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
+  // Removed OpenClipart API key/logic
   const PIXABAY_API_KEY = '54841320-2fc493da46915b0eb0a6f740c';
   let activeViewId = 'view-tshirt';
   let currentProduct = 'tshirt';
@@ -488,10 +486,10 @@
   });
   document.addEventListener('mouseup', () => activeItem = null);
 
-  // --- DUAL LOADER ---
+  // --- PIXABAY LOADER ---
   async function loadPixabay(q = '') {
     const grid = document.getElementById('pixabayGrid');
-    const url = `https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(q)}&image_type=vector&per_page=10`;
+    const url = `https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(q)}&image_type=vector&per_page=18`;
     try {
         const res = await fetch(url);
         const data = await res.json();
@@ -503,36 +501,18 @@
             el.onclick = () => createLayer('image', img.largeImageURL);
             grid.appendChild(el);
         });
-    } catch(e) {}
+    } catch(e) {
+        grid.innerHTML = '<p style="font-size:12px; color:red;">Failed to load images.</p>';
+    }
   }
 
-  async function loadOpenClipart(q = '') {
-    const grid = document.getElementById('openClipartGrid');
-    const url = q 
-        ? `https://openclipart.org/search/json/?query=${encodeURIComponent(q)}&amount=10`
-        : `https://openclipart.org/search/json/?sort=downloads&amount=10`;
-    try {
-        const res = await fetch(url);
-        const data = await res.json();
-        grid.innerHTML = '';
-        data.payload.forEach(clip => {
-            const el = document.createElement('img');
-            el.src = clip.svg.url_thumb; 
-            el.className = 'gallery-item';
-            el.onclick = () => createLayer('image', clip.svg.url);
-            grid.appendChild(el);
-        });
-    } catch(e) {}
-  }
-
+  // --- Search Only Pixabay ---
   document.getElementById('gallerySearch').addEventListener('input', (e) => {
       loadPixabay(e.target.value);
-      loadOpenClipart(e.target.value);
   });
 
   // Init
   loadPixabay();
-  loadOpenClipart();
 
   document.getElementById('addTextBtn').addEventListener('click', () => {
       const val = document.getElementById('textInput').value;
