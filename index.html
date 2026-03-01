@@ -105,7 +105,6 @@
     .draggable img { max-width: 100%; max-height: 100%; pointer-events: none; }
     
     .design-text { 
-        font-weight: bold; 
         text-align: center; 
         pointer-events: none;
         word-break: break-word;
@@ -130,10 +129,9 @@
     
     .layer-manager {
         background: #f3f4f6; padding: 10px; border-radius: 8px; border: 1px solid #e5e7eb;
-        max-height: 250px; overflow-y: auto;
+        max-height: 200px; overflow-y: auto;
     }
     
-    /* Updated List Styling for Dragging */
     .layer-item {
         display: flex; justify-content: space-between; align-items: center;
         background: white; padding: 8px 10px; border-radius: 4px; margin-bottom: 5px; font-size: 12px;
@@ -151,8 +149,11 @@
     .btn-primary { background: var(--primary); color: white; }
     .btn-action { background: #dbeafe; color: #1e40af; }
     .btn-download { background: #d1fae5; color: #065f46; }
+    
+    /* Text Editor Specific */
+    #textEditor { display: none; background: #f3f4f6; padding: 10px; border-radius: 8px; }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Lobster&family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -198,9 +199,23 @@
             <button class="btn-action" id="addTextBtn">Add</button>
         </div>
     </div>
+    
+    <div id="textEditor">
+        <label style="color: var(--accent);">Text Style</label>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 5px;">
+            <input type="color" id="fontColor" value="#000000">
+            <select id="fontFamily">
+                <option value="Roboto">Default</option>
+                <option value="Lobster">Lobster</option>
+                <option value="'Press Start 2P'">Pixel</option>
+            </select>
+            <button class="btn-icon" id="fontBold" style="grid-column: span 1;"><b>B</b></button>
+            <button class="btn-icon" id="fontItalic" style="grid-column: span 1;"><i>I</i></button>
+        </div>
+    </div>
 
     <div class="layer-manager">
-        <label style="color: var(--accent); margin-bottom: 8px; display: block;">Active Layers (Drag to Reorder)</label>
+        <label style="color: var(--accent); margin-bottom: 8px; display: block;">Layers (Drag to Reorder)</label>
         <div id="layerList"></div>
     </div>
 
@@ -230,6 +245,7 @@
 
   const productShape = document.getElementById('productShape');
   const layerList = document.getElementById('layerList');
+  const textEditor = document.getElementById('textEditor');
   let layerCount = 0;
 
   function createLayer(type, content) {
@@ -240,6 +256,7 @@
     layer.id = layerId;
     layer.className = 'draggable active-layer';
     layer.style.top = '100px'; layer.style.left = '100px';
+    layer.dataset.type = type; // Store type for styling
     
     document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
     
@@ -249,14 +266,17 @@
         img.style.width = '100px'; 
         layer.appendChild(img);
         addLayerToList(layerId, 'Image');
+        textEditor.style.display = 'none'; // Hide text editor
     } else {
         const text = document.createElement('div');
         text.className = 'design-text';
         text.textContent = content;
         text.style.fontSize = '24px';
         text.style.fontFamily = 'Roboto';
+        text.style.color = '#000000';
         layer.appendChild(text);
         addLayerToList(layerId, 'Text');
+        textEditor.style.display = 'block'; // Show text editor
     }
 
     const handle = document.createElement('div');
@@ -268,13 +288,31 @@
     makeResizable(layer, handle, type);
   }
 
+  // --- TEXT CUSTOMIZATION ---
+  document.getElementById('fontColor').addEventListener('input', (e) => {
+      const active = document.querySelector('.active-layer .design-text');
+      if(active) active.style.color = e.target.value;
+  });
+  document.getElementById('fontFamily').addEventListener('change', (e) => {
+      const active = document.querySelector('.active-layer .design-text');
+      if(active) active.style.fontFamily = e.target.value;
+  });
+  document.getElementById('fontBold').addEventListener('click', (e) => {
+      const active = document.querySelector('.active-layer .design-text');
+      if(active) active.style.fontWeight = active.style.fontWeight === 'bold' ? 'normal' : 'bold';
+  });
+  document.getElementById('fontItalic').addEventListener('click', (e) => {
+      const active = document.querySelector('.active-layer .design-text');
+      if(active) active.style.fontStyle = active.style.fontStyle === 'italic' ? 'normal' : 'italic';
+  });
+
   // --- HTML5 DRAG & DROP LIST ---
   function addLayerToList(id, name) {
       const item = document.createElement('div');
       item.className = 'layer-item';
       item.id = 'list_' + id;
-      item.draggable = true; // Make item draggable
-      item.dataset.layerId = id; // Store link to layer
+      item.draggable = true;
+      item.dataset.layerId = id;
 
       item.innerHTML = `
         <span>${name}</span>
@@ -283,7 +321,6 @@
         </div>
       `;
 
-      // Drag Event Listeners
       item.addEventListener('dragstart', handleDragStart);
       item.addEventListener('dragover', handleDragOver);
       item.addEventListener('drop', handleDrop);
@@ -295,9 +332,9 @@
   function removeLayer(id) {
       document.getElementById(id).remove();
       document.getElementById('list_' + id).remove();
+      textEditor.style.display = 'none';
   }
 
-  // --- DRAG AND DROP HANDLERS ---
   let draggedItem = null;
 
   function handleDragStart(e) {
@@ -315,7 +352,6 @@
   function handleDrop(e) {
       e.stopPropagation();
       if (draggedItem !== this) {
-          // Reorder List
           const allItems = Array.from(layerList.children);
           const draggedIndex = allItems.indexOf(draggedItem);
           const droppedIndex = allItems.indexOf(this);
@@ -325,8 +361,6 @@
           } else {
               this.before(draggedItem);
           }
-
-          // --- SYNC DOM ORDER WITH LIST ORDER ---
           syncDomOrder();
       }
       return false;
@@ -337,13 +371,11 @@
       draggedItem = null;
   }
 
-  // Syncs the canvas Z-order with the list order
   function syncDomOrder() {
       const listItems = Array.from(layerList.children);
-      // Reverse list to match visual top-to-bottom with back-to-front
       listItems.reverse().forEach(item => {
           const layer = document.getElementById(item.dataset.layerId);
-          productShape.appendChild(layer); // Re-appending moves it to the top of the stack
+          productShape.appendChild(layer);
       });
   }
 
@@ -358,23 +390,28 @@
       activeItem = el;
       document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
       el.classList.add('active-layer');
+      
+      // Update Editor Panel
+      if(el.dataset.type === 'text') {
+          textEditor.style.display = 'block';
+      } else {
+          textEditor.style.display = 'none';
+      }
+
       const rect = el.getBoundingClientRect();
       offset.x = e.clientX - rect.left;
       offset.y = e.clientY - rect.top;
       
-      // Bring to top
       el.parentNode.appendChild(el);
-      // Sync list to match
       syncListOrder();
     });
   }
 
-  // Syncs list order with canvas stacking order
   function syncListOrder() {
       const layers = Array.from(productShape.children);
       layers.forEach(layer => {
           const listItem = document.getElementById('list_' + layer.id);
-          layerList.prepend(listItem); // Move list item to top
+          layerList.prepend(listItem);
       });
   }
 
