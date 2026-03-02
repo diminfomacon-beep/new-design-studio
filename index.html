@@ -181,6 +181,16 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
   position: relative;
   overflow: hidden;
 }
+/* Style for the shape buttons in the gallery */
+.shape-item {
+    cursor: pointer;
+    border: 1px solid #eee;
+    transition: all 0.2s;
+}
+.shape-item:hover {
+    border-color: var(--accent);
+    transform: scale(1.05);
+}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat:wght@400;900&family=Pacifico&family=Playfair+Display:wght@700&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
 </head>
@@ -199,11 +209,22 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
       <div class="gallery-grid" id="pixabayGrid"></div>
     </div>
     <hr style="border:0;border-top:1px solid #eee;margin:10px 0;">
+    <div class="mini-gallery-container">
+      <div class="mini-gallery-title" style="display:flex; justify-content:space-between; align-items:center;">
+        <span>Solid Shapes</span>                
+        <div id="shapeColorPicker" style="width: 25px; height: 25px;"></div>
+      </div>
+      <div class="gallery-grid" id="shapesGrid">
+          <div class="gallery-item shape-item" data-shape="square" style="border-radius: 0; background: #333;"></div>
+          <div class="gallery-item shape-item" data-shape="circle" style="border-radius: 50%; background: #333;"></div>
+          <div class="gallery-item shape-item" data-shape="triangle" style="background: #333; clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"></div>
+      </div>
+    </div>
+    <hr style="border:0;border-top:1px solid #eee;margin:10px 0;">
     <div class="control-group">
       <label>Upload Local Image</label>
       <input type="file" id="imageInput" accept="image/*"/>
     </div>
-    <hr style="border:0;border-top:1px solid #eee;margin:10px 0;">
   </div>
 
 
@@ -267,7 +288,7 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 
 
 
-  
+
   <div class="controls-panel">
     <div class="control-group">
       <label>Product</label>
@@ -278,16 +299,15 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
       </select>
     </div>
     <div class="control-group">
-      <label>Zoom Preview</label>
-      <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
-    </div>
-    <div class="control-group">
       <label>Product Color</label>
       <div id="bgPicker"></div>
     </div>
     <hr style="border:0;border-top:1px solid #eee;margin:10px 0;">
     <div class="preview-panel">
       <div class="preview-title">Preview</div>
+      <div class="control-group">
+        <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
+      </div>
       <div class="preview-box">
         <div id="stage-tshirt" class="product-stage active-product">
           <div class="product-view view-tshirt">
@@ -316,7 +336,7 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-/********************************************
+  /********************************************
  * INITIALIZATION
  ********************************************/
 const PIXABAY_API_KEY = '54841320-2fc493da46915b0eb0a6f740c';
@@ -342,21 +362,36 @@ const extendedSwatches = [
 function createPicker(el, def) {
   return Pickr.create({
     el,
-    theme: 'classic',
+    // --- CHANGED: Use a cleaner theme ---
+    theme: 'nano', 
     default: def,
     swatches: extendedSwatches,
     components: {
+      // --- UPDATED: Focus on Swatches and Interactive Inputs ---
       preview: true,
-      opacity: true,
-      hue: true,
-      interaction: { hex: true, input: true, save: true }
+      opacity: false,
+      hue: false, // Hides the main color gradient slider
+      interaction: {
+        hex: true,
+        input: true,
+        save: true // The save button handles applying the custom input
+      }
     }
   });
 }
 
 const bgPicker = createPicker('#bgPicker', '#ffffff');
 const fontColorPicker = createPicker('#fontColorPicker', '#000000');
+const shapeColorPicker = createPicker('#shapeColorPicker', '#333333');
 
+function hidePickerOnSave(picker) {
+    picker.on('save', (color, instance) => {
+        instance.hide(); // --- THIS CLOSES THE PICKER BOX ---
+    });
+}
+hidePickerOnSave(bgPicker);
+hidePickerOnSave(fontColorPicker);
+hidePickerOnSave(shapeColorPicker);
 bgPicker.on('change', (color, instance) => {
   const colorStr = color.toRGBA().toString();
   document.querySelectorAll('.product-view').forEach(v => v.style.backgroundColor = colorStr);
@@ -364,10 +399,29 @@ bgPicker.on('change', (color, instance) => {
 });
 
 fontColorPicker.on('change', (color, instance) => {
-  const active = document.querySelector('.active-layer .design-text');
-  if(active) active.style.color = color.toRGBA().toString();
-  instance.setColor(color.toRGBA().toString());
+    const colorStr = color.toRGBA().toString();
+    if(activeItem) {
+        const textEl = activeItem.querySelector('.design-text');
+        const svgEl = activeItem.querySelector('svg');
+        
+        if(textEl) textEl.style.color = colorStr;
+        if(svgEl) svgEl.setAttribute('fill', colorStr); 
+    }
 });
+
+// --- UPDATED: Shape Picker Change Logic ---
+shapeColorPicker.on('change', (color, instance) => {
+    const colorStr = color.toRGBA().toString();
+    if(activeItem) {
+        const svgEl = activeItem.querySelector('svg');
+        if(svgEl) {
+            svgEl.setAttribute('fill', colorStr);
+        }
+    }
+    instance.setColor(colorStr);
+});
+
+
 /********************************************
  * UTILITY
  ********************************************/
@@ -665,6 +719,60 @@ function updateLayerList(){
 }
 
 /********************************************
+ * SOLID SHAPES FUNCTIONALITY
+ ********************************************/
+const shapesGrid = document.getElementById('shapesGrid');
+
+// 1. Listen for clicks on the shape buttons
+shapesGrid.querySelectorAll('.shape-item').forEach(shapeItem => {
+    shapeItem.addEventListener('click', () => {
+        const shapeType = shapeItem.getAttribute('data-shape');
+        addShapeToCanvas(shapeType);
+    });
+});
+
+// 2. Function to add SVG shape to canvas
+function addShapeToCanvas(type) {
+    const div = document.createElement('div');
+    div.classList.add('draggable');
+    
+    // Set initial size and position
+    div.style.width = '100px';
+    div.style.height = '100px';
+    div.style.left = '50px'; 
+    div.style.top = '50px';
+
+    let svgContent = '';
+    
+    // --- UPDATED: Get color from the shape picker ---
+    const color = shapeColorPicker.getColor().toHEXA().toString();
+
+    if (type === 'square') {
+        svgContent = `<svg viewBox="0 0 100 100" fill="${color}"><rect width="100" height="100"/></svg>`;
+    } else if (type === 'circle') {
+        svgContent = `<svg viewBox="0 0 100 100" fill="${color}"><circle cx="50" cy="50" r="50"/></svg>`;
+    } else if (type === 'triangle') {
+        svgContent = `<svg viewBox="0 0 100 100" fill="${color}"><polygon points="50,0 100,100 0,100"/></svg>`;
+    }
+
+    div.innerHTML = svgContent + '<div class="resize-handle handle-br"></div>';
+    
+    // Add to canvas and make draggable
+    designCanvas.appendChild(div);
+    makeDraggable(div);
+    
+    // Set as active item for color changes
+    activeItem = div;
+    
+    // Update dependencies
+    if(typeof updateLayerList === 'function') updateLayerList();
+    if(typeof saveHistory === 'function') saveHistory();
+    if(typeof updatePreview === 'function') updatePreview();
+}
+
+
+
+/********************************************
  * IMAGE UPLOAD
  ********************************************/
 const imageInput = document.getElementById('imageInput');
@@ -750,6 +858,7 @@ async function fetchPixabay(query = 'vector') {
 }
 fetchPixabay();
 
+
 gallerySearch.addEventListener('keypress', e => {
   if(e.key==='Enter') fetchPixabay(gallerySearch.value);
 });
@@ -766,7 +875,6 @@ document.getElementById('downloadBtn').addEventListener('click', () => {
     link.click();
   });
 });
-
 /********************************************
  * INITIALIZATION
  ********************************************/
