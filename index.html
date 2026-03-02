@@ -20,7 +20,7 @@ body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:10px;dis
 .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(45px,1fr));gap:5px;overflow-y:auto;flex-grow:1;padding-right:5px;}
 .gallery-item{width:45px;height:45px;border:1px solid #eee;border-radius:6px;cursor:pointer;object-fit:contain;background:white;transition:all 0.2s;}
 .gallery-item:hover{border-color:var(--accent);transform:scale(1.05);}
-.preview-container{background:#e5e7eb;background-size:20px 20px;border:1px solid var(--border-color);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;position:relative;min-height:500px;gap:15px;overflow:hidden;}
+.canvas-container{background:#ffffff;background-size:20px 20px;border:1px solid var(--border-color);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;position:relative;min-height:500px;gap:15px;overflow:hidden;}
 .product-stage{display:none;position:relative;transform-origin:center;align-items:center;justify-content:center;}
 .product-stage.active-product{display:flex;}
 .product-view{box-shadow:0 10px 25px rgba(0,0,0,0.2);position:relative;overflow:hidden;background-color:white;cursor:pointer;border:3px solid transparent;transition:all 0.3s;}
@@ -91,6 +91,8 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 </head>
 <body>
 <div class="studio-wrapper">
+
+  
   <!-- LEFT PANEL -->
   <div class="gallery-panel">
     <div class="gallery-header">
@@ -155,7 +157,7 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 
   
   <!-- CENTER PREVIEW -->
-  <div class="preview-container"></div>
+  <div class="canvas-container"></div>
 
   
   <!-- RIGHT PANEL -->
