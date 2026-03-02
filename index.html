@@ -402,11 +402,12 @@ fontColorPicker.on('change', (color, instance) => {
     const colorStr = color.toRGBA().toString();
     if(activeItem) {
         const textEl = activeItem.querySelector('.design-text');
-        const svgEl = activeItem.querySelector('svg');
+       
         
         if(textEl) textEl.style.color = colorStr;
-        if(svgEl) svgEl.setAttribute('fill', colorStr); 
+         
     }
+    updatePreview();
 });
 
 // --- UPDATED: Shape Picker Change Logic ---
@@ -418,7 +419,7 @@ shapeColorPicker.on('change', (color, instance) => {
             svgEl.setAttribute('fill', colorStr);
         }
     }
-    instance.setColor(colorStr);
+  updatePreview();
 });
 
 
