@@ -20,7 +20,7 @@ body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:10px;dis
 .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(45px,1fr));gap:5px;overflow-y:auto;flex-grow:1;padding-right:5px;}
 .gallery-item{width:45px;height:45px;border:1px solid #eee;border-radius:6px;cursor:pointer;object-fit:contain;background:white;transition:all 0.2s;}
 .gallery-item:hover{border-color:var(--accent);transform:scale(1.05);}
-.preview-container{background:#e5e7eb;background-image:radial-gradient(#bcbece 1px, transparent 1px);background-size:20px 20px;border:1px solid var(--border-color);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;position:relative;min-height:500px;gap:15px;overflow:hidden;}
+.preview-container{background:#e5e7eb;background-size:20px 20px;border:1px solid var(--border-color);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;position:relative;min-height:500px;gap:15px;overflow:hidden;}
 .product-stage{display:none;position:relative;transform-origin:center;align-items:center;justify-content:center;}
 .product-stage.active-product{display:flex;}
 .product-view{box-shadow:0 10px 25px rgba(0,0,0,0.2);position:relative;overflow:hidden;background-color:white;cursor:pointer;border:3px solid transparent;transition:all 0.3s;}
@@ -52,6 +52,40 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 #textEditor{display:none;background:#f3f4f6;padding:10px;border-radius:8px;border:1px solid #e5e7eb;}
 .size-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
 .size-row input{width:60px;}
+.preview-panel{
+    border:1px solid var(--border-color);                
+    border-radius:12px;
+    padding:10px;
+    background:#ffffff;
+    display:flex;
+    flex-direction:column;
+    height:300px; /* Increased height to fit preview */
+    overflow:hidden;
+}
+.preview-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: #000000;
+    align-self: flex-start;
+}
+.preview-box {
+    width: 150px;                
+    height: px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.preview-box img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat:wght@400;900&family=Pacifico&family=Playfair+Display:wght@700&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
 </head>
@@ -60,7 +94,7 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
   <!-- LEFT PANEL -->
   <div class="gallery-panel">
     <div class="gallery-header">
-      <div class="gallery-title">Asset Search</div>
+      <div class="gallery-title">Image Search</div>
       <input type="text" id="gallerySearch" class="gallery-search" placeholder="Search all libraries...">
     </div>
     <div class="mini-gallery-container">
@@ -72,37 +106,7 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
       <label>Upload Local Image</label>
       <input type="file" id="imageInput" accept="image/*"/>
     </div>
-  </div>
-  <!-- CENTER PREVIEW -->
-  <div class="preview-container">
-    <div id="stage-tshirt" class="product-stage active-product">
-      <div id="view-tshirt" class="product-view view-tshirt"></div>
-    </div>
-    <div id="stage-tumbler" class="product-stage">
-      <div id="view-tumbler" class="product-view view-tumbler"></div>
-    </div>
-    <div id="stage-mug" class="product-stage">
-      <div id="view-mug" class="product-view view-mug"></div>
-    </div>
-  </div>
-  <!-- RIGHT PANEL -->
-  <div class="controls-panel">
-    <div class="control-group">
-      <label>Product</label>
-      <select id="productSelect">
-        <option value="tshirt">T-Shirt</option>
-        <option value="tumbler">Tumbler</option>
-        <option value="mug">Mug</option>
-      </select>
-    </div>
-    <div class="control-group">
-      <label>Zoom Preview</label>
-      <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
-    </div>
-    <div class="control-group">
-      <label>Surface Color</label>
-      <div id="bgPicker"></div>
-    </div>
+    <hr style="border:0;border-top:1px solid #eee;margin:10px 0;">
     <div class="control-group">
       <label>Add Text</label>
       <div style="display:flex; gap:3px;">
@@ -146,7 +150,48 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
     <div class="layer-manager">
       <label style="color: var(--accent); margin-bottom:5px; display:block; font-size:10px;">Active Layers</label>
       <div id="layerList"></div>
+    </div>    
+  </div>
+
+  
+  <!-- CENTER PREVIEW -->
+  <div class="preview-container"></div>
+
+  
+  <!-- RIGHT PANEL -->
+  <div class="controls-panel">
+    <div class="control-group">
+      <label>Product</label>
+      <select id="productSelect">
+        <option value="tshirt">T-Shirt</option>
+        <option value="tumbler">Tumbler</option>
+        <option value="mug">Mug</option>
+      </select>
     </div>
+    <div class="control-group">
+      <label>Zoom Preview</label>
+      <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
+    </div>
+    <div class="control-group">
+      <label>Surface Color</label>
+      <div id="bgPicker"></div>
+    </div>
+    <hr style="border:0;border-top:1px solid #eee;margin:10px 0;">
+    <div class="preview-panel">
+      <div class="preview-title">Preview</div>
+      <div class="preview-box"></div>
+        <div class="preview-box img"></div>
+          <div id="stage-tshirt" class="product-stage active-product">
+            <div id="view-tshirt" class="product-view view-tshirt"></div>
+          </div>
+          <div id="stage-tumbler" class="product-stage">
+            <div id="view-tumbler" class="product-view view-tumbler"></div>
+          </div>
+          <div id="stage-mug" class="product-stage">
+            <div id="view-mug" class="product-view view-mug"></div>
+          </div>
+    </div>
+    
     <div class="btn-group">
       <button class="btn-download" id="downloadBtn">💾 Save PNG</button>
       <button class="btn-primary" id="submitDesign">Finalize</button>
