@@ -10,7 +10,32 @@
   --primary:#111827; --accent:#3b82f6; --bg-light:#f5f5f5; --border-color:#ddd;
 }
 body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:10px;display:flex;justify-content:center;user-select:none;}
-.studio-wrapper{display:grid;grid-template-columns:240px 1fr 240px;gap:15px;width:100%;padding:15px;background:#CAE4DB;border-radius:16px;}
+.studio-wrapper {                
+  display: grid;
+  /* --- CHANGED: First 2 columns are fixed, center expands --- */
+  grid-template-columns: 240px 240px 1fr 240px; 
+  gap: 15px;                
+  width: 100%;                
+  padding: 15px;                
+  background:#CAE4DB;                
+  border-radius:16px;
+  box-sizing: border-box;
+  /* --- Added to ensure panels don't shrink too small --- */
+  min-width: 1200px; 
+}
+
+/* --- NEW: Control Panel Style --- */
+.control-panel-left {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 15px;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: 600px;
+  overflow-y: auto;
+}
 .gallery-panel{border:1px solid var(--border-color);border-radius:12px;padding:10px;background:#f9fafb;display:flex;flex-direction:column;height:600px;overflow:hidden;}
 .gallery-header{margin-bottom:10px;display:flex;flex-direction:column;gap:5px;}
 .gallery-title{font-size:13px;font-weight:bold;color:#333;}
@@ -144,9 +169,12 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
   position: relative;
   overflow: hidden;
 }
+
 .design-canvas {
-  width: 400px;
-  height: 400px;
+  /* --- CHANGED: Use 100% instead of fixed pixels --- */
+  width: 100%;
+  height: 100%;
+  
   background: white;
   border: 2px dashed #ccc;
   border-radius: 12px;
@@ -156,8 +184,10 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat:wght@400;900&family=Pacifico&family=Playfair+Display:wght@700&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
 </head>
-<body>
+<body>      
 <div class="studio-wrapper">
+
+
 
   <div class="gallery-panel">
     <div class="gallery-header">
@@ -174,6 +204,12 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
       <input type="file" id="imageInput" accept="image/*"/>
     </div>
     <hr style="border:0;border-top:1px solid #eee;margin:10px 0;">
+  </div>
+
+
+
+
+  <div class="control-panel-left">
     <div class="control-group">
       <label>Add Text</label>
       <div style="display:flex; gap:3px;">
@@ -218,12 +254,20 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
       <label style="color: var(--accent); margin-bottom:5px; display:block; font-size:10px;">Active Layers</label>
       <div id="layerList"></div>
     </div>
+    <div class="btn-group">
+      <button onclick="undo()">↶ Undo</button>
+      <button onclick="redo()">↷ Redo</button>
+    </div>
   </div>
+
 
   <div class="canvas-container">
     <div id="designCanvas" class="design-canvas"></div>
   </div>
 
+
+
+  
   <div class="controls-panel">
     <div class="control-group">
       <label>Product</label>
@@ -266,8 +310,6 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
     <div class="btn-group">
       <button class="btn-download" id="downloadBtn">💾 Save PNG</button>
       <button class="btn-primary" id="submitDesign">Finalize</button>
-      <button onclick="undo()">↶ Undo</button>
-      <button onclick="redo()">↷ Redo</button>
     </div>
   </div>
 </div>
