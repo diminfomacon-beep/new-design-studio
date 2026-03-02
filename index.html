@@ -20,20 +20,65 @@ body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:10px;dis
 .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(45px,1fr));gap:5px;overflow-y:auto;flex-grow:1;padding-right:5px;}
 .gallery-item{width:45px;height:45px;border:1px solid #eee;border-radius:6px;cursor:pointer;object-fit:contain;background:white;transition:all 0.2s;}
 .gallery-item:hover{border-color:var(--accent);transform:scale(1.05);}
-.canvas-container{background:#ffffff;background-size:20px 20px;border:1px solid var(--border-color);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;position:relative;min-height:500px;gap:15px;overflow:hidden;}
-.product-stage{display:none;position:relative;transform-origin:center;align-items:center;justify-content:center;}
+
+/* --- PRODUCT PREVIEW CSS --- */
+.product-stage{
+    display:none;
+    position:relative;
+    width: 100%;
+    height: 100%;
+    align-items:center;
+    justify-content:center;
+}
 .product-stage.active-product{display:flex;}
-.product-view{box-shadow:0 10px 25px rgba(0,0,0,0.2);position:relative;overflow:hidden;background-color:white;cursor:pointer;border:3px solid transparent;transition:all 0.3s;}
-.view-tshirt{width:320px;height:330px;clip-path:polygon(25% 0%,75% 0%,100% 20%,85% 35%,85% 100%,15% 100%,15% 35%,0% 20%);}
-.view-tumbler{width:140px;height:330px;border-radius:10px;}
-.view-mug{width:200px;height:170px;border-radius:10px 10px 50px 50px;}
-.draggable{position:absolute;cursor:move;border:2px solid transparent;display:flex;align-items:center;justify-content:center;min-width:20px;min-height:20px;box-sizing:border-box;touch-action:none;}
+.product-view{
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    position:relative;
+    overflow:hidden;
+    background-color:white;
+    border:3px solid transparent;
+    transition:all 0.3s;
+}
+/* Define shapes for products */
+.view-tshirt{width:320px;height:250px;clip-path:polygon(25% 0%,75% 0%,100% 20%,85% 35%,85% 100%,15% 100%,15% 35%,0% 20%);}
+
+
+/* Ensure the design container is positioned over the chest */
+#tshirt-design {
+    /* Adjust these to fit the SVG or image you use */
+    top: 25%;
+    left: 30%;
+    width: 40%;
+    height: 35%;
+    border: 1px dashed rgba(255,0,0,0.3); /* Keep for debugging */
+}
+.view-tumbler { width: 100px; height: 250px; border-radius: 10px; }
+.view-mug { width: 180px; height: 150px; border-radius: 10px 10px 30px 30px; }
+
+/* Combined design layer */
+.mockup-layer {
+    position: absolute;
+    overflow: hidden;
+    pointer-events: none;
+    border: 1px dashed rgba(255,0,0,0.3); /* Visualization */
+}
+
+/* --- DRAGGABLE CSS --- */
 .draggable.active-layer{border:2px solid var(--accent);}
-.draggable img{max-width:100%;max-height:100%;pointer-events:none;}
 .design-text{text-align:center;pointer-events:none;word-break:break-word;display:block;width:100%;line-height:1.1;}
 .resize-handle{width:10px;height:10px;background:white;border:2px solid var(--accent);position:absolute;display:none;cursor:nwse-resize;}
 .draggable.active-layer .resize-handle{display:block;}
 .handle-br{bottom:-5px;right:-5px;}
+.draggable img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.draggable {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+/* --- PANELS --- */
 .controls-panel{display:flex;flex-direction:column;gap:10px;}
 .control-group{display:flex;flex-direction:column;gap:3px;}
 label{font-weight:600;font-size:10px;color:#666;text-transform:uppercase;}
@@ -42,7 +87,7 @@ input,select{padding:6px;border-radius:6px;border:1px solid #ddd;font-size:12px;
 .layer-item{display:flex;justify-content:space-between;align-items:center;background:white;padding:6px 8px;border-radius:4px;margin-bottom:4px;font-size:11px;border:1px solid #eee;}
 .btn-icon{background:#eee;border:none;padding:2px 5px;border-radius:3px;cursor:pointer;font-size:9px;}
 .btn-delete{background:#fee2e2;color:#991b1b;}
-.btn-group{display:flex;gap:8px;margin-top:5px;}
+.btn-group{display:flex;gap:8px;margin-top:5px;flex-wrap: wrap;}
 button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;font-size:12px;}
 .btn-style{background:#f3f4f6;color:#333;font-weight:bold;padding:6px 10px;border:1px solid #ddd;}
 .btn-style.active{background:var(--accent);color:white;border-color:var(--accent);}
@@ -52,39 +97,61 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 #textEditor{display:none;background:#f3f4f6;padding:10px;border-radius:8px;border:1px solid #e5e7eb;}
 .size-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
 .size-row input{width:60px;}
+
+/* --- PREVIEW PANEL --- */
 .preview-panel{
-    border:1px solid var(--border-color);                
+    border:1px solid var(--border-color);
     border-radius:12px;
     padding:10px;
     background:#c9c5c5;
     display:flex;
     flex-direction:column;
-    height:300px; 
+    height:350px;
     overflow:hidden;
 }
-.preview-title {
-    font-size: 13px;
-    font-weight: bold;
-    color: #000000;
-    align-self: flex-start;
-}
+.preview-title { font-size: 13px; font-weight: bold; color: #000000; align-self: flex-start; }
 .preview-box {
-    width: px;                
-    height: px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
+  width: 100%;
+  height: 300px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background-color: #e5e7eb;
+  background-image:
+    linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(0,0,0,0.05) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.05) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.05) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
 }
 
-.preview-box img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+/* --- CANVAS --- */
+.canvas-container {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  min-height: 500px;
+  position: relative;
+  overflow: hidden;
+}
+.design-canvas {
+  width: 400px;
+  height: 400px;
+  background: white;
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
 }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat:wght@400;900&family=Pacifico&family=Playfair+Display:wght@700&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
@@ -92,8 +159,6 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 <body>
 <div class="studio-wrapper">
 
-  
-  <!-- LEFT PANEL -->
   <div class="gallery-panel">
     <div class="gallery-header">
       <div class="gallery-title">Image Search</div>
@@ -152,15 +217,13 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
     <div class="layer-manager">
       <label style="color: var(--accent); margin-bottom:5px; display:block; font-size:10px;">Active Layers</label>
       <div id="layerList"></div>
-    </div>    
+    </div>
   </div>
 
-  
-  <!-- CENTER PREVIEW -->
-  <div class="canvas-container"></div>
+  <div class="canvas-container">
+    <div id="designCanvas" class="design-canvas"></div>
+  </div>
 
-  
-  <!-- RIGHT PANEL -->
   <div class="controls-panel">
     <div class="control-group">
       <label>Product</label>
@@ -175,27 +238,31 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
       <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
     </div>
     <div class="control-group">
-      <label>Surface Color</label>
+      <label>Product Color</label>
       <div id="bgPicker"></div>
     </div>
     <hr style="border:0;border-top:1px solid #eee;margin:10px 0;">
     <div class="preview-panel">
       <div class="preview-title">Preview</div>
       <div class="preview-box">
-        <div class="preview-box img">
-          <div id="stage-tshirt" class="product-stage active-product">
-            <div id="view-tshirt" class="product-view view-tshirt"></div>
+        <div id="stage-tshirt" class="product-stage active-product">
+          <div class="product-view view-tshirt">
+            <div class="mockup-layer" id="tshirt-design"></div>
           </div>
-          <div id="stage-tumbler" class="product-stage">
-            <div id="view-tumbler" class="product-view view-tumbler"></div>
+        </div>
+        <div id="stage-tumbler" class="product-stage">
+          <div class="product-view view-tumbler">
+            <div class="mockup-layer" id="tumbler-design"></div>
           </div>
-          <div id="stage-mug" class="product-stage">
-            <div id="view-mug" class="product-view view-mug"></div>
+        </div>
+        <div id="stage-mug" class="product-stage">
+          <div class="product-view view-mug">
+            <div class="mockup-layer" id="mug-design"></div>
           </div>
         </div>
       </div>
     </div>
-    
+
     <div class="btn-group">
       <button class="btn-download" id="downloadBtn">💾 Save PNG</button>
       <button class="btn-primary" id="submitDesign">Finalize</button>
@@ -211,16 +278,13 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
  * INITIALIZATION
  ********************************************/
 const PIXABAY_API_KEY = '54841320-2fc493da46915b0eb0a6f740c';
-let activeViewId = 'view-tshirt';
-let activeView = document.getElementById(activeViewId);
+let designCanvas = document.getElementById('designCanvas');
 let currentProduct = 'tshirt';
-let layerCount = 0;
 let historyStack = [];
 let redoStack = [];
 let activeItem = null;
-let offset = {x:0, y:0};
 let isResizing = false;
-  
+
 const extendedSwatches = [
   '#FFFFFF', '#F2F2F2', '#D9D9D9', '#BFBFBF', '#A6A6A6', '#808080', '#595959', '#404040', '#262626', '#000000',
   '#FFCCCC', '#FF9999', '#FF6666', '#FF3333', '#FF0000', '#CC0000', '#990000', '#660000', '#330000',
@@ -266,47 +330,122 @@ fontColorPicker.on('change', (color, instance) => {
  * UTILITY
  ********************************************/
 function saveHistory(){
-  const snapshot = activeView.innerHTML;
+  const snapshot = designCanvas.innerHTML;
   historyStack.push(snapshot);
   if(historyStack.length>50) historyStack.shift();
+  redoStack = []; // Clear redo on new action
 }
 function undo(){
-  if(historyStack.length>0){
-    redoStack.push(activeView.innerHTML);
+  if(historyStack.length > 0){
+    redoStack.push(designCanvas.innerHTML);
     const last = historyStack.pop();
-    activeView.innerHTML = last;
+    designCanvas.innerHTML = last;
     updateLayerList();
+    rebindDraggables();
+    updatePreview();
   }
 }
 function redo(){
-  if(redoStack.length>0){
-    historyStack.push(activeView.innerHTML);
+  if(redoStack.length > 0){
+    historyStack.push(designCanvas.innerHTML);
     const next = redoStack.pop();
-    activeView.innerHTML = next;
+    designCanvas.innerHTML = next;
     updateLayerList();
+    rebindDraggables();
+    updatePreview();
   }
 }
+function updatePreview() {
+  document.querySelectorAll('.product-stage').forEach(stage => {
+    const productView = stage.querySelector('.product-view');
+    const designContainer = productView.querySelector('.mockup-layer');
+    
+    if (!designContainer) return;
+    
+    designContainer.innerHTML = ""; // Clear existing
 
+    // --- APPLY PRODUCT-SPECIFIC BOUNDARIES ---
+    if (stage.id === 'stage-tshirt') {
+        designContainer.style.top = "25%";
+        designContainer.style.left = "30%";
+        designContainer.style.width = "40%";
+        designContainer.style.height = "35%";
+    } else if (stage.id === 'stage-mug') {
+        designContainer.style.top = "20%";
+        designContainer.style.left = "15%";
+        designContainer.style.width = "70%";
+        designContainer.style.height = "55%";
+    } else if (stage.id === 'stage-tumbler') {
+        designContainer.style.top = "10%";
+        designContainer.style.left = "15%";
+        designContainer.style.width = "70%";
+        designContainer.style.height = "70%";
+    }
+
+    // --- CLONE AND SCALE ELEMENTS ---
+    Array.from(designCanvas.children).forEach(child => {
+      const clone = child.cloneNode(true);
+      clone.classList.remove("active-layer");
+      clone.style.pointerEvents = "none";
+      
+      const handle = clone.querySelector('.resize-handle');
+      if (handle) handle.remove();
+
+      // Proportional scaling
+      const scaleX = designContainer.clientWidth / designCanvas.clientWidth;
+      const scaleY = designContainer.clientHeight / designCanvas.clientHeight;
+
+      // Position relative to the container
+      const canvasLeft = parseInt(child.style.left) || 0;
+      const canvasTop = parseInt(child.style.top) || 0;
+
+      clone.style.position = 'absolute';
+      clone.style.left = (canvasLeft * scaleX) + 'px';
+      clone.style.top = (canvasTop * scaleY) + 'px';
+      clone.style.width = (parseInt(child.style.width) * scaleX) + 'px';
+      clone.style.height = (parseInt(child.style.height) * scaleY) + 'px';
+      
+      // Scale Font Size
+      if (clone.querySelector('.design-text')) {
+          const fontSize = parseInt(window.getComputedStyle(child).fontSize);
+          clone.style.fontSize = (fontSize * scaleX) + 'px';
+      }
+
+      designContainer.appendChild(clone);
+    });
+  });
+}
+function rebindDraggables(){
+  document.querySelectorAll('#designCanvas .draggable')
+    .forEach(el => makeDraggable(el));
+}
 /********************************************
  * PRODUCT SWITCHING
  ********************************************/
 const productSelect = document.getElementById('productSelect');
-productSelect.addEventListener('change',e=>{
+productSelect.addEventListener('change', e => {
   currentProduct = e.target.value;
-  document.querySelectorAll('.product-stage').forEach(s=>s.classList.remove('active-product'));
-  document.getElementById(`stage-${currentProduct}`).classList.add('active-product');
-  activeView = document.getElementById(`view-${currentProduct}`);
+
+  document.querySelectorAll('.product-stage')
+    .forEach(s => s.classList.remove('active-product'));
+
+  document.getElementById(`stage-${currentProduct}`)
+    .classList.add('active-product');
+
+  setDefaultPreviewScale();
+  updatePreview();
 });
 
 /********************************************
  * ZOOM PREVIEW
  ********************************************/
 const zoomSlider = document.getElementById('zoomSlider');
-zoomSlider.addEventListener('input',()=>activeView.style.transform=`scale(${zoomSlider.value})`);
+zoomSlider.addEventListener('input', () => {
+  const activeProductView =
+    document.querySelector(`#stage-${currentProduct} .product-view`);
 
-/********************************************
- * COLOR PICKERS
- ********************************************/
+  activeProductView.style.transform = `scale(${zoomSlider.value})`;
+});
 
 /********************************************
  * ADD TEXT
@@ -318,22 +457,46 @@ const fontFamilySelect = document.getElementById('fontFamily');
 const btnBold = document.getElementById('btnBold');
 const btnItalic = document.getElementById('btnItalic');
 
-addTextBtn.addEventListener('click',()=>{
+addTextBtn.addEventListener('click', () => {
   const div = document.createElement('div');
   div.classList.add('draggable');
-  div.style.left='50%';
-  div.style.top='50%';
-  div.style.transform='translate(-50%, -50%)';
-  div.style.fontSize = fontSizeInput.value+'px';
+  
+  // Set initial size
+  const initialWidth = 150;
+  const initialHeight = 50;
+  div.style.width = initialWidth + 'px';
+  div.style.height = initialHeight + 'px';
+
+  // Calculate pixel-perfect center
+  const centerX = (designCanvas.clientWidth / 2) - (initialWidth / 2);
+  const centerY = (designCanvas.clientHeight / 2) - (initialHeight / 2);
+
+  // Apply coordinates and styling
+  div.style.left = centerX + 'px';
+  div.style.top = centerY + 'px';
+  div.style.transform = 'none';
+  
+  div.style.fontSize = fontSizeInput.value + 'px';
   div.style.fontFamily = fontFamilySelect.value;
-  if(btnBold.classList.contains('active')) div.style.fontWeight='bold';
-  if(btnItalic.classList.contains('active')) div.style.fontStyle='italic';
-  div.innerHTML=`<span class="design-text" style="color:${fontColorPicker.getColor().toHEXA().toString()}">${textInput.value}</span><div class="resize-handle handle-br"></div>`;
-  activeView.appendChild(div);
+  
+  if (btnBold.classList.contains('active')) div.style.fontWeight = 'bold';
+  if (btnItalic.classList.contains('active')) div.style.fontStyle = 'italic';
+  
+  // Content and Handle
+  div.innerHTML = `
+    <span class="design-text" style="color:${fontColorPicker.getColor().toHEXA().toString()}">
+        ${textInput.value}
+    </span>
+    <div class="resize-handle handle-br"></div>
+  `;
+  
+  designCanvas.appendChild(div);
   makeDraggable(div);
   activeItem = div;
+  
   updateLayerList();
   saveHistory();
+  updatePreview();
   showTextEditor();
 });
 
@@ -350,53 +513,108 @@ function showTextEditor(){document.getElementById('textEditor').style.display='b
 /********************************************
  * DRAGGABLE
  ********************************************/
-function makeDraggable(el){
-  let startX,startY,initX,initY;
+function makeDraggable(el) {
+  let startX, startY, initX, initY;
   const handle = el.querySelector('.resize-handle');
   
-  el.addEventListener('mousedown', e=>{
-    activeItem=el;updateLayerList();
-    if(e.target===handle){isResizing=true;return;}
-    startX=e.clientX; startY=e.clientY;
-    initX=parseInt(el.offsetLeft); initY=parseInt(el.offsetTop);
+  el.addEventListener('mousedown', e => {
+    activeItem = el; 
+    updateLayerList();
+    
+    if(e.target === handle) { isResizing = true; return; }
+
+    // Remove the centering transform to prevent "jumping"
+    if (el.style.transform.includes('translate')) {
+        const rect = el.getBoundingClientRect();
+        const parentRect = designCanvas.getBoundingClientRect();
+        el.style.left = (rect.left - parentRect.left) + 'px';
+        el.style.top = (rect.top - parentRect.top) + 'px';
+        el.style.transform = 'none';
+    }
+
+    startX = e.clientX; startY = e.clientY;
+    initX = parseInt(el.style.left) || 0;
+    initY = parseInt(el.style.top) || 0;
+    
     document.addEventListener('mousemove', dragMove);
     document.addEventListener('mouseup', dragUp);
   });
-  function dragMove(e){
-    if(isResizing){
-      const rect=el.getBoundingClientRect();
-      const newWidth=e.clientX-rect.left;
-      const newHeight=e.clientY-rect.top;
-      el.style.width=newWidth+'px';
-      el.style.height=newHeight+'px';
-      return;
-    }
-    const dx=e.clientX-startX;
-    const dy=e.clientY-startY;
-    el.style.left=initX+dx+'px';
-    el.style.top=initY+dy+'px';
-  }
-  function dragUp(){document.removeEventListener('mousemove', dragMove); document.removeEventListener('mouseup', dragUp); isResizing=false; saveHistory();}
-}
 
+  function dragMove(e) {
+    if (isResizing) {
+        const rect = el.getBoundingClientRect();
+        const canvasRect = designCanvas.getBoundingClientRect();
+        
+        let newWidth = e.clientX - rect.left;
+        let newHeight = e.clientY - rect.top;
+
+        // Prevent resizing beyond the right/bottom canvas edge
+        if (rect.left + newWidth > canvasRect.right) newWidth = canvasRect.right - rect.left;
+        if (rect.top + newHeight > canvasRect.bottom) newHeight = canvasRect.bottom - rect.top;
+
+        el.style.width = Math.max(10, newWidth) + 'px';
+        el.style.height = Math.max(10, newHeight) + 'px';
+        return;
+    }
+
+    // Movement Logic
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+
+    let newLeft = initX + dx;
+    let newTop = initY + dy;
+
+    // Boundary Constraints
+    const minLeft = 0;
+    const maxLeft = designCanvas.clientWidth - el.offsetWidth;
+    const minTop = 0;
+    const maxTop = designCanvas.clientHeight - el.offsetHeight;
+
+    // Apply clamped coordinates
+    el.style.left = Math.max(minLeft, Math.min(newLeft, maxLeft)) + 'px';
+    el.style.top = Math.max(minTop, Math.min(newTop, maxTop)) + 'px';
+  }
+
+  function dragUp(){
+    document.removeEventListener('mousemove', dragMove);
+    document.removeEventListener('mouseup', dragUp);
+    isResizing=false;
+    saveHistory();
+    updatePreview();
+  }
+}
+function setDefaultPreviewScale() {
+  const scales = {
+    tshirt: 0.8,
+    tumbler: 0.8,
+    mug: 1.0
+  };
+
+  document.querySelectorAll('.product-view').forEach(view => {
+    view.style.transform = `scale(${scales[currentProduct]})`;
+  });
+
+  zoomSlider.value = scales[currentProduct];
+}
 /********************************************
  * LAYER MANAGER
  ********************************************/
 function updateLayerList(){
   const container = document.getElementById('layerList');
   container.innerHTML='';
-  Array.from(activeView.children).forEach((child,i)=>{
+  Array.from(designCanvas.children).forEach((child,i)=>{
     const div=document.createElement('div');
     div.classList.add('layer-item');
     div.innerHTML=`<span>Layer ${i+1}</span> <button class="btn-icon btn-delete">X</button>`;
         div.querySelector('button').addEventListener('click', () => {
-      activeView.removeChild(child);
+      designCanvas.removeChild(child);
       updateLayerList();
       saveHistory();
+      updatePreview();
     });
     div.addEventListener('click', () => {
       activeItem = child;
-      Array.from(activeView.children).forEach(c => c.classList.remove('active-layer'));
+      Array.from(designCanvas.children).forEach(c => c.classList.remove('active-layer'));
       child.classList.add('active-layer');
       showTextEditor();
     });
@@ -424,11 +642,12 @@ imageInput.addEventListener('change', e => {
     const handle = document.createElement('div');
     handle.classList.add('resize-handle', 'handle-br');
     div.appendChild(handle);
-    activeView.appendChild(div);
+    designCanvas.appendChild(div);
     makeDraggable(div);
     activeItem = div;
     updateLayerList();
     saveHistory();
+    updatePreview();
   };
   reader.readAsDataURL(file);
 });
@@ -443,36 +662,52 @@ async function fetchPixabay(query = 'vector') {
   const res = await fetch(`https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(query)}&image_type=vector&per_page=20`);
   const data = await res.json();
   pixabayGrid.innerHTML = '';
+  
   data.hits.forEach(hit => {
-    const img = document.createElement('img');
-    img.src = hit.previewURL;
-    img.classList.add('gallery-item');
-    img.addEventListener('click', () => {
+    const imgThumb = document.createElement('img');
+    imgThumb.src = hit.previewURL;
+    imgThumb.classList.add('gallery-item');
+    
+    imgThumb.addEventListener('click', () => {
       const div = document.createElement('div');
       div.classList.add('draggable');
-      div.style.left = '50%';
-      div.style.top = '50%';
-      div.style.transform = 'translate(-50%, -50%)';
+      
+      const initialSize = 120;
+      div.style.width = initialSize + 'px';
+      div.style.height = initialSize + 'px';
+
+      const centerX = (designCanvas.clientWidth / 2) - (initialSize / 2);
+      const centerY = (designCanvas.clientHeight / 2) - (initialSize / 2);
+
+      div.style.left = centerX + 'px';
+      div.style.top = centerY + 'px';
+      div.style.transform = 'none';
+
       const image = document.createElement('img');
       image.src = hit.largeImageURL;
+      image.style.width = "100%";
+      image.style.height = "100%";
+      image.style.objectFit = "contain";
+      image.style.pointerEvents = "none";
+
       div.appendChild(image);
       const handle = document.createElement('div');
       handle.classList.add('resize-handle', 'handle-br');
       div.appendChild(handle);
-      activeView.appendChild(div);
+      
+      designCanvas.appendChild(div);
       makeDraggable(div);
       activeItem = div;
+      
       updateLayerList();
       saveHistory();
+      updatePreview();
     });
-    pixabayGrid.appendChild(img);
+    pixabayGrid.appendChild(imgThumb);
   });
 }
-
-// Initial load
 fetchPixabay();
 
-// Search event
 gallerySearch.addEventListener('keypress', e => {
   if(e.key==='Enter') fetchPixabay(gallerySearch.value);
 });
@@ -481,7 +716,8 @@ gallerySearch.addEventListener('keypress', e => {
  * SAVE PNG
  ********************************************/
 document.getElementById('downloadBtn').addEventListener('click', () => {
-  html2canvas(activeView).then(canvas => {
+  const activeStage = document.querySelector('.product-stage.active-product .product-view');
+  html2canvas(activeStage).then(canvas => {
     const link = document.createElement('a');
     link.download = `${currentProduct}_design.png`;
     link.href = canvas.toDataURL();
@@ -490,10 +726,10 @@ document.getElementById('downloadBtn').addEventListener('click', () => {
 });
 
 /********************************************
- * INITIALIZE LAYER LIST
+ * INITIALIZATION
  ********************************************/
 updateLayerList();
-
+setDefaultPreviewScale();
 </script>
 </body>
 </html>
