@@ -225,6 +225,13 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
     border-color: var(--accent);
     transform: scale(1.05);
 }
+.group-container {
+    border: 1px dashed transparent;
+}
+.group-container.active-layer {
+    border: 1px dashed #2196F3;
+    background: rgba(33, 150, 243, 0.05);
+}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat:wght@400;900&family=Pacifico&family=Playfair+Display:wght@700&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
 </head>
@@ -378,14 +385,15 @@ let designCanvas = document.getElementById('designCanvas');
 let currentProduct = 'tshirt';
 let historyStack = [];
 let redoStack = [];
-let activeItem = null;
+let selectedItems = [];
 let isResizing = false;
 
 designCanvas.addEventListener('mousedown', e => {
   if (e.target === designCanvas) {
-    document.querySelectorAll('.draggable')
-      .forEach(item => item.classList.remove('active-layer'));
+    selectedItems.forEach(item => item.classList.remove('active-layer'));
+    selectedItems = [];
     activeItem = null;
+    updateLayerList();
   }
 });
 
@@ -509,51 +517,54 @@ function updatePreview() {
     
     designContainer.innerHTML = ""; // Clear existing
 
-    // --- APPLY PRODUCT-SPECIFIC BOUNDARIES ---
-    if (stage.id === 'stage-tshirt') {
-        designContainer.style.top = "25%";
-        designContainer.style.left = "30%";
-        designContainer.style.width = "40%";
-        designContainer.style.height = "35%";
-    } else if (stage.id === 'stage-mug') {
-        designContainer.style.top = "20%";
-        designContainer.style.left = "15%";
-        designContainer.style.width = "70%";
-        designContainer.style.height = "55%";
-    } else if (stage.id === 'stage-tumbler') {
-        designContainer.style.top = "10%";
-        designContainer.style.left = "15%";
-        designContainer.style.width = "70%";
-        designContainer.style.height = "70%";
-    }
+    // 1. Calculate the Scaling Ratios
+    const scaleX = designContainer.clientWidth / designCanvas.clientWidth;
+    const scaleY = designContainer.clientHeight / designCanvas.clientHeight;
 
-    // --- CLONE AND SCALE ELEMENTS ---
+    // 2. Clone and Scale Elements (Direct Children Only)
     Array.from(designCanvas.children).forEach(child => {
+      // Create the clone
       const clone = child.cloneNode(true);
-      clone.classList.remove("active-layer");
+      clone.classList.remove("active-layer", "editing");
       clone.style.pointerEvents = "none";
       
-      const handle = clone.querySelector('.resize-handle');
-      if (handle) handle.remove();
+      // Remove all resize handles from the clone (including nested ones)
+      clone.querySelectorAll('.resize-handle').forEach(h => h.remove());
 
-      // Proportional scaling
-      const scaleX = designContainer.clientWidth / designCanvas.clientWidth;
-      const scaleY = designContainer.clientHeight / designCanvas.clientHeight;
-
-      // Position relative to the container
+      // 3. Proportional Scaling for the element (or Group Container)
       const canvasLeft = parseInt(child.style.left) || 0;
       const canvasTop = parseInt(child.style.top) || 0;
+      const canvasWidth = child.offsetWidth;
+      const canvasHeight = child.offsetHeight;
 
       clone.style.position = 'absolute';
       clone.style.left = (canvasLeft * scaleX) + 'px';
       clone.style.top = (canvasTop * scaleY) + 'px';
-      clone.style.width = (parseInt(child.style.width) * scaleX) + 'px';
-      clone.style.height = (parseInt(child.style.height) * scaleY) + 'px';
+      clone.style.width = (canvasWidth * scaleX) + 'px';
+      clone.style.height = (canvasHeight * scaleY) + 'px';
       
-      // Scale Font Size
-      if (clone.querySelector('.design-text')) {
-          const fontSize = parseInt(window.getComputedStyle(child).fontSize);
-          clone.style.fontSize = (fontSize * scaleX) + 'px';
+      // 4. Handle Text Scaling inside the clone
+      const textElements = clone.querySelectorAll('.design-text');
+      textElements.forEach((text, index) => {
+          const originalText = child.querySelectorAll('.design-text')[index];
+          const originalFontSize = parseInt(window.getComputedStyle(originalText).fontSize);
+          text.style.fontSize = (originalFontSize * scaleX) + 'px';
+      });
+
+      // 5. Handle Nested Elements (if it's a group)
+      if (clone.classList.contains('group-container')) {
+          // The children inside the group are already relatively positioned,
+          // so we just need to scale their dimensions and font sizes.
+          const nestedItems = clone.querySelectorAll('.draggable');
+          nestedItems.forEach((nested, idx) => {
+              const originalNested = child.querySelectorAll('.draggable')[idx];
+              
+              // Scale the nested item's dimensions
+              nested.style.left = (parseInt(originalNested.style.left) * scaleX) + 'px';
+              nested.style.top = (parseInt(originalNested.style.top) * scaleY) + 'px';
+              nested.style.width = (parseInt(originalNested.style.width) * scaleX) + 'px';
+              nested.style.height = (parseInt(originalNested.style.height) * scaleY) + 'px';
+          });
       }
 
       designContainer.appendChild(clone);
@@ -699,17 +710,27 @@ btnItalic.addEventListener('click', () => {
 });
 function showTextEditor(){document.getElementById('textEditor').style.display='block';}
 
-function selectItem(el) {
-  // Remove active state from all
-  document.querySelectorAll('#designCanvas .draggable')
-    .forEach(item => item.classList.remove('active-layer'));
+function selectItem(el, additive = false) {
+  if (!additive) {
+    // If shift isn't held, clear previous selection
+    selectedItems.forEach(item => item.classList.remove('active-layer'));
+    selectedItems = [];
+  }
 
-  // Set new active
-  activeItem = el;
-  el.classList.add('active-layer');
+  if (selectedItems.includes(el)) {
+    // Toggle off if already selected
+    if (additive) {
+      el.classList.remove('active-layer');
+      selectedItems = selectedItems.filter(item => item !== el);
+    }
+  } else {
+    // Add to selection
+    selectedItems.push(el);
+    el.classList.add('active-layer');
+    activeItem = el; // Keep activeItem as the last clicked for color pickers
+  }
 
   updateLayerList();
-  updatePreview();
 }
 /********************************************
  * DRAGGABLE
@@ -718,96 +739,76 @@ function makeDraggable(el) {
   let startX, startY, initX, initY, initW, initH;
   let currentHandle = null;
 
-  el.addEventListener('click', e => {
-    e.stopPropagation();
-    selectItem(el);
-  });
+  // REMOVED: Separate 'click' listener to prevent double-firing with mousedown
 
   el.addEventListener('mousedown', e => {
+    // If editing text, don't drag
+    if (e.target.classList.contains('design-text') && el.classList.contains('editing')) return;
 
-    // If clicking resize handle
+    // 1. Handle Selection Logic
+    const isShift = e.shiftKey;
+    
+    // If the item isn't part of the current selection, update selection
+    if (!selectedItems.includes(el)) {
+      selectItem(el, isShift);
+    } else if (isShift) {
+      // If Shift is held and it's already selected, remove it (toggle)
+      el.classList.remove('active-layer');
+      selectedItems = selectedItems.filter(item => item !== el);
+      return; // Stop here if we're just deselecting
+    }
+
+    // 2. Setup dragging/resizing coordinates
+    startX = e.clientX;
+    startY = e.clientY;
+
     if (e.target.classList.contains('resize-handle')) {
       isResizing = true;
       currentHandle = e.target;
-
-      startX = e.clientX;
-      startY = e.clientY;
       initX = parseInt(el.style.left) || 0;
       initY = parseInt(el.style.top) || 0;
       initW = el.offsetWidth;
       initH = el.offsetHeight;
-
-      document.addEventListener('mousemove', dragMove);
-      document.addEventListener('mouseup', dragUp);
-      return;
+    } else {
+      // Setup group movement
+      selectedItems.forEach(item => {
+        item.dataset.initX = parseInt(item.style.left) || 0;
+        item.dataset.initY = parseInt(item.style.top) || 0;
+      });
     }
-
-    // If editing text, don't drag
-    if (e.target.classList.contains('design-text')) return;
-
-    selectItem(el);
-
-    startX = e.clientX;
-    startY = e.clientY;
-    initX = parseInt(el.style.left) || 0;
-    initY = parseInt(el.style.top) || 0;
 
     document.addEventListener('mousemove', dragMove);
     document.addEventListener('mouseup', dragUp);
+    
+    // Prevent browser image ghosting/drag defaults
+    e.preventDefault(); 
   });
 
   function dragMove(e) {
-
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
 
-    // --- RESIZING ---
+    // --- RESIZING (Single Element only) ---
     if (isResizing && currentHandle) {
-
       let newLeft = initX;
       let newTop = initY;
       let newWidth = initW;
       let newHeight = initH;
 
-      if (currentHandle.classList.contains('handle-br')) {
-        newWidth = initW + dx;
-        newHeight = initH + dy;
-      }
-      if (currentHandle.classList.contains('handle-bl')) {
-        newWidth = initW - dx;
-        newHeight = initH + dy;
-        newLeft = initX + dx;
-      }
-      if (currentHandle.classList.contains('handle-tr')) {
-        newWidth = initW + dx;
-        newHeight = initH - dy;
-        newTop = initY + dy;
-      }
-      if (currentHandle.classList.contains('handle-tl')) {
-        newWidth = initW - dx;
-        newHeight = initH - dy;
-        newLeft = initX + dx;
-        newTop = initY + dy;
-      }
-      if (currentHandle.classList.contains('handle-r')) {
-        newWidth = initW + dx;
-      }
-      if (currentHandle.classList.contains('handle-l')) {
-        newWidth = initW - dx;
-        newLeft = initX + dx;
-      }
-      if (currentHandle.classList.contains('handle-b')) {
-        newHeight = initH + dy;
-      }
-      if (currentHandle.classList.contains('handle-t')) {
-        newHeight = initH - dy;
-        newTop = initY + dy;
-      }
+      // ... [Keep your existing handle-tl, br, etc. switch logic here] ...
+      // (Assuming you're keeping the logic from your provided snippet)
+      if (currentHandle.classList.contains('handle-br')) { newWidth = initW + dx; newHeight = initH + dy; }
+      if (currentHandle.classList.contains('handle-bl')) { newWidth = initW - dx; newHeight = initH + dy; newLeft = initX + dx; }
+      if (currentHandle.classList.contains('handle-tr')) { newWidth = initW + dx; newHeight = initH - dy; newTop = initY + dy; }
+      if (currentHandle.classList.contains('handle-tl')) { newWidth = initW - dx; newHeight = initH - dy; newLeft = initX + dx; newTop = initY + dy; }
+      if (currentHandle.classList.contains('handle-r')) { newWidth = initW + dx; }
+      if (currentHandle.classList.contains('handle-l')) { newWidth = initW - dx; newLeft = initX + dx; }
+      if (currentHandle.classList.contains('handle-b')) { newHeight = initH + dy; }
+      if (currentHandle.classList.contains('handle-t')) { newHeight = initH - dy; newTop = initY + dy; }
 
       newWidth = Math.max(20, newWidth);
       newHeight = Math.max(20, newHeight);
 
-      // Clamp inside canvas
       const maxLeft = designCanvas.clientWidth - newWidth;
       const maxTop = designCanvas.clientHeight - newHeight;
 
@@ -815,28 +816,36 @@ function makeDraggable(el) {
       el.style.top = Math.max(0, Math.min(newTop, maxTop)) + 'px';
       el.style.width = newWidth + 'px';
       el.style.height = newHeight + 'px';
-
       return;
     }
 
-    // --- NORMAL DRAG ---
-    let newLeft = initX + dx;
-    let newTop = initY + dy;
+    // --- MULTI-MOVE DRAG ---
+    if (!isResizing) {
+      selectedItems.forEach(item => {
+        const itemInitX = parseInt(item.dataset.initX);
+        const itemInitY = parseInt(item.dataset.initY);
 
-    const maxLeft = designCanvas.clientWidth - el.offsetWidth;
-    const maxTop = designCanvas.clientHeight - el.offsetHeight;
+        let newLeft = itemInitX + dx;
+        let newTop = itemInitY + dy;
 
-    el.style.left = Math.max(0, Math.min(newLeft, maxLeft)) + 'px';
-    el.style.top = Math.max(0, Math.min(newTop, maxTop)) + 'px';
+        const maxLeft = designCanvas.clientWidth - item.offsetWidth;
+        const maxTop = designCanvas.clientHeight - item.offsetHeight;
+
+        item.style.left = Math.max(0, Math.min(newLeft, maxLeft)) + 'px';
+        item.style.top = Math.max(0, Math.min(newTop, maxTop)) + 'px';
+      });
+    }
   }
 
   function dragUp() {
     document.removeEventListener('mousemove', dragMove);
     document.removeEventListener('mouseup', dragUp);
+    if (isResizing || (selectedItems.length > 0)) {
+      saveHistory();
+      updatePreview();
+    }
     isResizing = false;
     currentHandle = null;
-    saveHistory();
-    updatePreview();
   }
 }
 function enableTextEditing(el) {
@@ -966,6 +975,116 @@ function addShapeToCanvas(type) {
     if(typeof updatePreview === 'function') updatePreview();
 }
 
+function groupSelected() {
+    if (selectedItems.length < 2) return;
+
+    // 1. Find the bounding box of all selected items
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+    selectedItems.forEach(item => {
+        const x = parseInt(item.style.left);
+        const y = parseInt(item.style.top);
+        const w = item.offsetWidth;
+        const h = item.offsetHeight;
+
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x + w > maxX) maxX = x + w;
+        if (y + h > maxY) maxY = y + h;
+    });
+
+    // 2. Create the Group Container
+    const group = document.createElement('div');
+    group.classList.add('draggable', 'group-container');
+    group.style.left = minX + 'px';
+    group.style.top = minY + 'px';
+    group.style.width = (maxX - minX) + 'px';
+    group.style.height = (maxY - minY) + 'px';
+    
+    // Add resize handles to the group itself
+    group.innerHTML = `
+        <div class="resize-handle handle-tl"></div><div class="resize-handle handle-tr"></div>
+        <div class="resize-handle handle-bl"></div><div class="resize-handle handle-br"></div>
+    `;
+
+    // 3. Move items into the group and adjust their relative positions
+    selectedItems.forEach(item => {
+        const oldX = parseInt(item.style.left);
+        const oldY = parseInt(item.style.top);
+        
+        item.style.left = (oldX - minX) + 'px';
+        item.style.top = (oldY - minY) + 'px';
+        item.classList.remove('active-layer');
+        
+        // Remove individual resize handles while in a group to prevent confusion
+        const handles = item.querySelectorAll('.resize-handle');
+        handles.forEach(h => h.style.display = 'none');
+        
+        group.appendChild(item);
+    });
+
+    designCanvas.appendChild(group);
+    makeDraggable(group);
+    
+    // Select the new group
+    selectedItems = [group];
+    group.classList.add('active-layer');
+
+    saveHistory();
+    updateLayerList();
+}
+
+function ungroupSelected() {
+    const groups = selectedItems.filter(item => item.classList.contains('group-container'));
+    
+    groups.forEach(group => {
+        const groupX = parseInt(group.style.left);
+        const groupY = parseInt(group.style.top);
+        const children = Array.from(group.children).filter(child => child.classList.contains('draggable'));
+
+        children.forEach(child => {
+            const relX = parseInt(child.style.left);
+            const relY = parseInt(child.style.top);
+
+            // Restore absolute position
+            child.style.left = (groupX + relX) + 'px';
+            child.style.top = (groupY + relY) + 'px';
+            
+            // Show individual handles again
+            const handles = child.querySelectorAll('.resize-handle');
+            handles.forEach(h => h.style.display = 'block');
+
+            designCanvas.appendChild(child);
+        });
+
+        group.remove();
+    });
+
+    selectedItems = [];
+    saveHistory();
+    updateLayerList();
+}
+
+window.addEventListener('keydown', e => {
+    if (e.ctrlKey && e.key === 'g') {
+        e.preventDefault();
+        groupSelected();
+    }
+    if (e.ctrlKey && e.shiftKey && e.key === 'G') {
+        e.preventDefault();
+        ungroupSelected();
+    }
+    // Optional: Delete selected items with Backspace/Delete
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedItems.length > 0 && !document.activeElement.isContentEditable) {
+            selectedItems.forEach(item => item.remove());
+            selectedItems = [];
+            saveHistory();
+            updateLayerList();
+            updatePreview();
+        }
+    }
+});
 
 
 /********************************************
