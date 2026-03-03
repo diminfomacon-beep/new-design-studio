@@ -133,6 +133,15 @@ body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:10px;dis
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
+    /* Ensure rotation happens from the dead center */
+    transform-origin: center center;
+    transition: transform 0.2s ease; /* Optional: smooths the flip/rotate */
+}
+
+/* This class will be added to the active item for a visual hint */
+.active-layer {
+    outline: 2px dashed #2196F3;
+    z-index: 10;
 }
 
 /* --- PANELS --- */
@@ -242,15 +251,47 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
     display: block !important;
 }
 
-/* Visual feedback for the active item */
-.active-layer {
-    outline: 1px dashed #2196F3;
-}
 
 /* Hide handles if we are currently dragging the item (cleaner look) */
 .draggable.dragging > .resize-handle {
     display: none;
 }
+
+.action-toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    background: #f4f4f4;
+    border-bottom: 1px solid #ddd;
+}
+
+.btn-tool {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 9px;
+    transition: all 0.2s;
+}
+
+.btn-tool:hover {
+    background: #e1e1e1;
+    border-color: #bbb;
+}
+
+.btn-tool:active {
+    background: #d1d1d1;
+    transform: translateY(1px);
+}
+
+
+
+
+
+
+
+
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat:wght@400;900&family=Pacifico&family=Playfair+Display:wght@700&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
 </head>
@@ -336,8 +377,28 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
       <div id="layerList"></div>
     </div>
     <div class="btn-group">
-      <button onclick="undo()">↶ Undo</button>
-      <button onclick="redo()">↷ Redo</button>
+      <button onclick="undo()" class="btn-tool">↶ Undo</button>
+      <button onclick="redo()" class="btn-tool">↷ Redo</button>
+    </div>
+    <div class="edit-toolbar">
+      <button onclick="rotateSelected(-90)" class="btn-tool">Rotate Left ↺</button>
+      <button onclick="rotateSelected(90)" class="btn-tool">Rotate Right ↻</button>
+      
+      <button onclick="flipSelected('horizontal')" class="btn-tool">Flip Horizontal</button>
+      <button onclick="flipSelected('vertical')" class="btn-tool">Flip Vertical</button>
+    </div>
+    <div class="action-toolbar">
+      <button onclick="selectAllItems()" class="btn-tool" title="Select All (Ctrl+A)">
+        Select All
+      </button>
+
+      <button onclick="groupSelected()" class="btn-tool" title="Group (Ctrl+G)">
+        Group
+      </button>
+      
+      <button onclick="ungroupSelected()" class="btn-tool" title="Ungroup (Ctrl+Shift+G)">
+        Ungroup
+      </button>
     </div>
   </div>
 
@@ -403,6 +464,7 @@ const PIXABAY_API_KEY = '54841320-2fc493da46915b0eb0a6f740c';
 let designCanvas = document.getElementById('designCanvas');
 let currentProduct = 'tshirt';
 let historyStack = [];
+let historyIndex = -1; // -1 means the stack is empty
 let redoStack = [];
 let selectedItems = [];
 let isResizing = false;
@@ -508,31 +570,56 @@ shapeColorPicker.on('save', () => {
 /********************************************
  * UTILITY
  ********************************************/
-function saveHistory(){
-  const snapshot = designCanvas.innerHTML;
-  historyStack.push(snapshot);
-  if(historyStack.length>50) historyStack.shift();
-  redoStack = []; // Clear redo on new action
+function saveHistory() {
+    const currentState = designCanvas.innerHTML;
+
+    // Don't save if it's the same as the current indexed state
+    if (historyIndex >= 0 && currentState === historyStack[historyIndex]) return;
+
+    // If we undo and then do a NEW action, remove all "redo" states after the current index
+    historyStack = historyStack.slice(0, historyIndex + 1);
+
+    historyStack.push(currentState);
+    historyIndex++;
+
+    // Limit history to 30 steps
+    if (historyStack.length > 30) {
+        historyStack.shift();
+        historyIndex--;
+    }
 }
-function undo(){
-  if(historyStack.length > 0){
-    redoStack.push(designCanvas.innerHTML);
-    const last = historyStack.pop();
-    designCanvas.innerHTML = last;
-    updateLayerList();
-    rebindDraggables();
-    updatePreview();
-  }
+function undo() {
+    if (historyIndex <= 0) return; // Nowhere to go back to
+
+    historyIndex--;
+    restoreState(historyStack[historyIndex]);
 }
-function redo(){
-  if(redoStack.length > 0){
-    historyStack.push(designCanvas.innerHTML);
-    const next = redoStack.pop();
-    designCanvas.innerHTML = next;
+
+function redo() {
+    if (historyIndex >= historyStack.length - 1) return; // Nowhere to go forward to
+
+    historyIndex++;
+    restoreState(historyStack[historyIndex]);
+}
+
+/**
+ * Helper to put the HTML back and make it interactive again
+ */
+function restoreState(htmlContent) {
+    designCanvas.innerHTML = htmlContent;
+
+    // Re-bind draggability to all elements
+    const items = designCanvas.querySelectorAll('.draggable');
+    items.forEach(item => {
+        makeDraggable(item);
+    });
+
+    // Clear selection to prevent ghosting
+    selectedItems = [];
+    activeItem = null;
+
     updateLayerList();
-    rebindDraggables();
     updatePreview();
-  }
 }
 function updatePreview() {
   document.querySelectorAll('.product-stage').forEach(stage => {
@@ -543,21 +630,24 @@ function updatePreview() {
     
     designContainer.innerHTML = ""; // Clear existing
 
-    // 1. Calculate the Scaling Ratios
+    // 1. Calculate the Scaling Ratio (How much smaller is the mockup than the canvas?)
     const scaleX = designContainer.clientWidth / designCanvas.clientWidth;
     const scaleY = designContainer.clientHeight / designCanvas.clientHeight;
 
-    // 2. Clone and Scale Elements (Direct Children Only)
+    // 2. Loop through top-level children only
     Array.from(designCanvas.children).forEach(child => {
-      // Create the clone
       const clone = child.cloneNode(true);
+      
+      // Clean up the clone
       clone.classList.remove("active-layer", "editing");
       clone.style.pointerEvents = "none";
-      
-      // Remove all resize handles from the clone (including nested ones)
       clone.querySelectorAll('.resize-handle').forEach(h => h.remove());
 
-      // 3. Proportional Scaling for the element (or Group Container)
+      // 3. Sync Transformations (Rotation/Mirroring)
+      clone.style.transform = child.style.transform;
+      clone.style.transformOrigin = "center center";
+
+      // 4. Scale the Main Element (or Group Container)
       const canvasLeft = parseInt(child.style.left) || 0;
       const canvasTop = parseInt(child.style.top) || 0;
       const canvasWidth = child.offsetWidth;
@@ -569,27 +659,32 @@ function updatePreview() {
       clone.style.width = (canvasWidth * scaleX) + 'px';
       clone.style.height = (canvasHeight * scaleY) + 'px';
       
-      // 4. Handle Text Scaling inside the clone
+      // 5. Scale Typography
+      // This handles text whether it's a direct child or nested in a group
       const textElements = clone.querySelectorAll('.design-text');
       textElements.forEach((text, index) => {
-          const originalText = child.querySelectorAll('.design-text')[index];
-          const originalFontSize = parseInt(window.getComputedStyle(originalText).fontSize);
+          // Find the corresponding original text element to get its real computed font size
+          const originalText = child.querySelectorAll('.design-text')[index] || child;
+          const originalFontSize = parseFloat(window.getComputedStyle(originalText).fontSize);
           text.style.fontSize = (originalFontSize * scaleX) + 'px';
       });
 
-      // 5. Handle Nested Elements (if it's a group)
+      // 6. Fix Nested Elements Scaling
+      // We only scale the inner dimensions because the parent container is already scaled
       if (clone.classList.contains('group-container')) {
-          // The children inside the group are already relatively positioned,
-          // so we just need to scale their dimensions and font sizes.
-          const nestedItems = clone.querySelectorAll('.draggable');
-          nestedItems.forEach((nested, idx) => {
+          const nestedDraggables = clone.querySelectorAll('.draggable');
+          nestedDraggables.forEach((nested, idx) => {
               const originalNested = child.querySelectorAll('.draggable')[idx];
               
-              // Scale the nested item's dimensions
-              nested.style.left = (parseInt(originalNested.style.left) * scaleX) + 'px';
-              nested.style.top = (parseInt(originalNested.style.top) * scaleY) + 'px';
-              nested.style.width = (parseInt(originalNested.style.width) * scaleX) + 'px';
-              nested.style.height = (parseInt(originalNested.style.height) * scaleY) + 'px';
+              const nLeft = parseInt(originalNested.style.left) || 0;
+              const nTop = parseInt(originalNested.style.top) || 0;
+              const nWidth = parseInt(originalNested.style.width) || originalNested.offsetWidth;
+              const nHeight = parseInt(originalNested.style.height) || originalNested.offsetHeight;
+
+              nested.style.left = (nLeft * scaleX) + 'px';
+              nested.style.top = (nTop * scaleY) + 'px';
+              nested.style.width = (nWidth * scaleX) + 'px';
+              nested.style.height = (nHeight * scaleY) + 'px';
           });
       }
 
@@ -1154,6 +1249,111 @@ function ungroupSelected() {
     updatePreview();
 }
 
+/**
+ * Applies both Rotation and Mirroring simultaneously
+ */
+function applyTransformations(item) {
+    const rotation = item.dataset.rotation || 0;
+    const flipH = item.dataset.flipH === 'true' ? -1 : 1;
+    const flipV = item.dataset.flipV === 'true' ? -1 : 1;
+
+    // Combine into one string: rotate and scale
+    item.style.transform = `rotate(${rotation}deg) scale(${flipH}, ${flipV})`;
+}
+
+/**
+ * Rotates selected items by a relative amount (e.g., +90 or -90)
+ */
+function rotateSelected(degrees) {
+    selectedItems.forEach(item => {
+        let current = parseInt(item.dataset.rotation) || 0;
+        item.dataset.rotation = (current + degrees) % 360;
+        applyTransformations(item);
+    });
+    saveHistory();
+    updatePreview();
+}
+
+/**
+ * Flips selected items across an axis
+ */
+function flipSelected(axis) {
+    selectedItems.forEach(item => {
+        if (axis === 'horizontal') {
+            item.dataset.flipH = item.dataset.flipH === 'true' ? 'false' : 'true';
+        } else if (axis === 'vertical') {
+            item.dataset.flipV = item.dataset.flipV === 'true' ? 'false' : 'true';
+        }
+        applyTransformations(item);
+    });
+    saveHistory();
+    updatePreview();
+}
+
+/**
+ * Main function to combine all transformations
+ */
+function applyTransformations(item) {
+    const rotation = item.dataset.rotation || 0;
+    const flipH = item.dataset.flipH === 'true' ? -1 : 1;
+    const flipV = item.dataset.flipV === 'true' ? -1 : 1;
+
+    // We combine rotate and scale in one string
+    // scale(-1, 1) mirrors horizontally, scale(1, -1) mirrors vertically
+    item.style.transform = `rotate(${rotation}deg) scale(${flipH}, ${flipV})`;
+}
+
+/**
+ * Rotates all currently selected items
+ */
+function rotateSelected(degrees) {
+    selectedItems.forEach(item => {
+        let current = parseInt(item.dataset.rotation) || 0;
+        item.dataset.rotation = (current + degrees) % 360;
+        applyTransformations(item);
+    });
+    saveHistory();
+    updatePreview();
+}
+
+/**
+ * Mirrors/Flips all currently selected items
+ */
+function flipSelected(axis) {
+    selectedItems.forEach(item => {
+        if (axis === 'horizontal') {
+            item.dataset.flipH = item.dataset.flipH === 'true' ? 'false' : 'true';
+        } else if (axis === 'vertical') {
+            item.dataset.flipV = item.dataset.flipV === 'true' ? 'false' : 'true';
+        }
+        applyTransformations(item);
+    });
+    saveHistory();
+    updatePreview();
+}
+
+function selectAllItems() {
+    // Clear current selection visuals
+    selectedItems.forEach(item => item.classList.remove('active-layer'));
+    
+    // Select only top-level draggables (direct children of canvas)
+    selectedItems = Array.from(designCanvas.querySelectorAll(':scope > .draggable'));
+    
+    // Apply active class to all
+    selectedItems.forEach(item => {
+        item.classList.add('active-layer');
+    });
+
+    if (selectedItems.length > 0) {
+        activeItem = selectedItems[selectedItems.length - 1];
+    }
+    
+    updateLayerList();
+    console.log("All items selected via button");
+}
+
+
+
 
 
 
@@ -1342,12 +1542,23 @@ window.addEventListener('keydown', e => {
             updatePreview();
         }
     }
+    // Add inside your keydown listener
+    if (e.ctrlKey && e.key === 'z') {
+        e.preventDefault();
+        undo();
+    }
+    if (e.ctrlKey && (e.key === 'y' || (e.shiftKey && e.key === 'Z'))) {
+        e.preventDefault();
+        redo();
+    }
 });
 /********************************************
  * INITIALIZATION
  ********************************************/
 updateLayerList();
 setDefaultPreviewScale();
+// Add this at the very bottom of your script in the INITIALIZATION section
+saveHistory();
 </script>
 </body>
 </html>
