@@ -90,8 +90,40 @@ body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:10px;dis
 
 /* --- DRAGGABLE CSS --- */
 .draggable.active-layer{border:2px solid var(--accent);}
-.design-text{text-align:center;pointer-events:none;word-break:break-word;display:block;width:100%;line-height:1.1;}
-.resize-handle{width:10px;height:10px;background:white;border:2px solid var(--accent);position:absolute;display:none;cursor:nwse-resize;}
+.design-text{
+  text-align:center;
+  pointer-events:auto;   /* FIXED */
+  word-break:break-word;
+  display:block;
+  width:100%;
+  line-height:1.1;
+  cursor:text;
+}
+.resize-handle{
+  width:10px;
+  height:10px;
+  background:white;
+  border:2px solid var(--accent);
+  position:absolute;
+  display:none;
+  z-index:10;
+}
+
+.draggable.active-layer .resize-handle{
+  display:block;
+}
+
+/* Corners */
+.handle-tl{top:-6px;left:-6px;cursor:nwse-resize;}
+.handle-tr{top:-6px;right:-6px;cursor:nesw-resize;}
+.handle-bl{bottom:-6px;left:-6px;cursor:nesw-resize;}
+.handle-br{bottom:-6px;right:-6px;cursor:nwse-resize;}
+
+/* Edges */
+.handle-t{top:-6px;left:50%;transform:translateX(-50%);cursor:ns-resize;}
+.handle-b{bottom:-6px;left:50%;transform:translateX(-50%);cursor:ns-resize;}
+.handle-l{left:-6px;top:50%;transform:translateY(-50%);cursor:ew-resize;}
+.handle-r{right:-6px;top:50%;transform:translateY(-50%);cursor:ew-resize;}
 .draggable.active-layer .resize-handle{display:block;}
 .handle-br{bottom:-5px;right:-5px;}
 .draggable img { display: block; width: 100%; height: 100%; object-fit: contain; }
@@ -122,7 +154,9 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 #textEditor{display:none;background:#f3f4f6;padding:10px;border-radius:8px;border:1px solid #e5e7eb;}
 .size-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
 .size-row input{width:60px;}
-
+.draggable.editing .resize-handle {
+  display: none !important;
+}
 /* --- PREVIEW PANEL --- */
 .preview-panel{
     border:1px solid var(--border-color);
@@ -347,6 +381,14 @@ let redoStack = [];
 let activeItem = null;
 let isResizing = false;
 
+designCanvas.addEventListener('mousedown', e => {
+  if (e.target === designCanvas) {
+    document.querySelectorAll('.draggable')
+      .forEach(item => item.classList.remove('active-layer'));
+    activeItem = null;
+  }
+});
+
 const extendedSwatches = [
   '#FFFFFF', '#F2F2F2', '#D9D9D9', '#BFBFBF', '#A6A6A6', '#808080', '#595959', '#404040', '#262626', '#000000',
   '#FFCCCC', '#FF9999', '#FF6666', '#FF3333', '#FF0000', '#CC0000', '#990000', '#660000', '#330000',
@@ -417,9 +459,15 @@ shapeColorPicker.on('change', (color, instance) => {
         const svgEl = activeItem.querySelector('svg');
         if(svgEl) {
             svgEl.setAttribute('fill', colorStr);
+            updatePreview();
         }
     }
-  updatePreview();
+});
+
+shapeColorPicker.on('save', () => {
+    if(activeItem){
+        saveHistory();
+    }
 });
 
 
@@ -514,7 +562,10 @@ function updatePreview() {
 }
 function rebindDraggables(){
   document.querySelectorAll('#designCanvas .draggable')
-    .forEach(el => makeDraggable(el));
+    .forEach(el => {
+      makeDraggable(el);
+      enableTextEditing(el);
+    });
 }
 /********************************************
  * PRODUCT SWITCHING
@@ -581,14 +632,24 @@ addTextBtn.addEventListener('click', () => {
   
   // Content and Handle
   div.innerHTML = `
-    <span class="design-text" style="color:${fontColorPicker.getColor().toHEXA().toString()}">
+    <span class="design-text" contenteditable="false"
+          style="color:${fontColorPicker.getColor().toHEXA().toString()}">
         ${textInput.value}
     </span>
+    <div class="resize-handle handle-tl"></div>
+    <div class="resize-handle handle-tr"></div>
+    <div class="resize-handle handle-bl"></div>
     <div class="resize-handle handle-br"></div>
+
+    <div class="resize-handle handle-t"></div>
+    <div class="resize-handle handle-b"></div>
+    <div class="resize-handle handle-l"></div>
+    <div class="resize-handle handle-r"></div>
   `;
   
   designCanvas.appendChild(div);
   makeDraggable(div);
+  enableTextEditing(div);
   activeItem = div;
   
   updateLayerList();
@@ -600,85 +661,211 @@ addTextBtn.addEventListener('click', () => {
 /********************************************
  * FONT EDIT CONTROLS
  ********************************************/
-fontSizeInput.addEventListener('input',()=>{if(activeItem) activeItem.style.fontSize=fontSizeInput.value+'px';});
-fontFamilySelect.addEventListener('change',()=>{if(activeItem) activeItem.style.fontFamily=fontFamilySelect.value;});
-btnBold.addEventListener('click',()=>{btnBold.classList.toggle('active'); if(activeItem) activeItem.style.fontWeight=btnBold.classList.contains('active')?'bold':'normal';});
-btnItalic.addEventListener('click',()=>{btnItalic.classList.toggle('active'); if(activeItem) activeItem.style.fontStyle=btnItalic.classList.contains('active')?'italic':'normal';});
+fontSizeInput.addEventListener('input', () => {
+  if(activeItem){
+    activeItem.style.fontSize = fontSizeInput.value + 'px';
+    updatePreview();
+  }
+});
 
+fontSizeInput.addEventListener('change', saveHistory);
+
+fontFamilySelect.addEventListener('change', () => {
+  if(activeItem){
+    activeItem.style.fontFamily = fontFamilySelect.value;
+    updatePreview();
+    saveHistory();
+  }
+});
+
+btnBold.addEventListener('click', () => {
+  btnBold.classList.toggle('active');
+  if(activeItem){
+    activeItem.style.fontWeight = 
+      btnBold.classList.contains('active') ? 'bold' : 'normal';
+    updatePreview();
+    saveHistory();
+  }
+});
+
+btnItalic.addEventListener('click', () => {
+  btnItalic.classList.toggle('active');
+  if(activeItem){
+    activeItem.style.fontStyle = 
+      btnItalic.classList.contains('active') ? 'italic' : 'normal';
+    updatePreview();
+    saveHistory();
+  }
+});
 function showTextEditor(){document.getElementById('textEditor').style.display='block';}
 
+function selectItem(el) {
+  // Remove active state from all
+  document.querySelectorAll('#designCanvas .draggable')
+    .forEach(item => item.classList.remove('active-layer'));
+
+  // Set new active
+  activeItem = el;
+  el.classList.add('active-layer');
+
+  updateLayerList();
+  updatePreview();
+}
 /********************************************
  * DRAGGABLE
  ********************************************/
 function makeDraggable(el) {
-  let startX, startY, initX, initY;
-  const handle = el.querySelector('.resize-handle');
-  
-  el.addEventListener('mousedown', e => {
-    activeItem = el; 
-    updateLayerList();
-    
-    if(e.target === handle) { isResizing = true; return; }
+  let startX, startY, initX, initY, initW, initH;
+  let currentHandle = null;
 
-    // Remove the centering transform to prevent "jumping"
-    if (el.style.transform.includes('translate')) {
-        const rect = el.getBoundingClientRect();
-        const parentRect = designCanvas.getBoundingClientRect();
-        el.style.left = (rect.left - parentRect.left) + 'px';
-        el.style.top = (rect.top - parentRect.top) + 'px';
-        el.style.transform = 'none';
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    selectItem(el);
+  });
+
+  el.addEventListener('mousedown', e => {
+
+    // If clicking resize handle
+    if (e.target.classList.contains('resize-handle')) {
+      isResizing = true;
+      currentHandle = e.target;
+
+      startX = e.clientX;
+      startY = e.clientY;
+      initX = parseInt(el.style.left) || 0;
+      initY = parseInt(el.style.top) || 0;
+      initW = el.offsetWidth;
+      initH = el.offsetHeight;
+
+      document.addEventListener('mousemove', dragMove);
+      document.addEventListener('mouseup', dragUp);
+      return;
     }
 
-    startX = e.clientX; startY = e.clientY;
+    // If editing text, don't drag
+    if (e.target.classList.contains('design-text')) return;
+
+    selectItem(el);
+
+    startX = e.clientX;
+    startY = e.clientY;
     initX = parseInt(el.style.left) || 0;
     initY = parseInt(el.style.top) || 0;
-    
+
     document.addEventListener('mousemove', dragMove);
     document.addEventListener('mouseup', dragUp);
   });
 
   function dragMove(e) {
-    if (isResizing) {
-        const rect = el.getBoundingClientRect();
-        const canvasRect = designCanvas.getBoundingClientRect();
-        
-        let newWidth = e.clientX - rect.left;
-        let newHeight = e.clientY - rect.top;
 
-        // Prevent resizing beyond the right/bottom canvas edge
-        if (rect.left + newWidth > canvasRect.right) newWidth = canvasRect.right - rect.left;
-        if (rect.top + newHeight > canvasRect.bottom) newHeight = canvasRect.bottom - rect.top;
-
-        el.style.width = Math.max(10, newWidth) + 'px';
-        el.style.height = Math.max(10, newHeight) + 'px';
-        return;
-    }
-
-    // Movement Logic
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
 
+    // --- RESIZING ---
+    if (isResizing && currentHandle) {
+
+      let newLeft = initX;
+      let newTop = initY;
+      let newWidth = initW;
+      let newHeight = initH;
+
+      if (currentHandle.classList.contains('handle-br')) {
+        newWidth = initW + dx;
+        newHeight = initH + dy;
+      }
+      if (currentHandle.classList.contains('handle-bl')) {
+        newWidth = initW - dx;
+        newHeight = initH + dy;
+        newLeft = initX + dx;
+      }
+      if (currentHandle.classList.contains('handle-tr')) {
+        newWidth = initW + dx;
+        newHeight = initH - dy;
+        newTop = initY + dy;
+      }
+      if (currentHandle.classList.contains('handle-tl')) {
+        newWidth = initW - dx;
+        newHeight = initH - dy;
+        newLeft = initX + dx;
+        newTop = initY + dy;
+      }
+      if (currentHandle.classList.contains('handle-r')) {
+        newWidth = initW + dx;
+      }
+      if (currentHandle.classList.contains('handle-l')) {
+        newWidth = initW - dx;
+        newLeft = initX + dx;
+      }
+      if (currentHandle.classList.contains('handle-b')) {
+        newHeight = initH + dy;
+      }
+      if (currentHandle.classList.contains('handle-t')) {
+        newHeight = initH - dy;
+        newTop = initY + dy;
+      }
+
+      newWidth = Math.max(20, newWidth);
+      newHeight = Math.max(20, newHeight);
+
+      // Clamp inside canvas
+      const maxLeft = designCanvas.clientWidth - newWidth;
+      const maxTop = designCanvas.clientHeight - newHeight;
+
+      el.style.left = Math.max(0, Math.min(newLeft, maxLeft)) + 'px';
+      el.style.top = Math.max(0, Math.min(newTop, maxTop)) + 'px';
+      el.style.width = newWidth + 'px';
+      el.style.height = newHeight + 'px';
+
+      return;
+    }
+
+    // --- NORMAL DRAG ---
     let newLeft = initX + dx;
     let newTop = initY + dy;
 
-    // Boundary Constraints
-    const minLeft = 0;
     const maxLeft = designCanvas.clientWidth - el.offsetWidth;
-    const minTop = 0;
     const maxTop = designCanvas.clientHeight - el.offsetHeight;
 
-    // Apply clamped coordinates
-    el.style.left = Math.max(minLeft, Math.min(newLeft, maxLeft)) + 'px';
-    el.style.top = Math.max(minTop, Math.min(newTop, maxTop)) + 'px';
+    el.style.left = Math.max(0, Math.min(newLeft, maxLeft)) + 'px';
+    el.style.top = Math.max(0, Math.min(newTop, maxTop)) + 'px';
   }
 
-  function dragUp(){
+  function dragUp() {
     document.removeEventListener('mousemove', dragMove);
     document.removeEventListener('mouseup', dragUp);
-    isResizing=false;
+    isResizing = false;
+    currentHandle = null;
     saveHistory();
     updatePreview();
   }
+}
+function enableTextEditing(el) {
+  const textEl = el.querySelector('.design-text');
+  if (!textEl) return;
+
+  textEl.addEventListener('dblclick', (e) => {
+    e.stopPropagation();
+
+    textEl.setAttribute('contenteditable', 'true');
+    textEl.focus();
+    document.execCommand('selectAll', false, null);
+
+    el.classList.add('editing');
+  });
+
+  textEl.addEventListener('blur', () => {
+    textEl.setAttribute('contenteditable', 'false');
+    el.classList.remove('editing');
+    saveHistory();
+    updatePreview();
+  });
+
+  textEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      textEl.blur();
+    }
+  });
 }
 function setDefaultPreviewScale() {
   const scales = {
@@ -710,9 +897,7 @@ function updateLayerList(){
       updatePreview();
     });
     div.addEventListener('click', () => {
-      activeItem = child;
-      Array.from(designCanvas.children).forEach(c => c.classList.remove('active-layer'));
-      child.classList.add('active-layer');
+      selectItem(child);
       showTextEditor();
     });
     container.appendChild(div);
@@ -756,7 +941,17 @@ function addShapeToCanvas(type) {
         svgContent = `<svg viewBox="0 0 100 100" fill="${color}"><polygon points="50,0 100,100 0,100"/></svg>`;
     }
 
-    div.innerHTML = svgContent + '<div class="resize-handle handle-br"></div>';
+    div.innerHTML = svgContent + `
+      <div class="resize-handle handle-tl"></div>
+      <div class="resize-handle handle-tr"></div>
+      <div class="resize-handle handle-bl"></div>
+      <div class="resize-handle handle-br"></div>
+
+      <div class="resize-handle handle-t"></div>
+      <div class="resize-handle handle-b"></div>
+      <div class="resize-handle handle-l"></div>
+      <div class="resize-handle handle-r"></div>
+    `;
     
     // Add to canvas and make draggable
     designCanvas.appendChild(div);
@@ -780,26 +975,53 @@ const imageInput = document.getElementById('imageInput');
 imageInput.addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
+
   const reader = new FileReader();
   reader.onload = function(ev) {
-    const img = document.createElement('img');
-    img.src = ev.target.result;
+
     const div = document.createElement('div');
     div.classList.add('draggable');
-    div.style.left = '50%';
-    div.style.top = '50%';
-    div.style.transform = 'translate(-50%, -50%)';
+
+    const initialSize = 150;
+    div.style.width = initialSize + 'px';
+    div.style.height = initialSize + 'px';
+
+    const centerX = (designCanvas.clientWidth / 2) - (initialSize / 2);
+    const centerY = (designCanvas.clientHeight / 2) - (initialSize / 2);
+
+    div.style.left = centerX + 'px';
+    div.style.top = centerY + 'px';
+    div.style.transform = 'none';
+
+    const img = document.createElement('img');
+    img.src = ev.target.result;
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.objectFit = "contain";
+    img.style.pointerEvents = "none";
+
     div.appendChild(img);
-    const handle = document.createElement('div');
-    handle.classList.add('resize-handle', 'handle-br');
-    div.appendChild(handle);
+
+    div.innerHTML += `
+      <div class="resize-handle handle-tl"></div>
+      <div class="resize-handle handle-tr"></div>
+      <div class="resize-handle handle-bl"></div>
+      <div class="resize-handle handle-br"></div>
+      <div class="resize-handle handle-t"></div>
+      <div class="resize-handle handle-b"></div>
+      <div class="resize-handle handle-l"></div>
+      <div class="resize-handle handle-r"></div>
+    `;
+
     designCanvas.appendChild(div);
     makeDraggable(div);
     activeItem = div;
+
     updateLayerList();
     saveHistory();
     updatePreview();
   };
+
   reader.readAsDataURL(file);
 });
 
@@ -842,9 +1064,16 @@ async function fetchPixabay(query = 'vector') {
       image.style.pointerEvents = "none";
 
       div.appendChild(image);
-      const handle = document.createElement('div');
-      handle.classList.add('resize-handle', 'handle-br');
-      div.appendChild(handle);
+     div.innerHTML += `
+        <div class="resize-handle handle-tl"></div>
+        <div class="resize-handle handle-tr"></div>
+        <div class="resize-handle handle-bl"></div>
+        <div class="resize-handle handle-br"></div>
+        <div class="resize-handle handle-t"></div>
+        <div class="resize-handle handle-b"></div>
+        <div class="resize-handle handle-l"></div>
+        <div class="resize-handle handle-r"></div>
+      `;
       
       designCanvas.appendChild(div);
       makeDraggable(div);
