@@ -9,7 +9,7 @@
 :root {
   --primary:#111827; --accent:#3b82f6; --bg-light:#f5f5f5; --border-color:#ddd;
 }
-body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:10px;display:flex;justify-content:center;user-select:none;}
+body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:2px;display:flex;justify-content:center;user-select:none;}
 .studio-wrapper {                
   display: grid;
   /* --- CHANGED: First 2 columns are fixed, center expands --- */
@@ -28,20 +28,20 @@ body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:10px;dis
 .control-panel-left {
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 15px;
-  background: #f9fafb;
+  padding: 5px;
+  background: #2F6B64;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 5px;
   height: 600px;
   overflow-y: auto;
 }
-.gallery-panel{border:1px solid var(--border-color);border-radius:12px;padding:10px;background:#f9fafb;display:flex;flex-direction:column;height:600px;overflow:hidden;}
+.gallery-panel{border:1px solid var(--border-color);border-radius:12px;padding:10px;background:#2F6B64;display:flex;flex-direction:column;height:600px;overflow:hidden;}
 .gallery-header{margin-bottom:10px;display:flex;flex-direction:column;gap:5px;}
-.gallery-title{font-size:13px;font-weight:bold;color:#333;}
+.gallery-title{font-size:13px;font-weight:bold;color:#fff;}
 .gallery-search{padding:5px;border-radius:6px;border:1px solid #ddd;font-size:11px;width:100%;box-sizing:border-box;}
-.mini-gallery-container{margin-bottom:10px;height:200px;display:flex;flex-direction:column;}
-.mini-gallery-title{font-size:10px;color:var(--accent);text-transform:uppercase;font-weight:bold;margin-bottom:5px;}
+.mini-gallery-container{margin-bottom:2px;height:200px;display:flex;flex-direction:column;}
+.mini-gallery-title{font-size:10px;color:#fff;text-transform:uppercase;font-weight:bold;margin-bottom:2px;}
 .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(45px,1fr));gap:5px;overflow-y:auto;flex-grow:1;padding-right:5px;}
 .gallery-item{width:45px;height:45px;border:1px solid #eee;border-radius:6px;cursor:pointer;object-fit:contain;background:white;transition:all 0.2s;}
 .gallery-item:hover{border-color:var(--accent);transform:scale(1.05);}
@@ -145,26 +145,95 @@ body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:10px;dis
 }
 
 /* --- PANELS --- */
-.controls-panel{display:flex;flex-direction:column;gap:10px;}
+.controls-panel{display:flex;flex-direction:column;gap:5px;}
 .control-group{display:flex;flex-direction:column;gap:3px;}
-label{font-weight:600;font-size:10px;color:#666;text-transform:uppercase;}
+label{font-weight:600;font-size:10px;color:#000;text-transform:uppercase;}
 input,select{padding:6px;border-radius:6px;border:1px solid #ddd;font-size:12px;}
-.layer-manager{background:#f3f4f6;padding:8px;border-radius:8px;border:1px solid #e5e7eb;max-height:120px;overflow-y:auto;}
-.layer-item{display:flex;justify-content:space-between;align-items:center;background:white;padding:6px 8px;border-radius:4px;margin-bottom:4px;font-size:11px;border:1px solid #eee;}
 .btn-icon{background:#eee;border:none;padding:2px 5px;border-radius:3px;cursor:pointer;font-size:9px;}
 .btn-delete{background:#fee2e2;color:#991b1b;}
-.btn-group{display:flex;gap:8px;margin-top:5px;flex-wrap: wrap;}
-button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;font-size:12px;}
-.btn-style{background:#f3f4f6;color:#333;font-weight:bold;padding:6px 10px;border:1px solid #ddd;}
-.btn-style.active{background:var(--accent);color:white;border-color:var(--accent);}
+.btn-group{display:flex;gap:2px;margin-top:2px;flex-wrap: wrap;}
+button{padding:2px;border-radius:8px;border:none;font-weight:600;cursor:pointer;font-size:12px;}
 .btn-primary{background:var(--primary);color:white;flex:1;}
 .btn-action{background:#dbeafe;color:#1e40af;}
 .btn-download{background:#d1fae5;color:#065f46;flex:1;}
-#textEditor{display:none;background:#f3f4f6;padding:10px;border-radius:8px;border:1px solid #e5e7eb;}
-.size-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+#textEditor{display:block !important; background:#f3f4f6;padding:2px;border-radius:8px;border:1px solid #e5e7eb;}
+.size-row{display:flex;align-items:center;gap:8px;margin-bottom:2px;}
 .size-row input{width:60px;}
 .draggable.editing .resize-handle {
   display: none !important;
+}
+  
+  /* Container for the specific layer section */
+
+  
+.layer-manager-section {
+  border: 1px solid #eee;
+  background: #e0dede;
+  padding: 2px;
+  border-radius: 6px;
+}
+
+/* The scrollable area for layers */
+#layerListContainer {
+    max-height: 200px; /* Fixed height so it stays permanent */
+    min-height: 100px; /* Ensures it always occupies space */
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 2px;
+}
+
+/* Individual Layer Item Styling */
+.layer-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 5px;
+    margin-bottom: 2px;
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 3px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.layer-item.active {
+    background: #e3f2fd;
+    border-color: #2196f3;
+    font-weight: bold;
+}
+
+/* Scrollbar styling for a cleaner look */
+#layerListContainer::-webkit-scrollbar {
+    width: 6px;
+}
+#layerListContainer::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+}
+#textEditor {
+    display: block !important; /* Never hide this */
+}
+
+.btn-style {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    height: 36px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #fff;
+}
+
+.btn-style.active {
+    background: #e0e0e0;
+    border-color: #888;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-style:hover {
+    background: #f8f8f8;
 }
 /* --- PREVIEW PANEL --- */
 .preview-panel{
@@ -257,74 +326,59 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
     display: none;
 }
 
-.action-toolbar {
+/* Apply this to EVERYTHING to prevent padding from breaking widths */
+* {
+    box-sizing: border-box;
+}
+
+.control-panel {
+    width: flex; /* Or whatever your sidebar width is */
+    padding: 2px;
+    background: #e0dede;
+    border-radius: 9px; /* Uniform rounding */
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Adds depth to the rounded look */
     display: flex;
-    gap: 8px;
-    padding: 10px;
-    background: #f4f4f4;
-    border-bottom: 1px solid #ddd;
+    flex-direction: column;
+    overflow-x: hidden; /* Stops horizontal scrolling */
 }
 
-.btn-tool {
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    background: #fff;
-    cursor: pointer;
+.tool-section {
+    width: 100%; /* Ensures section stays inside panel */
+    margin-bottom: 2px;
+}
+
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two equal columns */
+    gap: 5px;
+    width: 100%; /* Forces the grid to match the tool-section width */
+}
+
+.button-grid button {
+    width: 100%; /* Forces button to stay inside its grid cell */
+    height: 20px;
+    font-size: 11px;
+    font-weight: 150px;
+    padding: 4px;
+    background: #2F6B64;
+    border: 1px solid #15302d;
     border-radius: 4px;
-    font-size: 9px;
-    transition: all 0.2s;
-}
-
-.btn-tool:hover {
-    background: #e1e1e1;
-    border-color: #bbb;
-}
-
-.btn-tool:active {
-    background: #d1d1d1;
-    transform: translateY(1px);
-}
-
-.danger-zone {
-    display: flex;
-    gap: 10px;
-    margin-left: auto; /* Pushes to the right if in a flex container */
-}
-
-.btn-delete {
-    background-color: #ffeded;
-    color: #d32f2f;
-    border: 1px solid #d32f2f;
-    padding: 6px 12px;
+    color: #fff;
     cursor: pointer;
-    border-radius: 4px;
-    font-size: 9px;
+    /* This prevents long text from pushing the button wider */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.btn-delete:hover {
-    background-color: #d32f2f;
-    color: white;
+/* Ensure buttons with span-2 don't break the layout */
+.span-2 {
+    grid-column: span 2;
+    width: 100% !important;
 }
 
-.btn-reset {
-    background-color: #333;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 9px;
-}
-
-.btn-reset:hover {
-    background-color: #000;
-}
-
-
-
-
-
-
+/* { outline: 1px solid red !important; }*/
 
 
 </style>
@@ -344,10 +398,10 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
       <div class="mini-gallery-title">Pixabay (Vector)</div>
       <div class="gallery-grid" id="pixabayGrid"></div>
     </div>
-    <hr style="border:0;border-top:1px solid #eee;margin:10px 0;">
+    <hr style="border:0;border-top:1px solid #eee;margin:2px 0;">
     <div class="mini-gallery-container">
       <div class="mini-gallery-title" style="display:flex; justify-content:space-between; align-items:center;">
-        <span>Solid Shapes</span>                
+        <span>Shapes</span>                
         <div id="shapeColorPicker" style="width: 25px; height: 25px;"></div>
       </div>
       <div class="gallery-grid" id="shapesGrid">
@@ -356,10 +410,10 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
           <div class="gallery-item shape-item" data-shape="triangle" style="background: #333; clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"></div>
       </div>
     </div>
-    <hr style="border:0;border-top:1px solid #eee;margin:10px 0;">
+    <hr style="border:0;border-top:1px solid #eee;margin:2px 0;">
     <div class="control-group">
-      <label>Upload Local Image</label>
-      <input type="file" id="imageInput" accept="image/*"/>
+      <label style="font-size: 9px; color: #fff;">Upload Your Image</label>
+      <input type="file" id="imageInput" style="background: #e0dede;" accept="image/*"/>
     </div>
   </div>
 
@@ -367,82 +421,99 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 
 
   <div class="control-panel-left">
-    <div class="control-group">
-      <label>Add Text</label>
-      <div style="display:flex; gap:3px;">
-        <input type="text" id="textInput" placeholder="Enter text..." value="New Text" style="flex:1"/>
-        <button class="btn-action" id="addTextBtn">Add</button>
-      </div>
-    </div>
-    <div id="textEditor">
-      <div class="size-row">
-        <div style="flex:1">
-          <label>Text Color</label>
-          <div id="fontColorPicker"></div>
-        </div>
-        <div>
-          <label>Size (px)</label><br>
-          <input type="number" id="fontSizeInput" min="8" max="200" value="24">
-        </div>
-      </div>
-      <div class="control-group">
-        <label>Font Family</label>
-        <select id="fontFamily">
-          <option value="'Montserrat', sans-serif">Modern: Montserrat</option>
-          <option value="'Playfair Display', serif">Classic: Playfair</option>
-          <option value="'Pacifico', cursive">Script: Pacifico</option>
-          <option value="'Lobster', cursive">Bold Script: Lobster</option>
-          <option value="'Bungee', cursive">Block: Bungee</option>
-          <option value="'Anton', sans-serif">Impact: Anton</option>
-          <option value="'Bangers', cursive">Comic: Bangers</option>
-          <option value="'Rock Salt', cursive">Handwritten: Rock Salt</option>
-          <option value="'Monoton', cursive">Retro: Monoton</option>
-          <option value="'Special Elite', cursive">Typewriter: Special Elite</option>
-          <option value="'Creepster', cursive">Horror: Creepster</option>
-          <option value="'Press Start 2P', cursive">Pixel: Press Start</option>
-        </select>
-      </div>
-      <div style="display:flex; gap:5px; margin-top:5px;">
-        <button id="btnBold" class="btn-style" style="flex:1">B</button>
-        <button id="btnItalic" class="btn-style" style="flex:1">I</button>
-      </div>
-    </div>
-    <div class="layer-manager">
-      <label style="color: var(--accent); margin-bottom:5px; display:block; font-size:10px;">Active Layers</label>
-      <div id="layerList"></div>
-    </div>
-    <div class="btn-group">
-      <button onclick="undo()" class="btn-tool">↶ Undo</button>
-      <button onclick="redo()" class="btn-tool">↷ Redo</button>
-    </div>
-    <div class="edit-toolbar">
-      <button onclick="rotateSelected(-90)" class="btn-tool">Rotate Left ↺</button>
-      <button onclick="rotateSelected(90)" class="btn-tool">Rotate Right ↻</button>
-      
-      <button onclick="flipSelected('horizontal')" class="btn-tool">Flip Horizontal</button>
-      <button onclick="flipSelected('vertical')" class="btn-tool">Flip Vertical</button>
-    </div>
-    <div class="action-toolbar">
-      <button onclick="selectAllItems()" class="btn-tool" title="Select All (Ctrl+A)">
-        Select All
-      </button>
+    <div class="control-panel">
 
-      <button onclick="groupSelected()" class="btn-tool" title="Group (Ctrl+G)">
-        Group
-      </button>
-      
-      <button onclick="ungroupSelected()" class="btn-tool" title="Ungroup (Ctrl+Shift+G)">
-        Ungroup
-      </button>
+    <div class="tool-section">
+        <div class="button-grid">
+            <input type="text" id="textInput" placeholder="Enter text..." value="New Text Here" class="span-2" style="height: 20px; padding: 0 8px;">
+            <button class="btn-action span-2" id="addTextBtn" style="background: #2F6B64; color: #fff; border: none; font-weight: 600px; cursor: pointer;">Add to Canvas</button>
+        </div>
     </div>
-    <div class="danger-zone">
-      <button onclick="deleteSelected()" class="btn-delete" title="Delete Selected (Backspace)">
-          Delete
-      </button>
-      
-      <button onclick="clearCanvas()" class="btn-reset" title="Clear All">
-          Reset
-      </button>
+
+    <div id="textEditor" class="tool-section">
+         <div class="button-grid">
+            <div class="span-2">
+                <label style="font-size: 9px; color: #000;">Font</label>
+                <select id="fontFamily" style="width: 100%; height: 28px; cursor: pointer;">
+                    <option value="'Montserrat', sans-serif">Modern: Montserrat</option>
+                    <option value="'Playfair Display', serif">Classic: Playfair</option>
+                    <option value="'Pacifico', cursive">Script: Pacifico</option>
+                    <option value="'Lobster', cursive">Bold Script: Lobster</option>
+                    <option value="'Bungee', cursive">Block: Bungee</option>
+                    <option value="'Anton', sans-serif">Impact: Anton</option>
+                    <option value="'Bangers', cursive">Comic: Bangers</option>
+                    <option value="'Rock Salt', cursive">Handwritten: Rock Salt</option>
+                    <option value="'Monoton', cursive">Retro: Monoton</option>
+                    <option value="'Special Elite', cursive">Typewriter: Special Elite</option>
+                    <option value="'Creepster', cursive">Horror: Creepster</option>
+                    <option value="'Press Start 2P', cursive">Pixel: Press Start</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="font-size: 9px; color: #000;">Color</label>
+                <div id="fontColorPicker" style="width: 100%; height: 20px; border: 1px solid #ccc; border-radius: 4px;"></div>
+            </div>
+
+            <div>
+                <label style="font-size: 9px; color: #000;">Size (px)</label>
+                <input type="number" id="fontSizeInput" min="8" max="200" value="16" style="width: 100%; height: 20px; padding: 2px;">
+            </div>
+
+            <button id="btnBold" class="btn-style">Bold</button>
+            <button id="btnItalic" class="btn-style">Italic</button>
+        </div>
+    </div>
+
+    </div>
+    <div class="control-panel">
+        <div class="tool-section layer-manager-section">
+            <label>ACTIVE LAYERS</label>
+            <div class="button-grid" style="margin-top: 1px;">
+                <button onclick="selectAllItems()" style="font-size: 11px; color: #fff; height: 20px;">Select All</button>
+                <button onclick="clearCanvas()" class="btn-danger" style="font-size: 11px; color: #fff; height: 20px;">Clear All</button>
+            </div>
+            <div id="layerListContainer">
+                <div id="layerList">
+                    </div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="control-panel">
+
+        <div class="tool-section">
+            <label>SELECT & EDIT</label>
+            <div class="button-grid">
+                <button onclick="duplicateSelected()">Duplicate</button>
+                <button onclick="deleteSelected()" class="btn-danger">Delete</button>
+                <button onclick="groupSelected()">Group</button>
+                <button onclick="ungroupSelected()">Ungroup</button>
+                <button onclick="undo()">Undo</button>
+                <button onclick="redo()">Redo</button>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <label>TRANSFORM</label>
+            <div class="button-grid">
+                <button onclick="rotateSelected(90)">Rotate Right ↻</button>
+                <button onclick="rotateSelected(-90)">Rotate Left ↺</button>
+                <button onclick="flipSelected('horizontal')">Flip Horizontal ↔</button>
+                <button onclick="flipSelected('vertical')">Flip vertical ↕</button>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <label>ARRANGE</label>
+            <div class="button-grid">
+                <button onclick="bringToFront()">To Front</button>
+                <button onclick="sendToBack()">To Back</button>
+                <button onclick="bringForward()">Forward</button>
+                <button onclick="sendBackward()">Backward</button>
+            </div>
+        </div>
+        
     </div>
   </div>
 
@@ -468,7 +539,7 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
       <label>Product Color</label>
       <div id="bgPicker"></div>
     </div>
-    <hr style="border:0;border-top:1px solid #eee;margin:10px 0;">
+    <hr style="border:0;border-top:1px solid #eee;margin:2px 0;">
     <div class="preview-panel">
       <div class="preview-title">Preview</div>
       <div class="control-group">
@@ -839,7 +910,7 @@ addTextBtn.addEventListener('click', () => {
  * FONT EDIT CONTROLS
  ********************************************/
 fontSizeInput.addEventListener('input', () => {
-  if(activeItem){
+  if(activeItem && activeItem.classList.contains){
     activeItem.style.fontSize = fontSizeInput.value + 'px';
     updatePreview();
   }
@@ -848,7 +919,7 @@ fontSizeInput.addEventListener('input', () => {
 fontSizeInput.addEventListener('change', saveHistory);
 
 fontFamilySelect.addEventListener('change', () => {
-  if(activeItem){
+  if(activeItem && activeItem.classList.contains){
     activeItem.style.fontFamily = fontFamilySelect.value;
     updatePreview();
     saveHistory();
@@ -857,7 +928,7 @@ fontFamilySelect.addEventListener('change', () => {
 
 btnBold.addEventListener('click', () => {
   btnBold.classList.toggle('active');
-  if(activeItem){
+  if(activeItem && activeItem.classList.contains){
     activeItem.style.fontWeight = 
       btnBold.classList.contains('active') ? 'bold' : 'normal';
     updatePreview();
@@ -867,7 +938,7 @@ btnBold.addEventListener('click', () => {
 
 btnItalic.addEventListener('click', () => {
   btnItalic.classList.toggle('active');
-  if(activeItem){
+  if(activeItem && activeItem.classList.contains){
     activeItem.style.fontStyle = 
       btnItalic.classList.contains('active') ? 'italic' : 'normal';
     updatePreview();
@@ -1111,25 +1182,34 @@ function setDefaultPreviewScale() {
 /********************************************
  * LAYER MANAGER
  ********************************************/
-function updateLayerList(){
-  const container = document.getElementById('layerList');
-  container.innerHTML='';
-  Array.from(designCanvas.children).forEach((child,i)=>{
-    const div=document.createElement('div');
-    div.classList.add('layer-item');
-    div.innerHTML=`<span>Layer ${i+1}</span> <button class="btn-icon btn-delete">X</button>`;
-        div.querySelector('button').addEventListener('click', () => {
-      designCanvas.removeChild(child);
-      updateLayerList();
-      saveHistory();
-      updatePreview();
+function updateLayerList() {
+    const list = document.getElementById('layerList');
+    list.innerHTML = ""; // Clear existing list
+
+    // Get all draggable items from the canvas
+    const items = Array.from(designCanvas.querySelectorAll('.draggable'));
+
+    // We reverse the list so the "Top" layer on the canvas is at the top of the list
+    items.reverse().forEach((item, index) => {
+        const layerItem = document.createElement('div');
+        layerItem.className = 'layer-item';
+        if (selectedItems.includes(item)) layerItem.classList.add('active');
+
+        // Identify the layer type for the label
+        const type = item.classList.contains('text-item') ? 'Text' : 'Image';
+        const content = type === 'Text' ? `"${item.innerText.substring(0, 10)}..."` : `Image ${items.length - index}`;
+
+        layerItem.innerHTML = `
+            <span style="margin-right:8px; color:#888;">${items.length - index}</span>
+            <span style="flex:1">${type}: ${content}</span>
+            <button onclick="deleteLayer(event, ${index})" style="border:none; background:none; cursor:pointer;">✕</button>
+        `;
+
+        // Clicking the layer in the list selects it on the canvas
+        layerItem.onclick = () => selectItem(item);
+        
+        list.appendChild(layerItem);
     });
-    div.addEventListener('click', () => {
-      selectItem(child);
-      showTextEditor();
-    });
-    container.appendChild(div);
-  });
 }
 
 /********************************************
@@ -1436,6 +1516,103 @@ function clearCanvas() {
     }
 }
 
+/**
+ * Duplicates all currently selected items/groups
+ */
+function duplicateSelected() {
+    if (selectedItems.length === 0) return;
+
+    const newSelection = [];
+
+    selectedItems.forEach(item => {
+        // 1. Create a deep clone of the element
+        const clone = item.cloneNode(true);
+        
+        // 2. Remove active styling from the clone (we will re-apply it)
+        clone.classList.remove('active-layer');
+
+        // 3. Offset the position so it's not perfectly on top of the original
+        const currentLeft = parseInt(item.style.left) || 0;
+        const currentTop = parseInt(item.style.top) || 0;
+        clone.style.left = (currentLeft + 10) + 'px';
+        clone.style.top = (currentTop + 10) + 'px';
+
+        // 4. Add to canvas
+        designCanvas.appendChild(clone);
+
+        // 5. Make the new clone interactive
+        makeDraggable(clone);
+        
+        newSelection.push(clone);
+    });
+
+    // 6. Shift selection to the new items
+    selectedItems.forEach(item => item.classList.remove('active-layer'));
+    selectedItems = newSelection;
+    selectedItems.forEach(item => item.classList.add('active-layer'));
+
+    saveHistory();
+    updateLayerList();
+    updatePreview();
+}
+
+/**
+ * BRING TO FRONT: Moves item to the very end of the parent (top layer)
+ */
+function bringToFront() {
+    selectedItems.forEach(item => {
+        designCanvas.appendChild(item); 
+    });
+    finalizeOrderChange();
+}
+
+/**
+ * SEND TO BACK: Moves item to the very beginning of the parent (bottom layer)
+ */
+function sendToBack() {
+    // Reverse the loop to maintain relative order when moving multiple
+    [...selectedItems].reverse().forEach(item => {
+        designCanvas.insertBefore(item, designCanvas.firstChild);
+    });
+    finalizeOrderChange();
+}
+
+/**
+ * BRING FORWARD: Swaps item with the neighbor directly above it
+ */
+function bringForward() {
+    selectedItems.forEach(item => {
+        const next = item.nextElementSibling;
+        if (next && next.classList.contains('draggable')) {
+            designCanvas.insertBefore(next, item);
+        }
+    });
+    finalizeOrderChange();
+}
+
+/**
+ * SEND BACKWARD: Swaps item with the neighbor directly below it
+ */
+function sendBackward() {
+    selectedItems.forEach(item => {
+        const prev = item.previousElementSibling;
+        if (prev && prev.classList.contains('draggable')) {
+            designCanvas.insertBefore(item, prev);
+        }
+    });
+    finalizeOrderChange();
+}
+
+/**
+ * Helper to refresh UI after moving layers
+ */
+function finalizeOrderChange() {
+    saveHistory();
+    updateLayerList();
+    updatePreview();
+}
+
+
 
 
 
@@ -1613,6 +1790,11 @@ window.addEventListener('keydown', e => {
             e.preventDefault();
             deleteSelected();
         }
+    }
+    // Add inside your keydown listener
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd') {
+        e.preventDefault();
+        duplicateSelected();
     }
     // 2. GROUP (Ctrl + G)
     if (e.ctrlKey && key === 'g' && !e.shiftKey) {
