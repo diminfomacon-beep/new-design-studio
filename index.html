@@ -136,6 +136,7 @@ body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:2px;disp
     /* Ensure rotation happens from the dead center */
     transform-origin: center center;
     transition: transform 0.2s ease; /* Optional: smooths the flip/rotate */
+    z-index: 2; /* Starting point is higher than the canvas z-index */
 }
 
 /* This class will be added to the active item for a visual hint */
@@ -379,6 +380,14 @@ button{padding:2px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 }
 
 /* { outline: 1px solid red !important; }*/
+#designCanvas {
+    position: relative; /* Or absolute */
+    z-index: 1;         /* The "Floor" */
+    background: #ffffff;
+    overflow: hidden;
+}
+
+/* Ensure all draggable items start ABOVE the canvas floor */
 
 
 </style>
@@ -425,7 +434,7 @@ button{padding:2px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 
     <div class="tool-section">
         <div class="button-grid">
-            <input type="text" id="textInput" placeholder="Enter text..." value="New Text Here" class="span-2" style="height: 20px; padding: 0 8px;">
+            <input type="text" id="textInput" placeholder="Enter text..." value="" class="span-2" style="height: 20px; padding: 0 8px;">
             <button class="btn-action span-2" id="addTextBtn" style="background: #2F6B64; color: #fff; border: none; font-weight: 600px; cursor: pointer;">Add to Canvas</button>
         </div>
     </div>
@@ -526,47 +535,49 @@ button{padding:2px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 
 
 
-  <div class="controls-panel">
-    <div class="control-group">
-      <label>Product</label>
-      <select id="productSelect">
-        <option value="tshirt">T-Shirt</option>
-        <option value="tumbler">Tumbler</option>
-        <option value="mug">Mug</option>
-      </select>
-    </div>
-    <div class="control-group">
-      <label>Product Color</label>
-      <div id="bgPicker"></div>
-    </div>
-    <hr style="border:0;border-top:1px solid #eee;margin:2px 0;">
-    <div class="preview-panel">
-      <div class="preview-title">Preview</div>
+  <div class="gallery-panel">
+    <div class="controls-panel">
       <div class="control-group">
-        <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
+        <label style="color: #fff">Product</label>
+        <select id="productSelect">
+          <option value="tshirt">T-Shirt</option>
+          <option value="tumbler">Tumbler</option>
+          <option value="mug">Mug</option>
+        </select>
       </div>
-      <div class="preview-box">
-        <div id="stage-tshirt" class="product-stage active-product">
-          <div class="product-view view-tshirt">
-            <div class="mockup-layer" id="tshirt-design"></div>
-          </div>
+      <div class="control-group">
+        <label style="color: #fff">Product Color</label>
+        <div id="bgPicker"></div>
+      </div>
+      <hr style="border:0;border-top:1px solid #eee;margin:2px 0;">
+      <div class="preview-panel">
+        <div class="preview-title">Preview</div>
+        <div class="control-group">
+          <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
         </div>
-        <div id="stage-tumbler" class="product-stage">
-          <div class="product-view view-tumbler">
-            <div class="mockup-layer" id="tumbler-design"></div>
+        <div class="preview-box">
+          <div id="stage-tshirt" class="product-stage active-product">
+            <div class="product-view view-tshirt">
+              <div class="mockup-layer" id="tshirt-design"></div>
+            </div>
           </div>
-        </div>
-        <div id="stage-mug" class="product-stage">
-          <div class="product-view view-mug">
-            <div class="mockup-layer" id="mug-design"></div>
+          <div id="stage-tumbler" class="product-stage">
+            <div class="product-view view-tumbler">
+              <div class="mockup-layer" id="tumbler-design"></div>
+            </div>
+          </div>
+          <div id="stage-mug" class="product-stage">
+            <div class="product-view view-mug">
+              <div class="mockup-layer" id="mug-design"></div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="btn-group">
-      <button class="btn-download" id="downloadBtn">💾 Save PNG</button>
-      <button class="btn-primary" id="submitDesign">Finalize</button>
+      <div class="btn-group">
+        <button class="btn-download" id="downloadBtn">💾 Save Design</button>
+        <button class="btn-primary" id="submitDesign">Finalize</button>
+      </div>
     </div>
   </div>
 </div>
@@ -854,23 +865,33 @@ const btnBold = document.getElementById('btnBold');
 const btnItalic = document.getElementById('btnItalic');
 
 addTextBtn.addEventListener('click', () => {
+  // If the input is empty, don't add anything
+  if (textInput.value.trim() === "") return;
+
   const div = document.createElement('div');
   div.classList.add('draggable');
   
-  // Set initial size
+  // --- Z-INDEX LOGIC: Ensure new text is on top ---
+  let topZ = 2;
+  document.querySelectorAll('.draggable').forEach(el => {
+    let z = parseInt(el.style.zIndex) || 2;
+    if (z > topZ) topZ = z;
+  });
+  div.style.zIndex = topZ + 1;
+  // -----------------------------------------------
+
   const initialWidth = 150;
   const initialHeight = 50;
   div.style.width = initialWidth + 'px';
   div.style.height = initialHeight + 'px';
 
-  // Calculate pixel-perfect center
   const centerX = (designCanvas.clientWidth / 2) - (initialWidth / 2);
   const centerY = (designCanvas.clientHeight / 2) - (initialHeight / 2);
 
-  // Apply coordinates and styling
   div.style.left = centerX + 'px';
   div.style.top = centerY + 'px';
   div.style.transform = 'none';
+  div.style.position = 'absolute'; // Vital for Z-Index
   
   div.style.fontSize = fontSizeInput.value + 'px';
   div.style.fontFamily = fontFamilySelect.value;
@@ -878,7 +899,6 @@ addTextBtn.addEventListener('click', () => {
   if (btnBold.classList.contains('active')) div.style.fontWeight = 'bold';
   if (btnItalic.classList.contains('active')) div.style.fontStyle = 'italic';
   
-  // Content and Handle
   div.innerHTML = `
     <span class="design-text" contenteditable="false"
           style="color:${fontColorPicker.getColor().toHEXA().toString()}">
@@ -888,7 +908,6 @@ addTextBtn.addEventListener('click', () => {
     <div class="resize-handle handle-tr"></div>
     <div class="resize-handle handle-bl"></div>
     <div class="resize-handle handle-br"></div>
-
     <div class="resize-handle handle-t"></div>
     <div class="resize-handle handle-b"></div>
     <div class="resize-handle handle-l"></div>
@@ -899,27 +918,30 @@ addTextBtn.addEventListener('click', () => {
   makeDraggable(div);
   enableTextEditing(div);
   activeItem = div;
+
+  // --- NEW: Reset the input box ---
+  textInput.value = ""; 
+  textInput.focus(); // Puts the cursor back so you can type the next word
+  // -------------------------------
   
   updateLayerList();
   saveHistory();
   updatePreview();
-  showTextEditor();
 });
 
 /********************************************
  * FONT EDIT CONTROLS
  ********************************************/
 fontSizeInput.addEventListener('input', () => {
-  if(activeItem && activeItem.classList.contains){
+  // Fixed the check here to ensure activeItem exists and is a draggable
+  if(activeItem && activeItem.classList.contains('draggable')){
     activeItem.style.fontSize = fontSizeInput.value + 'px';
     updatePreview();
   }
 });
 
-fontSizeInput.addEventListener('change', saveHistory);
-
 fontFamilySelect.addEventListener('change', () => {
-  if(activeItem && activeItem.classList.contains){
+  if(activeItem && activeItem.classList.contains('draggable')){
     activeItem.style.fontFamily = fontFamilySelect.value;
     updatePreview();
     saveHistory();
@@ -1557,59 +1579,57 @@ function duplicateSelected() {
 }
 
 /**
- * BRING TO FRONT: Moves item to the very end of the parent (top layer)
+ * BRING TO FRONT: Highest possible Z-Index
  */
 function bringToFront() {
-    selectedItems.forEach(item => {
-        designCanvas.appendChild(item); 
+    if (!activeItem) return;
+    let maxZ = 0;
+    document.querySelectorAll('.draggable').forEach(el => {
+        let z = parseInt(el.style.zIndex) || 0;
+        if (z > maxZ) maxZ = z;
     });
+    activeItem.style.zIndex = maxZ + 1;
     finalizeOrderChange();
 }
 
 /**
- * SEND TO BACK: Moves item to the very beginning of the parent (bottom layer)
+ * SEND TO BACK: Lowest possible Z-Index
  */
 function sendToBack() {
-    // Reverse the loop to maintain relative order when moving multiple
-    [...selectedItems].reverse().forEach(item => {
-        designCanvas.insertBefore(item, designCanvas.firstChild);
+    if (!activeItem) return;
+    let minZ = 0;
+    document.querySelectorAll('.draggable').forEach(el => {
+        let z = parseInt(el.style.zIndex) || 0;
+        if (z < minZ) minZ = z;
     });
+    activeItem.style.zIndex = minZ - 1;
     finalizeOrderChange();
 }
 
 /**
- * BRING FORWARD: Swaps item with the neighbor directly above it
+ * BRING FORWARD: Move up 1 step
  */
 function bringForward() {
-    selectedItems.forEach(item => {
-        const next = item.nextElementSibling;
-        if (next && next.classList.contains('draggable')) {
-            designCanvas.insertBefore(next, item);
-        }
-    });
+    if (!activeItem) return;
+    let currentZ = parseInt(activeItem.style.zIndex) || 0;
+    activeItem.style.zIndex = currentZ + 1;
     finalizeOrderChange();
 }
 
 /**
- * SEND BACKWARD: Swaps item with the neighbor directly below it
+ * SEND BACKWARD: Move down 1 step
  */
 function sendBackward() {
-    selectedItems.forEach(item => {
-        const prev = item.previousElementSibling;
-        if (prev && prev.classList.contains('draggable')) {
-            designCanvas.insertBefore(item, prev);
-        }
-    });
+    if (!activeItem) return;
+    let currentZ = parseInt(activeItem.style.zIndex) || 0;
+    activeItem.style.zIndex = currentZ - 1;
     finalizeOrderChange();
 }
 
-/**
- * Helper to refresh UI after moving layers
- */
 function finalizeOrderChange() {
+    updateLayerList(); // Important: Must sort by Z-Index now!
     saveHistory();
-    updateLayerList();
-    updatePreview();
+    // updatePreview(); // Keep this commented if it still causes image flicker
 }
 
 
@@ -1827,6 +1847,11 @@ window.addEventListener('keydown', e => {
         e.preventDefault();
         redo();
     }
+});
+textInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    addTextBtn.click(); // This triggers the code above
+  }
 });
 /********************************************
  * INITIALIZATION
