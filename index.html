@@ -232,6 +232,25 @@ button{padding:8px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
     border: 1px dashed #2196F3;
     background: rgba(33, 150, 243, 0.05);
 }
+/* Hide handles by default */
+.draggable .resize-handle {
+    display: none !important;
+}
+
+/* Show handles ONLY when the item is active */
+.draggable.active-layer > .resize-handle {
+    display: block !important;
+}
+
+/* Visual feedback for the active item */
+.active-layer {
+    outline: 1px dashed #2196F3;
+}
+
+/* Hide handles if we are currently dragging the item (cleaner look) */
+.draggable.dragging > .resize-handle {
+    display: none;
+}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat:wght@400;900&family=Pacifico&family=Playfair+Display:wght@700&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
 </head>
@@ -389,12 +408,19 @@ let selectedItems = [];
 let isResizing = false;
 
 designCanvas.addEventListener('mousedown', e => {
-  if (e.target === designCanvas) {
-    selectedItems.forEach(item => item.classList.remove('active-layer'));
-    selectedItems = [];
-    activeItem = null;
-    updateLayerList();
-  }
+    // Check if the click was directly on the canvas background
+    if (e.target === designCanvas) {
+        // Remove class from all elements
+        designCanvas.querySelectorAll('.draggable').forEach(item => {
+            item.classList.remove('active-layer');
+        });
+        
+        // Reset variables
+        selectedItems = [];
+        activeItem = null;
+        
+        updateLayerList();
+    }
 });
 
 const extendedSwatches = [
@@ -711,26 +737,26 @@ btnItalic.addEventListener('click', () => {
 function showTextEditor(){document.getElementById('textEditor').style.display='block';}
 
 function selectItem(el, additive = false) {
-  if (!additive) {
-    // If shift isn't held, clear previous selection
-    selectedItems.forEach(item => item.classList.remove('active-layer'));
-    selectedItems = [];
-  }
-
-  if (selectedItems.includes(el)) {
-    // Toggle off if already selected
-    if (additive) {
-      el.classList.remove('active-layer');
-      selectedItems = selectedItems.filter(item => item !== el);
+    // 1. If not holding Shift, remove the active class from EVERY draggable on the canvas
+    if (!additive) {
+        designCanvas.querySelectorAll('.draggable').forEach(item => {
+            item.classList.remove('active-layer');
+        });
+        selectedItems = [];
     }
-  } else {
-    // Add to selection
-    selectedItems.push(el);
-    el.classList.add('active-layer');
-    activeItem = el; // Keep activeItem as the last clicked for color pickers
-  }
 
-  updateLayerList();
+    // 2. Add the item to the selection if it's not already there
+    if (!selectedItems.includes(el)) {
+        selectedItems.push(el);
+        el.classList.add('active-layer');
+        activeItem = el;
+    } else if (additive) {
+        // Toggle off if Shift-clicking an already selected item
+        el.classList.remove('active-layer');
+        selectedItems = selectedItems.filter(item => item !== el);
+    }
+
+    updateLayerList();
 }
 /********************************************
  * DRAGGABLE
@@ -744,7 +770,28 @@ function makeDraggable(el) {
   el.addEventListener('mousedown', e => {
     // If editing text, don't drag
     if (e.target.classList.contains('design-text') && el.classList.contains('editing')) return;
+    
+    if (e.target.classList.contains('resize-handle')) {
+        isResizing = true;
+        currentHandle = e.target;
+        
+        // Initial Group Stats
+        initX = parseInt(el.style.left) || 0;
+        initY = parseInt(el.style.top) || 0;
+        initW = el.offsetWidth;
+        initH = el.offsetHeight;
 
+        // Initial Children Stats (Capture these ONLY once at mousedown)
+        if (el.classList.contains('group-container')) {
+            el.querySelectorAll(':scope > .draggable').forEach(child => {
+                child.dataset.startL = parseInt(child.style.left) || 0;
+                child.dataset.startT = parseInt(child.style.top) || 0;
+                child.dataset.startW = parseInt(child.style.width) || child.offsetWidth;
+                child.dataset.startH = parseInt(child.style.height) || child.offsetHeight;
+                child.dataset.startFS = parseFloat(window.getComputedStyle(child).fontSize);
+            });
+        }
+    }
     // 1. Handle Selection Logic
     const isShift = e.shiftKey;
     
@@ -788,36 +835,68 @@ function makeDraggable(el) {
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
 
-    // --- RESIZING (Single Element only) ---
     if (isResizing && currentHandle) {
-      let newLeft = initX;
-      let newTop = initY;
-      let newWidth = initW;
-      let newHeight = initH;
+    let newWidth = initW;
+    let newHeight = initH;
+    let newLeft = initX;
+    let newTop = initY;
 
-      // ... [Keep your existing handle-tl, br, etc. switch logic here] ...
-      // (Assuming you're keeping the logic from your provided snippet)
-      if (currentHandle.classList.contains('handle-br')) { newWidth = initW + dx; newHeight = initH + dy; }
-      if (currentHandle.classList.contains('handle-bl')) { newWidth = initW - dx; newHeight = initH + dy; newLeft = initX + dx; }
-      if (currentHandle.classList.contains('handle-tr')) { newWidth = initW + dx; newHeight = initH - dy; newTop = initY + dy; }
-      if (currentHandle.classList.contains('handle-tl')) { newWidth = initW - dx; newHeight = initH - dy; newLeft = initX + dx; newTop = initY + dy; }
-      if (currentHandle.classList.contains('handle-r')) { newWidth = initW + dx; }
-      if (currentHandle.classList.contains('handle-l')) { newWidth = initW - dx; newLeft = initX + dx; }
-      if (currentHandle.classList.contains('handle-b')) { newHeight = initH + dy; }
-      if (currentHandle.classList.contains('handle-t')) { newHeight = initH - dy; newTop = initY + dy; }
-
-      newWidth = Math.max(20, newWidth);
-      newHeight = Math.max(20, newHeight);
-
-      const maxLeft = designCanvas.clientWidth - newWidth;
-      const maxTop = designCanvas.clientHeight - newHeight;
-
-      el.style.left = Math.max(0, Math.min(newLeft, maxLeft)) + 'px';
-      el.style.top = Math.max(0, Math.min(newTop, maxTop)) + 'px';
-      el.style.width = newWidth + 'px';
-      el.style.height = newHeight + 'px';
-      return;
+    // 1. Calculate the new dimensions of the Bound Box
+    if (currentHandle.classList.contains('handle-br')) {
+        newWidth = initW + dx;
+        newHeight = initH + dy;
+    } else if (currentHandle.classList.contains('handle-bl')) {
+        newWidth = initW - dx;
+        newHeight = initH + dy;
+        newLeft = initX + dx;
+    } else if (currentHandle.classList.contains('handle-tr')) {
+        newWidth = initW + dx;
+        newHeight = initH - dy;
+        newTop = initY + dy;
+    } else if (currentHandle.classList.contains('handle-tl')) {
+        newWidth = initW - dx;
+        newHeight = initH - dy;
+        newLeft = initX + dx;
+        newTop = initY + dy;
     }
+
+    // Constraints
+    newWidth = Math.max(20, newWidth);
+    newHeight = Math.max(20, newHeight);
+
+    // 2. Calculate the SCALE RATIO based on the starting size
+    const ratioX = newWidth / initW;
+    const ratioY = newHeight / initH;
+
+    // 3. Apply to the Bound Box (The Group itself)
+    el.style.width = newWidth + 'px';
+    el.style.height = newHeight + 'px';
+    el.style.left = newLeft + 'px';
+    el.style.top = newTop + 'px';
+
+    // 4. Scale Children Proportionally
+    if (el.classList.contains('group-container')) {
+        const children = el.querySelectorAll(':scope > .draggable');
+        children.forEach(child => {
+            // Get original positions stored when the group was first created/clicked
+            const startL = parseFloat(child.dataset.startL);
+            const startT = parseFloat(child.dataset.startT);
+            const startW = parseFloat(child.dataset.startW);
+            const startH = parseFloat(child.dataset.startH);
+            const startFS = parseFloat(child.dataset.startFS);
+
+            child.style.left = (startL * ratioX) + 'px';
+            child.style.top = (startT * ratioY) + 'px';
+            child.style.width = (startW * ratioX) + 'px';
+            child.style.height = (startH * ratioY) + 'px';
+            
+            if (child.querySelector('.design-text')) {
+                child.style.fontSize = (startFS * ratioX) + 'px';
+            }
+        });
+    }
+    return;
+}
 
     // --- MULTI-MOVE DRAG ---
     if (!isResizing) {
@@ -1035,56 +1114,47 @@ function groupSelected() {
 }
 
 function ungroupSelected() {
+    // Only target items that are actually groups
     const groups = selectedItems.filter(item => item.classList.contains('group-container'));
     
     groups.forEach(group => {
-        const groupX = parseInt(group.style.left);
-        const groupY = parseInt(group.style.top);
+        const groupX = parseInt(group.style.left) || 0;
+        const groupY = parseInt(group.style.top) || 0;
+        
+        // Find all draggable children inside this group
         const children = Array.from(group.children).filter(child => child.classList.contains('draggable'));
 
         children.forEach(child => {
-            const relX = parseInt(child.style.left);
-            const relY = parseInt(child.style.top);
+            const relX = parseInt(child.style.left) || 0;
+            const relY = parseInt(child.style.top) || 0;
 
-            // Restore absolute position
+            // 1. Restore absolute position on the main canvas
             child.style.left = (groupX + relX) + 'px';
             child.style.top = (groupY + relY) + 'px';
             
-            // Show individual handles again
+            // 2. IMPORTANT: Remove selection styling and hide handles
+            child.classList.remove('active-layer');
             const handles = child.querySelectorAll('.resize-handle');
-            handles.forEach(h => h.style.display = 'block');
+            handles.forEach(h => h.style.display = 'none'); // Force hide handles
 
+            // 3. Move back to the main designCanvas
             designCanvas.appendChild(child);
         });
 
+        // 4. Remove the now-empty group container
         group.remove();
     });
 
+    // 5. Reset global selection state so boxes don't "ghost"
     selectedItems = [];
+    activeItem = null;
+    
     saveHistory();
     updateLayerList();
+    updatePreview();
 }
 
-window.addEventListener('keydown', e => {
-    if (e.ctrlKey && e.key === 'g') {
-        e.preventDefault();
-        groupSelected();
-    }
-    if (e.ctrlKey && e.shiftKey && e.key === 'G') {
-        e.preventDefault();
-        ungroupSelected();
-    }
-    // Optional: Delete selected items with Backspace/Delete
-    if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (selectedItems.length > 0 && !document.activeElement.isContentEditable) {
-            selectedItems.forEach(item => item.remove());
-            selectedItems = [];
-            saveHistory();
-            updateLayerList();
-            updatePreview();
-        }
-    }
-});
+
 
 
 /********************************************
@@ -1223,6 +1293,55 @@ document.getElementById('downloadBtn').addEventListener('click', () => {
     link.href = canvas.toDataURL();
     link.click();
   });
+});
+window.addEventListener('keydown', e => {
+    const key = e.key.toLowerCase();
+
+    // 1. SELECT ALL (Ctrl + A)
+    if ((e.ctrlKey || e.metaKey) && key === 'a') {
+        // Only run if we aren't currently typing in a text box
+        if (document.activeElement.tagName !== 'INPUT' && !document.activeElement.isContentEditable) {
+            e.preventDefault();
+            
+            // Clear existing selection visual
+            selectedItems.forEach(item => item.classList.remove('active-layer'));
+            
+            // Select only top-level draggables (prevents "double-selecting" group children)
+            selectedItems = Array.from(designCanvas.querySelectorAll(':scope > .draggable'));
+            
+            selectedItems.forEach(item => item.classList.add('active-layer'));
+            
+            if (selectedItems.length > 0) {
+                activeItem = selectedItems[selectedItems.length - 1];
+            }
+            
+            updateLayerList();
+            console.log("Selected all top-level items");
+        }
+    }
+
+    // 2. GROUP (Ctrl + G)
+    if (e.ctrlKey && key === 'g' && !e.shiftKey) {
+        e.preventDefault();
+        groupSelected();
+    }
+
+    // 3. UNGROUP (Ctrl + Shift + G)
+    if (e.ctrlKey && e.shiftKey && key === 'g') {
+        e.preventDefault();
+        ungroupSelected();
+    }
+
+    // 4. DELETE (Delete / Backspace)
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedItems.length > 0 && !document.activeElement.isContentEditable && document.activeElement.tagName !== 'INPUT') {
+            selectedItems.forEach(item => item.remove());
+            selectedItems = [];
+            saveHistory();
+            updateLayerList();
+            updatePreview();
+        }
+    }
 });
 /********************************************
  * INITIALIZATION
