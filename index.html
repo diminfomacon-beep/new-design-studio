@@ -13,7 +13,7 @@ body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:2px;disp
 .studio-wrapper {                
   display: grid;
   /* --- CHANGED: First 2 columns are fixed, center expands --- */
-  grid-template-columns: 240px 240px 1fr 240px; 
+  grid-template-columns: 240px 50px 1fr 240px; 
   gap: 15px;                
   width: 100%;                
   padding: 15px;                
@@ -99,31 +99,30 @@ body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:2px;disp
   line-height:1.1;
   cursor:text;
 }
-.resize-handle{
-  width:10px;
-  height:10px;
-  background:white;
-  border:2px solid var(--accent);
-  position:absolute;
-  display:none;
-  z-index:10;
+.resize-handle {
+  width: 10px;
+  height: 10px;
+  background: #00f;
+  position: absolute;
+  z-index: 10;
+  border: 1px solid #fff;
+  box-sizing: border-box;
+  cursor: pointer;
 }
 
 .draggable.active-layer .resize-handle{
   display:block;
 }
 
-/* Corners */
-.handle-tl{top:-6px;left:-6px;cursor:nwse-resize;}
-.handle-tr{top:-6px;right:-6px;cursor:nesw-resize;}
-.handle-bl{bottom:-6px;left:-6px;cursor:nesw-resize;}
-.handle-br{bottom:-6px;right:-6px;cursor:nwse-resize;}
+.handle-tl { cursor: nwse-resize; top: -5px; left: -5px; }
+.handle-tr { cursor: nesw-resize; top: -5px; right: -5px; }
+.handle-bl { cursor: nesw-resize; bottom: -5px; left: -5px; }
+.handle-br { cursor: nwse-resize; bottom: -5px; right: -5px; }
+.handle-t  { cursor: ns-resize; top: -5px; left: 50%; transform: translateX(-50%); }
+.handle-b  { cursor: ns-resize; bottom: -5px; left: 50%; transform: translateX(-50%); }
+.handle-l  { cursor: ew-resize; left: -5px; top: 50%; transform: translateY(-50%); }
+.handle-r  { cursor: ew-resize; right: -5px; top: 50%; transform: translateY(-50%); }
 
-/* Edges */
-.handle-t{top:-6px;left:50%;transform:translateX(-50%);cursor:ns-resize;}
-.handle-b{bottom:-6px;left:50%;transform:translateX(-50%);cursor:ns-resize;}
-.handle-l{left:-6px;top:50%;transform:translateY(-50%);cursor:ew-resize;}
-.handle-r{right:-6px;top:50%;transform:translateY(-50%);cursor:ew-resize;}
 .draggable.active-layer .resize-handle{display:block;}
 .handle-br{bottom:-5px;right:-5px;}
 .draggable img { display: block; width: 100%; height: 100%; object-fit: contain; }
@@ -154,9 +153,9 @@ input,select{padding:6px;border-radius:6px;border:1px solid #ddd;font-size:12px;
 .btn-delete{background:#fee2e2;color:#991b1b;}
 .btn-group{display:flex;gap:2px;margin-top:2px;flex-wrap: wrap;}
 button{padding:2px;border-radius:8px;border:none;font-weight:600;cursor:pointer;font-size:12px;}
-.btn-primary{background:var(--primary);color:white;flex:1;}
+.btn-primary{background:#fc950f;color:#000;flex:1;}
 .btn-action{background:#dbeafe;color:#1e40af;}
-.btn-download{background:#d1fae5;color:#065f46;flex:1;}
+.btn-download{background:#eefa44;color:#000;flex:1;}
 #textEditor{display:block !important; background:#f3f4f6;padding:2px;border-radius:8px;border:1px solid #e5e7eb;}
 .size-row{display:flex;align-items:center;gap:8px;margin-bottom:2px;}
 .size-row input{width:60px;}
@@ -176,7 +175,7 @@ button{padding:2px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 
 /* The scrollable area for layers */
 #layerListContainer {
-    max-height: 200px; /* Fixed height so it stays permanent */
+    max-height: 100px; /* Fixed height so it stays permanent */
     min-height: 100px; /* Ensures it always occupies space */
     overflow-y: auto;
     background: #fff;
@@ -186,33 +185,56 @@ button{padding:2px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 }
 
 /* Individual Layer Item Styling */
-.layer-item {
-    display: flex;
-    align-items: center;
-    padding: 6px 5px;
-    margin-bottom: 2px;
-    background: #f9f9f9;
-    border: 1px solid #eee;
-    border-radius: 3px;
-    font-size: 11px;
-    cursor: pointer;
+.layer-item{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:6px 8px;
+border-bottom:1px solid #ddd;
+cursor:pointer;
+background:#fff;
 }
 
-.layer-item.active {
-    background: #e3f2fd;
-    border-color: #2196f3;
-    font-weight: bold;
+.layer-item.active{
+background:#e8f3ff;
+}
+
+.layer-controls button{
+border:none;
+background:none;
+cursor:pointer;
+margin-left:5px;
+}
+
+.layer-icon{
+cursor:grab;
+margin-right:6px;
+}
+
+.layer-name{
+flex:1;
+}
+
+.draggable[data-locked="true"]{
+opacity:.6;
+cursor:not-allowed;
+}
+
+.draggable[data-locked="true"]{
+opacity:.6;
+cursor:not-allowed;
 }
 
 /* Scrollbar styling for a cleaner look */
 #layerListContainer::-webkit-scrollbar {
     width: 6px;
 }
+
 #layerListContainer::-webkit-scrollbar-thumb {
     background: #ccc;
     border-radius: 10px;
 }
-}
+
 #textEditor {
     display: block !important; /* Never hide this */
 }
@@ -247,7 +269,7 @@ button{padding:2px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
     height:350px;
     overflow:hidden;
 }
-.preview-title { font-size: 13px; font-weight: bold; color: #000000; align-self: flex-start; }
+.preview-title { font-size: 12px; font-weight: bold; color: #25554f;; align-self: center; }
 .preview-box {
   width: 100%;
   height: 300px;
@@ -356,6 +378,37 @@ button{padding:2px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
     width: 100%; /* Forces the grid to match the tool-section width */
 }
 
+.control-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Two equal columns */
+    gap: 5px;
+    width: 100%; /* Forces the grid to match the tool-section width */
+    align-items:center; /* vertical alignment */
+}
+
+.button-grid-font{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Two equal columns */
+    gap: 2px;
+    width: 100%; /* Forces the grid to match the tool-section width */
+}
+.button-grid-font-three{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three equal columns */
+    gap: 2px;
+    width: 100%; /* Forces the grid to match the tool-section width */
+    overflow: none;
+    margin-bottom: 4px;
+    align-items:center; /* vertical alignment */
+}
+.button-grid-font-six{
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); /* Six equal columns */
+    gap: 2px;
+    width: 100%; /* Forces the grid to match the tool-section width */
+    overflow: none;
+}
+
 .button-grid button {
     width: 100%; /* Forces button to stay inside its grid cell */
     height: 20px;
@@ -387,6 +440,54 @@ button{padding:2px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
     overflow: hidden;
 }
 
+.toolbar{
+display:flex;
+flex-direction: column;
+gap:8px;
+padding:6px;
+background:#2F6B64;
+border-radius:8px;
+width: 50px;
+}
+
+.toolbar button{
+font-size:12px;
+background:#6dd4c8;
+color:rgb(12, 11, 11);
+border:none;
+padding:8px 8px;
+cursor:pointer;
+border-radius:6px;
+}
+
+.toolbar button:hover{
+background:#CAE4DB;
+}
+
+.selected {
+    outline: 2px dashed #1E90FF; /* blue dashed border */
+    position: absolute; /* ensure handles align */
+    box-sizing: border-box;
+}
+
+.resize-handle {
+    width: 10px;
+    height: 10px;
+    background: #1E90FF;
+    position: absolute;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.handle-tl { top: -5px; left: -5px; cursor: nwse-resize; }
+.handle-tr { top: -5px; right: -5px; cursor: nesw-resize; }
+.handle-bl { bottom: -5px; left: -5px; cursor: nesw-resize; }
+.handle-br { bottom: -5px; right: -5px; cursor: nwse-resize; }
+
+.handle-t  { top: -5px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.handle-b  { bottom: -5px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.handle-l  { left: -5px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+.handle-r  { right: -5px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
 /* Ensure all draggable items start ABOVE the canvas floor */
 
 
@@ -396,189 +497,152 @@ button{padding:2px;border-radius:8px;border:none;font-weight:600;cursor:pointer;
 <body>      
 <div class="studio-wrapper">
 
-
+<!---GALLERY--->
 
   <div class="gallery-panel">
-    <div class="gallery-header">
-      <div class="gallery-title">Image Search</div>
-      <input type="text" id="gallerySearch" class="gallery-search" placeholder="Search all libraries...">
-    </div>
-    <div class="mini-gallery-container">
-      <div class="mini-gallery-title">Pixabay (Vector)</div>
-      <div class="gallery-grid" id="pixabayGrid"></div>
-    </div>
-    <hr style="border:0;border-top:1px solid #eee;margin:2px 0;">
-    <div class="mini-gallery-container">
-      <div class="mini-gallery-title" style="display:flex; justify-content:space-between; align-items:center;">
-        <span>Shapes</span>                
-        <div id="shapeColorPicker" style="width: 25px; height: 25px;"></div>
-      </div>
-      <div class="gallery-grid" id="shapesGrid">
-          <div class="gallery-item shape-item" data-shape="square" style="border-radius: 0; background: #333;"></div>
-          <div class="gallery-item shape-item" data-shape="circle" style="border-radius: 50%; background: #333;"></div>
-          <div class="gallery-item shape-item" data-shape="triangle" style="background: #333; clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"></div>
-      </div>
-    </div>
-    <hr style="border:0;border-top:1px solid #eee;margin:2px 0;">
-    <div class="control-group">
-      <label style="font-size: 9px; color: #fff;">Upload Your Image</label>
-      <input type="file" id="imageInput" style="background: #e0dede;" accept="image/*"/>
-    </div>
-  </div>
-
-
-
-
-  <div class="control-panel-left">
-    <div class="control-panel">
-
-    <div class="tool-section">
-        <div class="button-grid">
-            <input type="text" id="textInput" placeholder="Enter text..." value="" class="span-2" style="height: 20px; padding: 0 8px;">
-            <button class="btn-action span-2" id="addTextBtn" style="background: #2F6B64; color: #fff; border: none; font-weight: 600px; cursor: pointer;">Add to Canvas</button>
-        </div>
-    </div>
-
-    <div id="textEditor" class="tool-section">
-         <div class="button-grid">
-            <div class="span-2">
-                <label style="font-size: 9px; color: #000;">Font</label>
-                <select id="fontFamily" style="width: 100%; height: 28px; cursor: pointer;">
-                    <option value="'Montserrat', sans-serif">Modern: Montserrat</option>
-                    <option value="'Playfair Display', serif">Classic: Playfair</option>
-                    <option value="'Pacifico', cursive">Script: Pacifico</option>
-                    <option value="'Lobster', cursive">Bold Script: Lobster</option>
-                    <option value="'Bungee', cursive">Block: Bungee</option>
-                    <option value="'Anton', sans-serif">Impact: Anton</option>
-                    <option value="'Bangers', cursive">Comic: Bangers</option>
-                    <option value="'Rock Salt', cursive">Handwritten: Rock Salt</option>
-                    <option value="'Monoton', cursive">Retro: Monoton</option>
-                    <option value="'Special Elite', cursive">Typewriter: Special Elite</option>
-                    <option value="'Creepster', cursive">Horror: Creepster</option>
-                    <option value="'Press Start 2P', cursive">Pixel: Press Start</option>
-                </select>
-            </div>
-
-            <div>
-                <label style="font-size: 9px; color: #000;">Color</label>
-                <div id="fontColorPicker" style="width: 100%; height: 20px; border: 1px solid #ccc; border-radius: 4px;"></div>
-            </div>
-
-            <div>
-                <label style="font-size: 9px; color: #000;">Size (px)</label>
-                <input type="number" id="fontSizeInput" min="8" max="200" value="16" style="width: 100%; height: 20px; padding: 2px;">
-            </div>
-
-            <button id="btnBold" class="btn-style">Bold</button>
-            <button id="btnItalic" class="btn-style">Italic</button>
-        </div>
-    </div>
-
-    </div>
-    <div class="control-panel">
-        <div class="tool-section layer-manager-section">
-            <label>ACTIVE LAYERS</label>
-            <div class="button-grid" style="margin-top: 1px;">
-                <button onclick="selectAllItems()" style="font-size: 11px; color: #fff; height: 20px;">Select All</button>
-                <button onclick="clearCanvas()" class="btn-danger" style="font-size: 11px; color: #fff; height: 20px;">Clear All</button>
-            </div>
-            <div id="layerListContainer">
-                <div id="layerList">
+      <div class="tool-section">
+            <div class="button-grid">
+                <input type="text" id="textInput" placeholder="Enter text..." value="" class="span-2" style="height: 20px; padding: 0 8px;">
+                <div class="button-grid-font-three">
+                    <div><label style="font-size: 9px; color: #fff;">Font</label></div>
+                    <div>
+                        <select id="fontFamily" style="width: 100px; height: 28px; cursor: pointer;">
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                            <option value="'Playfair Display', serif">Playfair</option>
+                            <option value="'Pacifico', cursive">Pacifico</option>
+                            <option value="'Lobster', cursive">Lobster</option>
+                            <option value="'Bungee', cursive">Bungee</option>
+                            <option value="'Anton', sans-serif">Anton</option>
+                            <option value="'Bangers', cursive">Bangers</option>
+                            <option value="'Rock Salt', cursive">Rock Salt</option>
+                            <option value="'Monoton', cursive">Monoton</option>
+                            <option value="'Special Elite', cursive">Special Elite</option>
+                            <option value="'Creepster', cursive">Creepster</option>
+                            <option value="'Press Start 2P', cursive">Pixel</option>
+                        </select>
                     </div>
+                    <div><button id="addTextBtn" style="background: #dde2e1; height: 28px; width: flex; color: #000; border: none; font-weight: 600px; cursor: pointer;">Add to Canvas</button></div>
+                </div>
             </div>
-            
-        </div>
-    </div>
-    <div class="control-panel">
-
-        <div class="tool-section">
-            <label>SELECT & EDIT</label>
-            <div class="button-grid">
-                <button onclick="duplicateSelected()">Duplicate</button>
-                <button onclick="deleteSelected()" class="btn-danger">Delete</button>
-                <button onclick="groupSelected()">Group</button>
-                <button onclick="ungroupSelected()">Ungroup</button>
-                <button onclick="undo()">Undo</button>
-                <button onclick="redo()">Redo</button>
+                
+            <div id="textEditor" class="tool-section">
+                <div class="button-grid-font-six">
+                    <div><label style="font-size: 9px; color: #000;">Color</label></div>
+                    <div id="fontColorPicker" style="font-size: 18px; cursor: pointer;">🎨</div>
+                    <div><label style="font-size: 9px; color: #000;">Size</label></div>
+                    <div><input type="number" id="fontSizeInput" min="8" max="200" value="16" style="width: 100%; height: 20px; padding: 2px;"></div>
+                    <div><button id="btnBold" style="width: 100%; height: 20px; border: 1px solid #ccc; border-radius: 4px;">B</button></div>
+                    <div><button id="btnItalic" style="width: 100%; height: 20px; border: 1px solid #ccc; border-radius: 4px;"><i>I</i></button></div>         
+                </div>
             </div>
+        <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
         </div>
-
-        <div class="tool-section">
-            <label>TRANSFORM</label>
-            <div class="button-grid">
-                <button onclick="rotateSelected(90)">Rotate Right ↻</button>
-                <button onclick="rotateSelected(-90)">Rotate Left ↺</button>
-                <button onclick="flipSelected('horizontal')">Flip Horizontal ↔</button>
-                <button onclick="flipSelected('vertical')">Flip vertical ↕</button>
-            </div>
+        <div class="gallery-header">
+        <div class="gallery-title">Image Search</div>
+        <input type="text" id="gallerySearch" class="gallery-search" placeholder="Search all libraries...">
         </div>
-
-        <div class="tool-section">
-            <label>ARRANGE</label>
-            <div class="button-grid">
-                <button onclick="bringToFront()">To Front</button>
-                <button onclick="sendToBack()">To Back</button>
-                <button onclick="bringForward()">Forward</button>
-                <button onclick="sendBackward()">Backward</button>
-            </div>
+        <div class="mini-gallery-container">
+        <!-- <div class="mini-gallery-title">Pixabay (Vector)</div> -->
+        <div class="gallery-grid" id="pixabayGrid"></div>
         </div>
-        
-    </div>
+        <hr style="border:0;border-top:1px solid #eee;margin:2px 0;">
+        <div class="mini-gallery-container">
+        <div class="mini-gallery-title" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Shapes</span>                
+            <div id="shapeColorPicker" style="font-size: 18px; cursor: pointer;">🎨</div>
+        </div>
+        <div class="gallery-grid" id="shapesGrid">
+            <div class="gallery-item shape-item" data-shape="square" style="border-radius: 0; background: #333;"></div>
+            <div class="gallery-item shape-item" data-shape="circle" style="border-radius: 50%; background: #333;"></div>
+            <div class="gallery-item shape-item" data-shape="triangle" style="background: #333; clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"></div>
+        </div>
+        </div>
+        <hr style="border:0;border-top:1px solid #eee;margin:5px 0;">
+        <div class="control-group">
+        <label style="font-size: 9px; color: #fff;">Upload Your Image</label>
+        <input type="file" id="imageInput" style="background: #e0dede;" accept="image/*"/>
+        </div>
   </div>
 
-
-
+<!---SELECT & EDIT TOOLBAR--->
+  <div class="toolbar">
+    <button onclick="duplicateSelected()">⧉</button>
+    <button onclick="deleteSelected()" class="btn-danger">❌</button>
+    <button onclick="groupSelected()">[ ]</button>
+    <button onclick="ungroupSelected()">] [</button>
+    <button onclick="undo()">↶</button>
+    <button onclick="redo()">↷</button>
+    <button onclick="cropImage()">✂️</button>
+    <button onclick="rotateSelected(90)">↻</button>
+    <button onclick="rotateSelected(-90)">↺</button>
+    <button onclick="flipSelected('horizontal')">↔</button>
+    <button onclick="flipSelected('vertical')">↕</button>
+    <button onclick="bringToFront()">⬇️</button>
+    <button onclick="sendToBack()">⬆️</button>
+    <button onclick="bringForward()">➡️</button>
+    <button onclick="sendBackward()">⬅️</button>
+  </div>
+<!---CANVAS--->
   <div class="canvas-container">
     <div id="designCanvas" class="design-canvas"></div>
   </div>
 
-
-
-
+<!---PREVIEW PANEL-->
   <div class="gallery-panel">
-    <div class="controls-panel">
-      <div class="control-group">
-        <label style="color: #fff">Product</label>
-        <select id="productSelect">
-          <option value="tshirt">T-Shirt</option>
-          <option value="tumbler">Tumbler</option>
-          <option value="mug">Mug</option>
-        </select>
-      </div>
-      <div class="control-group">
-        <label style="color: #fff">Product Color</label>
-        <div id="bgPicker"></div>
-      </div>
-      <hr style="border:0;border-top:1px solid #eee;margin:2px 0;">
-      <div class="preview-panel">
-        <div class="preview-title">Preview</div>
-        <div class="control-group">
-          <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
-        </div>
-        <div class="preview-box">
-          <div id="stage-tshirt" class="product-stage active-product">
-            <div class="product-view view-tshirt">
-              <div class="mockup-layer" id="tshirt-design"></div>
+        <div class="controls-panel">
+            <div class="control-grid">
+                <label style="color: #fff">Product</label>
+                <select id="productSelect">
+                    <option value="tshirt">T-Shirt</option>
+                    <option value="tumbler">Tumbler</option>
+                    <option value="mug">Mug</option>
+                </select>
+                <label style="color: #fff">Color</label>
+                <div id="bgPicker">🎨</div>
             </div>
-          </div>
-          <div id="stage-tumbler" class="product-stage">
-            <div class="product-view view-tumbler">
-              <div class="mockup-layer" id="tumbler-design"></div>
+            
+            <hr style="border:0;border-top:1px solid #eee;margin:2px 0;">
+            <div class="preview-panel">
+                <div class="preview-title">PREVIEW</div>
+                <div class="control-grid">
+                    <label>Zoom</label>
+                    <input type="range" id="zoomSlider" min="0.5" max="2" step="0.1" value="1">
+                </div>
+            
+                <div class="preview-box">
+                    <div id="stage-tshirt" class="product-stage active-product">
+                        <div class="product-view view-tshirt">
+                            <div class="mockup-layer" id="tshirt-design"></div>
+                        </div>
+                    </div>
+                    <div id="stage-tumbler" class="product-stage">
+                        <div class="product-view view-tumbler">
+                            <div class="mockup-layer" id="tumbler-design"></div>
+                        </div>
+                    </div>
+                    <div id="stage-mug" class="product-stage">
+                        <div class="product-view view-mug">
+                            <div class="mockup-layer" id="mug-design"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div id="stage-mug" class="product-stage">
-            <div class="product-view view-mug">
-              <div class="mockup-layer" id="mug-design"></div>
+            <div class="tool-section layer-manager-section">
+                <label>ACTIVE LAYERS</label>
+                <div class="button-grid" style="margin-top: 1px;">
+                    <button onclick="selectAllItems()" style="font-size: 11px; color: #fff; height: 20px;">Select All</button>
+                    <button onclick="clearCanvas()" class="btn-danger" style="font-size: 11px; color: #fff; height: 20px;">Clear All</button>
+                </div>
+                <div id="layerListContainer">
+                    <div id="layerList"></div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="btn-group">
-        <button class="btn-download" id="downloadBtn">💾 Save Design</button>
-        <button class="btn-primary" id="submitDesign">Finalize</button>
-      </div>
-    </div>
+            <div class="btn-group">
+                <button class="btn-download" id="downloadBtn">💾 Save Design</button>
+                <button class="btn-primary" id="submitDesign">Finalize</button>
+            </div>
+        </div>
   </div>
 </div>
 
@@ -594,23 +658,92 @@ let historyStack = [];
 let historyIndex = -1; // -1 means the stack is empty
 let redoStack = [];
 let selectedItems = [];
+let activeItem = null;
 let isResizing = false;
+let currentHandle = null;
+
+function getActiveItem(){
+    if(selectedItems.length > 0) return selectedItems[selectedItems.length-1];
+    return activeItem;
+}
+
+function addHandles(el) {
+    removeHandles(el); // clean first
+
+    const handles = ['tl','tr','bl','br','t','b','l','r'];
+    handles.forEach(pos => {
+        const handle = document.createElement('div');
+        handle.className = 'resize-handle handle-' + pos;
+        el.appendChild(handle);
+    });
+}
+
+function removeHandles(el) {
+    const existing = el.querySelectorAll('.resize-handle');
+    existing.forEach(h => h.remove());
+}
+
+
+// global drag state
+let isDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+
+// store starting positions of all selected items
+let dragStartPositions = [];
 
 designCanvas.addEventListener('mousedown', e => {
-    // Check if the click was directly on the canvas background
-    if (e.target === designCanvas) {
-        // Remove class from all elements
-        designCanvas.querySelectorAll('.draggable').forEach(item => {
-            item.classList.remove('active-layer');
-        });
-        
-        // Reset variables
-        selectedItems = [];
-        activeItem = null;
-        
-        updateLayerList();
-    }
+    const el = e.target.closest('.draggable');
+    if(!el || el.dataset.locked === "true") return;
+
+    // select this element (multi-select with shift)
+    selectItem(el, e);
+
+    // store initial positions of all selected items
+    dragStartPositions = selectedItems.map(item => ({
+        item: item,
+        startX: parseInt(item.style.left) || 0,
+        startY: parseInt(item.style.top) || 0
+    }));
+
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    isDragging = true;
+
+    document.addEventListener('mousemove', dragMoveAll);
+    document.addEventListener('mouseup', dragEndAll);
+
+    e.preventDefault();
 });
+
+function dragMoveAll(e){
+    if(!isDragging) return;
+
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+
+    dragStartPositions.forEach(pos => {
+        let newLeft = pos.startX + dx;
+        let newTop = pos.startY + dy;
+
+        // clamp to canvas bounds
+        newLeft = Math.max(0, Math.min(newLeft, designCanvas.clientWidth - pos.item.offsetWidth));
+        newTop = Math.max(0, Math.min(newTop, designCanvas.clientHeight - pos.item.offsetHeight));
+
+        pos.item.style.left = newLeft + 'px';
+        pos.item.style.top = newTop + 'px';
+    });
+
+    updatePreview();
+}
+
+function dragEndAll(e){
+    if(!isDragging) return;
+    isDragging = false;
+    document.removeEventListener('mousemove', dragMoveAll);
+    document.removeEventListener('mouseup', dragEndAll);
+    saveHistory();
+}
 
 const extendedSwatches = [
   '#FFFFFF', '#F2F2F2', '#D9D9D9', '#BFBFBF', '#A6A6A6', '#808080', '#595959', '#404040', '#262626', '#000000',
@@ -630,6 +763,7 @@ function createPicker(el, def) {
     // --- CHANGED: Use a cleaner theme ---
     theme: 'nano', 
     default: def,
+    useAsButton: true, // <--- ADD THIS: Stops Pickr from wiping your icon
     swatches: extendedSwatches,
     components: {
       // --- UPDATED: Focus on Swatches and Interactive Inputs ---
@@ -665,7 +799,8 @@ bgPicker.on('change', (color, instance) => {
 
 fontColorPicker.on('change', (color, instance) => {
     const colorStr = color.toRGBA().toString();
-    if(activeItem) {
+    const item = getActiveItem();
+    if(item) {
         const textEl = activeItem.querySelector('.design-text');
        
         
@@ -678,7 +813,8 @@ fontColorPicker.on('change', (color, instance) => {
 // --- UPDATED: Shape Picker Change Logic ---
 shapeColorPicker.on('change', (color, instance) => {
     const colorStr = color.toRGBA().toString();
-    if(activeItem) {
+    const item = getActiveItem();
+    if(item) {
         const svgEl = activeItem.querySelector('svg');
         if(svgEl) {
             svgEl.setAttribute('fill', colorStr);
@@ -688,7 +824,8 @@ shapeColorPicker.on('change', (color, instance) => {
 });
 
 shapeColorPicker.on('save', () => {
-    if(activeItem){
+     const item = getActiveItem();
+     if(item) {
         saveHistory();
     }
 });
@@ -734,7 +871,7 @@ function redo() {
  */
 function restoreState(htmlContent) {
     designCanvas.innerHTML = htmlContent;
-
+    designCanvas.querySelectorAll('.resize-handle').forEach(h => h.remove());
     // Re-bind draggability to all elements
     const items = designCanvas.querySelectorAll('.draggable');
     items.forEach(item => {
@@ -749,76 +886,54 @@ function restoreState(htmlContent) {
     updatePreview();
 }
 function updatePreview() {
+
   document.querySelectorAll('.product-stage').forEach(stage => {
+
     const productView = stage.querySelector('.product-view');
     const designContainer = productView.querySelector('.mockup-layer');
-    
-    if (!designContainer) return;
-    
-    designContainer.innerHTML = ""; // Clear existing
 
-    // 1. Calculate the Scaling Ratio (How much smaller is the mockup than the canvas?)
+    if (!designContainer) return;
+
+    designContainer.innerHTML = "";
+
     const scaleX = designContainer.clientWidth / designCanvas.clientWidth;
     const scaleY = designContainer.clientHeight / designCanvas.clientHeight;
 
-    // 2. Loop through top-level children only
     Array.from(designCanvas.children).forEach(child => {
+
       const clone = child.cloneNode(true);
-      
-      // Clean up the clone
+
       clone.classList.remove("active-layer", "editing");
       clone.style.pointerEvents = "none";
+
       clone.querySelectorAll('.resize-handle').forEach(h => h.remove());
 
-      // 3. Sync Transformations (Rotation/Mirroring)
       clone.style.transform = child.style.transform;
       clone.style.transformOrigin = "center center";
 
-      // 4. Scale the Main Element (or Group Container)
-      const canvasLeft = parseInt(child.style.left) || 0;
-      const canvasTop = parseInt(child.style.top) || 0;
+      const canvasLeft = parseFloat(child.style.left) || 0;
+      const canvasTop = parseFloat(child.style.top) || 0;
+
       const canvasWidth = child.offsetWidth;
       const canvasHeight = child.offsetHeight;
 
-      clone.style.position = 'absolute';
-      clone.style.left = (canvasLeft * scaleX) + 'px';
-      clone.style.top = (canvasTop * scaleY) + 'px';
-      clone.style.width = (canvasWidth * scaleX) + 'px';
-      clone.style.height = (canvasHeight * scaleY) + 'px';
-      
-      // 5. Scale Typography
-      // This handles text whether it's a direct child or nested in a group
-      const textElements = clone.querySelectorAll('.design-text');
-      textElements.forEach((text, index) => {
-          // Find the corresponding original text element to get its real computed font size
-          const originalText = child.querySelectorAll('.design-text')[index] || child;
-          const originalFontSize = parseFloat(window.getComputedStyle(originalText).fontSize);
-          text.style.fontSize = (originalFontSize * scaleX) + 'px';
-      });
+      clone.style.left = (canvasLeft * scaleX) + "px";
+      clone.style.top = (canvasTop * scaleY) + "px";
 
-      // 6. Fix Nested Elements Scaling
-      // We only scale the inner dimensions because the parent container is already scaled
-      if (clone.classList.contains('group-container')) {
-          const nestedDraggables = clone.querySelectorAll('.draggable');
-          nestedDraggables.forEach((nested, idx) => {
-              const originalNested = child.querySelectorAll('.draggable')[idx];
-              
-              const nLeft = parseInt(originalNested.style.left) || 0;
-              const nTop = parseInt(originalNested.style.top) || 0;
-              const nWidth = parseInt(originalNested.style.width) || originalNested.offsetWidth;
-              const nHeight = parseInt(originalNested.style.height) || originalNested.offsetHeight;
+      clone.style.width = (canvasWidth * scaleX) + "px";
+      clone.style.height = (canvasHeight * scaleY) + "px";
 
-              nested.style.left = (nLeft * scaleX) + 'px';
-              nested.style.top = (nTop * scaleY) + 'px';
-              nested.style.width = (nWidth * scaleX) + 'px';
-              nested.style.height = (nHeight * scaleY) + 'px';
-          });
-      }
+      clone.style.position = "absolute";
 
       designContainer.appendChild(clone);
+
     });
+
   });
+
 }
+
+
 function rebindDraggables(){
   document.querySelectorAll('#designCanvas .draggable')
     .forEach(el => {
@@ -969,200 +1084,239 @@ btnItalic.addEventListener('click', () => {
 });
 function showTextEditor(){document.getElementById('textEditor').style.display='block';}
 
-function selectItem(el, additive = false) {
-    // 1. If not holding Shift, remove the active class from EVERY draggable on the canvas
-    if (!additive) {
-        designCanvas.querySelectorAll('.draggable').forEach(item => {
-            item.classList.remove('active-layer');
+function clampToCanvas(el){
+
+    const rect = el.getBoundingClientRect();
+    const canvasRect = designCanvas.getBoundingClientRect();
+
+    let left = parseFloat(el.style.left)||0;
+    let top = parseFloat(el.style.top)||0;
+
+    if(left < 0) left = 0;
+    if(top < 0) top = 0;
+
+    if(left + rect.width > designCanvas.clientWidth)
+        left = designCanvas.clientWidth - rect.width;
+
+    if(top + rect.height > designCanvas.clientHeight)
+        top = designCanvas.clientHeight - rect.height;
+
+    el.style.left = left + "px";
+    el.style.top = top + "px";
+}
+
+
+function selectItem(el, e=null){
+
+    if(el.dataset.locked === "true") return;
+
+    // SHIFT = multi select
+    if(e && e.shiftKey){
+
+        if(selectedItems.includes(el)){
+            selectedItems = selectedItems.filter(i=>i!==el);
+            el.classList.remove("active-layer");
+            removeHandles(el);
+        }else{
+            selectedItems.push(el);
+            el.classList.add("active-layer");
+        }
+
+    }else{
+
+        // clear previous
+        selectedItems.forEach(item=>{
+            item.classList.remove("active-layer");
+            removeHandles(item);
         });
-        selectedItems = [];
+
+        selectedItems=[el];
+        el.classList.add("active-layer");
+
     }
 
-    // 2. Add the item to the selection if it's not already there
-    if (!selectedItems.includes(el)) {
-        selectedItems.push(el);
-        el.classList.add('active-layer');
-        activeItem = el;
-    } else if (additive) {
-        // Toggle off if Shift-clicking an already selected item
-        el.classList.remove('active-layer');
-        selectedItems = selectedItems.filter(item => item !== el);
+    activeItem = selectedItems[selectedItems.length-1];
+
+    // handles only on last selected
+    if(activeItem){
+        addHandles(activeItem);
     }
+
+    // safety cleanup
+    document.querySelectorAll(".resize-handle").forEach(h => h.remove());
+    addHandles(activeItem);
 
     updateLayerList();
 }
+
+
 /********************************************
- * DRAGGABLE
+ * MAKE DRAGGABLE FUNCTION
  ********************************************/
 function makeDraggable(el) {
-  let startX, startY, initX, initY, initW, initH;
-  let currentHandle = null;
+    let initX, initY, initW, initH;
+    let startX, startY;
+    let currentHandle = null;
+    let isResizing = false;
 
-  // REMOVED: Separate 'click' listener to prevent double-firing with mousedown
+    // --- MOUSE DOWN ---
+    el.addEventListener('mousedown', e => {
+        if (el.dataset.locked === "true") return;
+        e.stopPropagation();
 
-  el.addEventListener('mousedown', e => {
-    // If editing text, don't drag
-    if (e.target.classList.contains('design-text') && el.classList.contains('editing')) return;
-    
-    if (e.target.classList.contains('resize-handle')) {
-        isResizing = true;
-        currentHandle = e.target;
-        
-        // Initial Group Stats
-        initX = parseInt(el.style.left) || 0;
-        initY = parseInt(el.style.top) || 0;
-        initW = el.offsetWidth;
-        initH = el.offsetHeight;
-
-        // Initial Children Stats (Capture these ONLY once at mousedown)
-        if (el.classList.contains('group-container')) {
-            el.querySelectorAll(':scope > .draggable').forEach(child => {
-                child.dataset.startL = parseInt(child.style.left) || 0;
-                child.dataset.startT = parseInt(child.style.top) || 0;
-                child.dataset.startW = parseInt(child.style.width) || child.offsetWidth;
-                child.dataset.startH = parseInt(child.style.height) || child.offsetHeight;
-                child.dataset.startFS = parseFloat(window.getComputedStyle(child).fontSize);
-            });
-        }
-    }
-    // 1. Handle Selection Logic
-    const isShift = e.shiftKey;
-    
-    // If the item isn't part of the current selection, update selection
-    if (!selectedItems.includes(el)) {
-      selectItem(el, isShift);
-    } else if (isShift) {
-      // If Shift is held and it's already selected, remove it (toggle)
-      el.classList.remove('active-layer');
-      selectedItems = selectedItems.filter(item => item !== el);
-      return; // Stop here if we're just deselecting
-    }
-
-    // 2. Setup dragging/resizing coordinates
-    startX = e.clientX;
-    startY = e.clientY;
-
-    if (e.target.classList.contains('resize-handle')) {
-      isResizing = true;
-      currentHandle = e.target;
-      initX = parseInt(el.style.left) || 0;
-      initY = parseInt(el.style.top) || 0;
-      initW = el.offsetWidth;
-      initH = el.offsetHeight;
-    } else {
-      // Setup group movement
-      selectedItems.forEach(item => {
-        item.dataset.initX = parseInt(item.style.left) || 0;
-        item.dataset.initY = parseInt(item.style.top) || 0;
-      });
-    }
-
-    document.addEventListener('mousemove', dragMove);
-    document.addEventListener('mouseup', dragUp);
-    
-    // Prevent browser image ghosting/drag defaults
-    e.preventDefault(); 
-  });
-
-  function dragMove(e) {
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-
-    if (isResizing && currentHandle) {
-    let newWidth = initW;
-    let newHeight = initH;
-    let newLeft = initX;
-    let newTop = initY;
-
-    // 1. Calculate the new dimensions of the Bound Box
-    if (currentHandle.classList.contains('handle-br')) {
-        newWidth = initW + dx;
-        newHeight = initH + dy;
-    } else if (currentHandle.classList.contains('handle-bl')) {
-        newWidth = initW - dx;
-        newHeight = initH + dy;
-        newLeft = initX + dx;
-    } else if (currentHandle.classList.contains('handle-tr')) {
-        newWidth = initW + dx;
-        newHeight = initH - dy;
-        newTop = initY + dy;
-    } else if (currentHandle.classList.contains('handle-tl')) {
-        newWidth = initW - dx;
-        newHeight = initH - dy;
-        newLeft = initX + dx;
-        newTop = initY + dy;
-    }
-
-    // Constraints
-    newWidth = Math.max(20, newWidth);
-    newHeight = Math.max(20, newHeight);
-
-    // 2. Calculate the SCALE RATIO based on the starting size
-    const ratioX = newWidth / initW;
-    const ratioY = newHeight / initH;
-
-    // 3. Apply to the Bound Box (The Group itself)
-    el.style.width = newWidth + 'px';
-    el.style.height = newHeight + 'px';
-    el.style.left = newLeft + 'px';
-    el.style.top = newTop + 'px';
-
-    // 4. Scale Children Proportionally
-    if (el.classList.contains('group-container')) {
-        const children = el.querySelectorAll(':scope > .draggable');
-        children.forEach(child => {
-            // Get original positions stored when the group was first created/clicked
-            const startL = parseFloat(child.dataset.startL);
-            const startT = parseFloat(child.dataset.startT);
-            const startW = parseFloat(child.dataset.startW);
-            const startH = parseFloat(child.dataset.startH);
-            const startFS = parseFloat(child.dataset.startFS);
-
-            child.style.left = (startL * ratioX) + 'px';
-            child.style.top = (startT * ratioY) + 'px';
-            child.style.width = (startW * ratioX) + 'px';
-            child.style.height = (startH * ratioY) + 'px';
-            
-            if (child.querySelector('.design-text')) {
-                child.style.fontSize = (startFS * ratioX) + 'px';
+        // --- SELECTION LOGIC ---
+        // --- SELECTION LOGIC ---
+        if (!selectedItems.includes(el)) {
+            if (!e.shiftKey) {
+                // Deselect all
+                selectedItems.forEach(item => {
+                    item.classList.remove('selected');
+                    removeHandles(item);
+                });
+                selectedItems = [];
             }
+
+            el.classList.add('selected');
+            selectedItems.push(el);
+            addHandles(el); // <-- add this
+        }
+
+        // Make this the active item
+        activeItem = el;
+
+        // --- RESIZE START ---
+        if (e.target.classList.contains('resize-handle')) {
+            isResizing = true;
+            currentHandle = e.target;
+
+            initX = parseInt(el.style.left) || el.offsetLeft;
+            initY = parseInt(el.style.top) || el.offsetTop;
+            initW = el.offsetWidth;
+            initH = el.offsetHeight;
+
+            document.addEventListener('mousemove', resizeMove);
+            document.addEventListener('mouseup', resizeEnd);
+            e.preventDefault();
+            return;
+        }
+
+        // --- DRAG START ---
+        startX = e.clientX;
+        startY = e.clientY;
+
+        // store initial positions for all selected items
+        selectedItems.forEach(item => {
+            item.dataset.initX = parseInt(item.style.left) || item.offsetLeft;
+            item.dataset.initY = parseInt(item.style.top) || item.offsetTop;
         });
+
+        document.addEventListener('mousemove', dragMove);
+        document.addEventListener('mouseup', dragUp);
+    });
+
+    // --- RESIZE MOVE ---
+    function resizeMove(e) {
+        if (!isResizing || !currentHandle) return;
+
+        const rect = el.getBoundingClientRect();
+        let newWidth = initW;
+        let newHeight = initH;
+        let newLeft = initX;
+        let newTop = initY;
+
+        const isCorner = currentHandle.classList.contains('handle-tl') ||
+                         currentHandle.classList.contains('handle-tr') ||
+                         currentHandle.classList.contains('handle-bl') ||
+                         currentHandle.classList.contains('handle-br');
+
+        if (isCorner) {
+            const ratio = initW / initH;
+
+            if (currentHandle.classList.contains('handle-br')) {
+                newWidth = Math.max(20, e.clientX - rect.left);
+                newHeight = newWidth / ratio;
+            } else if (currentHandle.classList.contains('handle-bl')) {
+                newWidth = Math.max(20, rect.right - e.clientX);
+                newHeight = newWidth / ratio;
+                newLeft = initX + (initW - newWidth);
+            } else if (currentHandle.classList.contains('handle-tr')) {
+                newWidth = Math.max(20, e.clientX - rect.left);
+                newHeight = newWidth / ratio;
+                newTop = initY + (initH - newHeight);
+            } else if (currentHandle.classList.contains('handle-tl')) {
+                newWidth = Math.max(20, rect.right - e.clientX);
+                newHeight = newWidth / ratio;
+                newLeft = initX + (initW - newWidth);
+                newTop = initY + (initH - newHeight);
+            }
+        } else {
+            if (currentHandle.classList.contains('handle-t')) {
+                newHeight = Math.max(20, rect.bottom - e.clientY);
+                newTop = initY + (initH - newHeight);
+            } else if (currentHandle.classList.contains('handle-b')) {
+                newHeight = Math.max(20, e.clientY - rect.top);
+            } else if (currentHandle.classList.contains('handle-l')) {
+                newWidth = Math.max(20, rect.right - e.clientX);
+                newLeft = initX + (initW - newWidth);
+            } else if (currentHandle.classList.contains('handle-r')) {
+                newWidth = Math.max(20, e.clientX - rect.left);
+            }
+        }
+
+        el.style.width = newWidth + 'px';
+        el.style.height = newHeight + 'px';
+        el.style.left = newLeft + 'px';
+        el.style.top = newTop + 'px';
+        updatePreview();
     }
-    return;
+
+    // --- RESIZE END ---
+    function resizeEnd() {
+        isResizing = false;
+        currentHandle = null;
+        document.removeEventListener('mousemove', resizeMove);
+        document.removeEventListener('mouseup', resizeEnd);
+        saveHistory();
+    }
+
+    // --- DRAG MOVE ---
+    function dragMove(e) {
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        selectedItems.forEach(item => {
+            const itemInitX = parseInt(item.dataset.initX) || 0;
+            const itemInitY = parseInt(item.dataset.initY) || 0;
+
+            let newLeft = itemInitX + dx;
+            let newTop = itemInitY + dy;
+
+            // Constrain within canvas
+            newLeft = Math.max(0, Math.min(newLeft, designCanvas.clientWidth - item.offsetWidth));
+            newTop = Math.max(0, Math.min(newTop, designCanvas.clientHeight - item.offsetHeight));
+
+            item.style.left = newLeft + 'px';
+            item.style.top = newTop + 'px';
+        });
+
+        updatePreview();
+    }
+
+    // --- DRAG END ---
+    function dragUp() {
+        document.removeEventListener('mousemove', dragMove);
+        document.removeEventListener('mouseup', dragUp);
+        saveHistory();
+    }
 }
 
-    // --- MULTI-MOVE DRAG ---
-    if (!isResizing) {
-      selectedItems.forEach(item => {
-        const itemInitX = parseInt(item.dataset.initX);
-        const itemInitY = parseInt(item.dataset.initY);
 
-        let newLeft = itemInitX + dx;
-        let newTop = itemInitY + dy;
 
-        const maxLeft = designCanvas.clientWidth - item.offsetWidth;
-        const maxTop = designCanvas.clientHeight - item.offsetHeight;
-
-        item.style.left = Math.max(0, Math.min(newLeft, maxLeft)) + 'px';
-        item.style.top = Math.max(0, Math.min(newTop, maxTop)) + 'px';
-      });
-    }
-  }
-
-  function dragUp() {
-    document.removeEventListener('mousemove', dragMove);
-    document.removeEventListener('mouseup', dragUp);
-    if (isResizing || (selectedItems.length > 0)) {
-      saveHistory();
-      updatePreview();
-    }
-    isResizing = false;
-    currentHandle = null;
-  }
-}
 function enableTextEditing(el) {
   const textEl = el.querySelector('.design-text');
   if (!textEl) return;
+
+  if(el.dataset.locked === "true") return;
 
   textEl.addEventListener('dblclick', (e) => {
     e.stopPropagation();
@@ -1204,36 +1358,154 @@ function setDefaultPreviewScale() {
 /********************************************
  * LAYER MANAGER
  ********************************************/
-function updateLayerList() {
-    const list = document.getElementById('layerList');
-    list.innerHTML = ""; // Clear existing list
+function updateLayerList(){
 
-    // Get all draggable items from the canvas
-    const items = Array.from(designCanvas.querySelectorAll('.draggable'));
+    const list = document.getElementById("layerList");
+    list.innerHTML = "";
 
-    // We reverse the list so the "Top" layer on the canvas is at the top of the list
-    items.reverse().forEach((item, index) => {
-        const layerItem = document.createElement('div');
-        layerItem.className = 'layer-item';
-        if (selectedItems.includes(item)) layerItem.classList.add('active');
+    const items = Array.from(designCanvas.querySelectorAll(":scope > .draggable"));
 
-        // Identify the layer type for the label
-        const type = item.classList.contains('text-item') ? 'Text' : 'Image';
-        const content = type === 'Text' ? `"${item.innerText.substring(0, 10)}..."` : `Image ${items.length - index}`;
+    // Sort by zIndex (top layer first)
+    items.sort((a,b)=>{
+        const zA = parseInt(a.style.zIndex)||0;
+        const zB = parseInt(b.style.zIndex)||0;
+        return zB-zA;
+    });
 
-        layerItem.innerHTML = `
-            <span style="margin-right:8px; color:#888;">${items.length - index}</span>
-            <span style="flex:1">${type}: ${content}</span>
-            <button onclick="deleteLayer(event, ${index})" style="border:none; background:none; cursor:pointer;">✕</button>
+    items.forEach((item,index)=>{
+
+        const layer = document.createElement("div");
+        layer.className = "layer-item";
+        layer.draggable = true;
+        layer.dataset.index = index;
+
+        if(selectedItems.includes(item)){
+            layer.classList.add("active");
+        }
+
+        let label="Layer";
+
+        if(item.querySelector(".design-text")){
+            label="Text";
+        }
+        else if(item.querySelector("img")){
+            label="Image";
+        }
+        else if(item.querySelector("svg")){
+            label="Shape";
+        }
+
+        layer.innerHTML=`
+        <span class="layer-icon">☰</span>
+        <span class="layer-name">${label}</span>
+
+        <span class="layer-controls">
+
+            <button class="layer-hide">👁</button>
+            <button class="layer-lock">🔓</button>
+            <button class="layer-delete">✕</button>
+
+        </span>
         `;
 
-        // Clicking the layer in the list selects it on the canvas
-        layerItem.onclick = () => selectItem(item);
-        
-        list.appendChild(layerItem);
+        /* SELECT LAYER */
+
+        layer.addEventListener("click",e=>{
+            if(e.target.tagName==="BUTTON") return;
+            selectItem(item);
+        });
+
+        /* DELETE */
+
+        const lockBtn = layer.querySelector(".layer-lock");
+
+        // SHOW CORRECT ICON
+        if(item.dataset.locked === "true"){
+            lockBtn.textContent = "🔒"; // locked
+        }else{
+            lockBtn.textContent = "🔓"; // unlocked
+        }
+
+        lockBtn.addEventListener("click", e => {
+            e.stopPropagation();
+
+        if(item.dataset.locked === "true"){
+            item.dataset.locked = "false";
+            item.removeAttribute("data-locked");
+            lockBtn.textContent = "🔓";
+        }else{
+            item.dataset.locked = "true";
+            item.setAttribute("data-locked","true");
+            lockBtn.textContent = "🔒";
+        }
+        saveHistory();
+        });
+
+        /* HIDE / SHOW */
+
+        layer.querySelector(".layer-hide").addEventListener("click",e=>{
+            e.stopPropagation();
+
+            if(item.style.display==="none"){
+                item.style.display="";
+                e.target.textContent="👁";
+            }else{
+                item.style.display="none";
+                e.target.textContent="🚫";
+            }
+
+            updatePreview();
+            saveHistory();
+        });
+
+
+
+        /* DRAG START */
+
+        layer.addEventListener("dragstart",e=>{
+            e.dataTransfer.setData("layerIndex",index);
+        });
+
+        /* DRAG OVER */
+
+        layer.addEventListener("dragover",e=>{
+            e.preventDefault();
+        });
+
+        /* DROP REORDER */
+
+        layer.addEventListener("drop",e=>{
+            e.preventDefault();
+
+            const fromIndex = e.dataTransfer.getData("layerIndex");
+            const toIndex = index;
+
+            reorderLayers(items,fromIndex,toIndex);
+
+        });
+
+        list.appendChild(layer);
+
     });
+
 }
 
+function reorderLayers(items,fromIndex,toIndex){
+
+    const itemA = items[fromIndex];
+    const itemB = items[toIndex];
+
+    const zA = parseInt(itemA.style.zIndex)||0;
+    const zB = parseInt(itemB.style.zIndex)||0;
+
+    itemA.style.zIndex = zB;
+    itemB.style.zIndex = zA;
+
+    updateLayerList();
+    updatePreview();
+    saveHistory();
+
+}
 /********************************************
  * SOLID SHAPES FUNCTIONALITY
  ********************************************/
@@ -1250,7 +1522,7 @@ shapesGrid.querySelectorAll('.shape-item').forEach(shapeItem => {
 // 2. Function to add SVG shape to canvas
 function addShapeToCanvas(type) {
     const div = document.createElement('div');
-    div.classList.add('draggable');
+    div.classList.add('draggable','text-item');
     
     // Set initial size and position
     div.style.width = '100px';
@@ -1396,46 +1668,6 @@ function ungroupSelected() {
     updatePreview();
 }
 
-/**
- * Applies both Rotation and Mirroring simultaneously
- */
-function applyTransformations(item) {
-    const rotation = item.dataset.rotation || 0;
-    const flipH = item.dataset.flipH === 'true' ? -1 : 1;
-    const flipV = item.dataset.flipV === 'true' ? -1 : 1;
-
-    // Combine into one string: rotate and scale
-    item.style.transform = `rotate(${rotation}deg) scale(${flipH}, ${flipV})`;
-}
-
-/**
- * Rotates selected items by a relative amount (e.g., +90 or -90)
- */
-function rotateSelected(degrees) {
-    selectedItems.forEach(item => {
-        let current = parseInt(item.dataset.rotation) || 0;
-        item.dataset.rotation = (current + degrees) % 360;
-        applyTransformations(item);
-    });
-    saveHistory();
-    updatePreview();
-}
-
-/**
- * Flips selected items across an axis
- */
-function flipSelected(axis) {
-    selectedItems.forEach(item => {
-        if (axis === 'horizontal') {
-            item.dataset.flipH = item.dataset.flipH === 'true' ? 'false' : 'true';
-        } else if (axis === 'vertical') {
-            item.dataset.flipV = item.dataset.flipV === 'true' ? 'false' : 'true';
-        }
-        applyTransformations(item);
-    });
-    saveHistory();
-    updatePreview();
-}
 
 /**
  * Main function to combine all transformations
@@ -1632,7 +1864,138 @@ function finalizeOrderChange() {
     // updatePreview(); // Keep this commented if it still causes image flicker
 }
 
+function cropImage() {
+    if (!activeItem) {
+        alert("Select an image first");
+        return;
+    }
 
+    const img = activeItem.querySelector("img");
+    if (!img) {
+        alert("Crop only works on images");
+        return;
+    }
+
+    // Remove any existing crop box
+    activeItem.querySelectorAll('.crop-box').forEach(b => b.remove());
+
+    const cropBox = document.createElement("div");
+    cropBox.classList.add("crop-box");
+    cropBox.style.position = "absolute";
+    cropBox.style.border = "2px dashed red";
+    cropBox.style.left = "10%";
+    cropBox.style.top = "10%";
+    cropBox.style.width = "80%";
+    cropBox.style.height = "80%";
+    cropBox.style.cursor = "move";
+    cropBox.style.boxSizing = "border-box";
+    activeItem.appendChild(cropBox);
+
+    let isDragging = false;
+    let startX, startY;
+    let isResizing = false;
+    let resizeHandle = null;
+
+    const handles = ["tl","tr","bl","br","t","b","l","r"];
+    handles.forEach(pos => {
+        const handle = document.createElement("div");
+        handle.className = "crop-handle handle-" + pos;
+        handle.style.position = "absolute";
+        handle.style.width = "10px";
+        handle.style.height = "10px";
+        handle.style.background = "red";
+        handle.style.cursor = pos + "-resize";
+        switch(pos){
+            case "tl": handle.style.left="0"; handle.style.top="0"; break;
+            case "tr": handle.style.right="0"; handle.style.top="0"; break;
+            case "bl": handle.style.left="0"; handle.style.bottom="0"; break;
+            case "br": handle.style.right="0"; handle.style.bottom="0"; break;
+            case "t": handle.style.top="0"; handle.style.left="50%"; handle.style.transform="translateX(-50%)"; break;
+            case "b": handle.style.bottom="0"; handle.style.left="50%"; handle.style.transform="translateX(-50%)"; break;
+            case "l": handle.style.left="0"; handle.style.top="50%"; handle.style.transform="translateY(-50%)"; break;
+            case "r": handle.style.right="0"; handle.style.top="50%"; handle.style.transform="translateY(-50%)"; break;
+        }
+        cropBox.appendChild(handle);
+        handle.addEventListener("mousedown", e => {
+            isResizing = true;
+            resizeHandle = pos;
+            startX = e.clientX;
+            startY = e.clientY;
+            e.stopPropagation();
+        });
+    });
+
+    cropBox.addEventListener("mousedown", e => {
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        e.stopPropagation();
+    });
+
+    document.addEventListener("mousemove", e => {
+        const rect = cropBox.getBoundingClientRect();
+        const parentRect = activeItem.getBoundingClientRect();
+        if(isDragging){
+            let dx = e.clientX - startX;
+            let dy = e.clientY - startY;
+            let newLeft = rect.left - parentRect.left + dx;
+            let newTop = rect.top - parentRect.top + dy;
+            newLeft = Math.max(0, Math.min(newLeft, activeItem.clientWidth - rect.width));
+            newTop = Math.max(0, Math.min(newTop, activeItem.clientHeight - rect.height));
+            cropBox.style.left = newLeft + "px";
+            cropBox.style.top = newTop + "px";
+            startX = e.clientX;
+            startY = e.clientY;
+        } else if(isResizing){
+            let dx = e.clientX - startX;
+            let dy = e.clientY - startY;
+            let l = parseFloat(cropBox.style.left) || 0;
+            let t = parseFloat(cropBox.style.top) || 0;
+            let w = parseFloat(cropBox.style.width) || rect.width;
+            let h = parseFloat(cropBox.style.height) || rect.height;
+
+            switch(resizeHandle){
+                case "tl": l+=dx; t+=dy; w-=dx; h-=dy; break;
+                case "tr": t+=dy; w+=dx; h-=dy; break;
+                case "bl": l+=dx; w-=dx; h+=dy; break;
+                case "br": w+=dx; h+=dy; break;
+                case "t": t+=dy; h-=dy; break;
+                case "b": h+=dy; break;
+                case "l": l+=dx; w-=dx; break;
+                case "r": w+=dx; break;
+            }
+            if(w>20){ cropBox.style.width = w+"px"; cropBox.style.left=l+"px"; }
+            if(h>20){ cropBox.style.height = h+"px"; cropBox.style.top=t+"px"; }
+            startX = e.clientX;
+            startY = e.clientY;
+        }
+    });
+
+    document.addEventListener("mouseup", ()=>{
+        isDragging=false;
+        isResizing=false;
+        resizeHandle=null;
+    });
+
+    cropBox.addEventListener("dblclick", ()=>{
+        const rect = cropBox.getBoundingClientRect();
+        const parentRect = activeItem.getBoundingClientRect();
+        const imgRect = img.getBoundingClientRect();
+
+        img.style.position="absolute";
+        img.style.left = -(rect.left - parentRect.left)+"px";
+        img.style.top = -(rect.top - parentRect.top)+"px";
+        img.style.width = activeItem.clientWidth+"px";
+        img.style.height = activeItem.clientHeight+"px";
+
+        activeItem.style.width = rect.width+"px";
+        activeItem.style.height = rect.height+"px";
+        activeItem.style.overflow="hidden";
+        cropBox.remove();
+        saveHistory();
+        updatePreview();
+    });
+}
 
 
 
@@ -1668,6 +2031,7 @@ imageInput.addEventListener('change', e => {
 
     const img = document.createElement('img');
     img.src = ev.target.result;
+    img.draggable = false;
     img.style.width = "100%";
     img.style.height = "100%";
     img.style.objectFit = "contain";
@@ -1705,13 +2069,14 @@ const pixabayGrid = document.getElementById('pixabayGrid');
 const gallerySearch = document.getElementById('gallerySearch');
 
 async function fetchPixabay(query = 'vector') {
-  const res = await fetch(`https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(query)}&image_type=vector&per_page=20`);
+  const res = await fetch(`https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(query)}&image_type=vector&per_page=50`);
   const data = await res.json();
   pixabayGrid.innerHTML = '';
   
   data.hits.forEach(hit => {
     const imgThumb = document.createElement('img');
     imgThumb.src = hit.previewURL;
+    imgThumb.draggable = false;
     imgThumb.classList.add('gallery-item');
     
     imgThumb.addEventListener('click', () => {
@@ -1846,6 +2211,31 @@ window.addEventListener('keydown', e => {
     if (e.ctrlKey && (e.key === 'y' || (e.shiftKey && e.key === 'Z'))) {
         e.preventDefault();
         redo();
+        // MOVE SELECTED ITEMS WITH ARROW KEYS
+    if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
+
+        if(selectedItems.length === 0) return;
+
+        e.preventDefault();
+
+        selectedItems.forEach(item=>{
+            let left = parseInt(item.style.left)||0;
+            let top = parseInt(item.style.top)||0;
+
+            if(e.key==='ArrowUp') top -= 1;
+            if(e.key==='ArrowDown') top += 1;
+            if(e.key==='ArrowLeft') left -= 1;
+            if(e.key==='ArrowRight') left += 1;
+
+            left = Math.max(0, Math.min(left, designCanvas.clientWidth - item.offsetWidth));
+            top = Math.max(0, Math.min(top, designCanvas.clientHeight - item.offsetHeight));
+
+            item.style.left = left + "px";
+            item.style.top = top + "px";
+        });
+
+        updatePreview();
+    }
     }
 });
 textInput.addEventListener('keypress', (e) => {
