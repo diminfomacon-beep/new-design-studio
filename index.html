@@ -944,6 +944,12 @@ document.getElementById('imageInput').onchange = function(e) {
 
     const reader = new FileReader();
     reader.onload = function(event) {
+        // Inside your imageInput.onchange reader.onload:
+    const newImg = loadTemplate(event.target.result); 
+    if(newImg) {
+        bridgeTouchEvents(newImg);
+        addPinchSupport(newImg);
+    }
         // Reuse your loadTemplate logic to maintain consistency
         loadTemplate(event.target.result);
         
@@ -1026,10 +1032,16 @@ document.getElementById('addTextBtn').onclick = () => {
     div.style.left = "100px"; 
     div.style.top = "100px";
     div.innerHTML = `<span style="font-size:30px; font-family:${font}; white-space:nowrap;">${val}</span>` + getHandleHTML();
+    
     designCanvas.appendChild(div);
     makeDraggable(div);
+    
+    // --- FIX STARTS HERE ---
+    bridgeTouchEvents(div); // Enable single-finger dragging
+    addPinchSupport(div);    // Enable two-finger scaling
+    // --- FIX ENDS HERE ---
+
     saveHistory();
-    bridgeTouchEvents(theNewElement);
 };
 function filterTemplates() {
     const searchInput = document.getElementById('templateSearch');
@@ -1240,20 +1252,22 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
 function bridgeTouchEvents(element) {
-    element.addEventListener("touchstart", function (e) {
-        if (e.touches.length === 1) {
-            // ONE FINGER: Logic for Dragging
-            const touch = e.touches[0];
-            const mouseEvent = new MouseEvent("mousedown", {
-                clientX: touch.clientX,
-                clientY: touch.clientY
-            });
-            element.dispatchEvent(mouseEvent);
-        } else if (e.touches.length === 2) {
-            // TWO FINGERS: Logic for Pinching
-            // (Handled by the addPinchSupport function)
-        }
-    }, { passive: false });
+        element.addEventListener("touchstart", function (e) {
+            if (e.touches.length === 1) {
+                // Re-sync the scale so dragging doesn't "jump"
+                const currentScale = element.getAttribute('data-scale') || 1;
+                element.style.transform = `scale(${currentScale})`;
+                
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent("mousedown", {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                element.dispatchEvent(mouseEvent);
+            }
+        }, { passive: false });
+        // ... rest of your move/end code
+    }
 
     element.addEventListener("touchmove", function (e) {
         const touch = e.touches[0];
