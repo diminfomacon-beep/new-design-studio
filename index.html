@@ -17,210 +17,181 @@
       })();
     </script>
 <style>
-  :root {--primary:#111827; --accent:#3b82f6; --bg-light:#f5f5f5; --border-color:#ddd;}
-
-/* BASE STYLES (Applies to both) */
-html, body {
-    margin: 0; padding: 0; width: 100%; height: 100%;
-    background-color: #CAE4DB; font-family: sans-serif;
-    user-select: none; -webkit-user-select: none;
-    overflow: hidden; /* Critical for Standalone Mode */
-    position: fixed; /* Prevents browser bounce */
-}
-
-.studio-wrapper {
-    display: flex; flex-direction: row;
-    width: 100vw; height: 100vh;
-    padding: 15px; box-sizing: border-box;
-    background: #CAE4DB; overflow: hidden;
-}
-
-/* SIDEBARS & PANELS */
-#toolbar { width: 300px; flex-shrink: 0; background: white; border-radius: 12px; padding: 10px; overflow-y: auto; }
-#varietyPanel { width: 100px; flex-shrink: 0; display: flex; flex-direction: column; padding: 10px; }
-#workspace { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-
-/* CANVAS */
-.canvas-container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-#designCanvas { 
-    width: 500px; height: 500px; /* Default desktop size */
-    background: white; border: 2px dashed #ccc; position: relative; 
-    overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
-
-#product-bg { z-index: 0 !important; pointer-events: none; width: 100%; height: 100%; object-fit: contain; }
-
-/* DRAGGABLE ITEMS */
-.draggable { 
-    position: absolute; cursor: move; z-index: 10; 
-    touch-action: none; will-change: transform;
-}
-.draggable img { width: 100%; height: 100%; pointer-events: none; display: block; }
-.active-layer { outline: 2px dashed #007bff; }
-
-/* HANDLES (Bigger for touch) */
-.resize-handle { 
-    display: none; width: 12px; height: 12px; background: #007bff; 
-    position: absolute; border-radius: 50%; z-index: 20; 
-}
-.active-layer .resize-handle { display: block; }
-
-/* SWATCHES & GALLERY */
-#swatchContainer { 
-    display: none; position: absolute; z-index: 9999; 
-    width: 220px; grid-template-columns: repeat(10, 1fr); 
-    background: white; padding: 8px; border-radius: 8px; border: 2px solid #3b82f6; 
-}
-
-/* 📱 MOBILE OVERRIDES */
-@media (max-width: 900px) {
-    .studio-wrapper { flex-direction: column; overflow-y: auto; }
+    body { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; background: #fafafa; }
     
-    #workspace { 
-        order: 1; width: 100% !important; height: 400px !important; 
-        position: sticky; top: 0; z-index: 100; background: #CAE4DB;
+    /* Layout Container */
+    .studio-wrapper {
+        display: flex;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
     }
-    
-    #designCanvas { width: 350px !important; height: 350px !important; }
-    
-    #toolbar { order: 2; width: 100% !important; height: auto; overflow: visible; }
-    
-    #varietyPanel { order: 3; width: 100% !important; height: auto; }
-    #thumbContainer { flex-direction: row !important; overflow-x: auto; }
-    
-    .resize-handle { width: 24px; height: 24px; } /* Fat-finger friendly */
-    .resize-handle::after { content: ''; position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px; }
-}
+
+    /* Left Panel - Tools */
+    #toolbar {
+        width: 320px;
+        background: #f3e595;
+        border-right: 1px solid #ddd;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        z-index: 10;
+    }
+
+    /* Center - Workspace */
+    #workspace {
+        flex-grow: 1;
+        background: #e5e5e5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    #designCanvas {
+        width: 500px;
+        height: 600px;
+        background: white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Right Panel - Styles */
+    #varietyPanel {
+        width: 150px;
+        background: #f3e595;
+        border-left: 1px solid #ddd;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 10;
+    }
+
+    /* Buttons & Inputs */
+    button {
+        background: #125850;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    button:hover { opacity: 0.9; }
+
+    .draggable {
+        position: absolute;
+        cursor: move;
+        outline: 1px dashed transparent;
+    }
+
+    .active-layer { outline: 2px solid #125850; }
+
+    /* Handles */
+    .resize-handle {
+        width: 10px;
+        height: 10px;
+        background: #125850;
+        position: absolute;
+        border-radius: 50%;
+    }
+    .handle-br { bottom: -5px; right: -5px; cursor: nwse-resize; }
+    /* ... add other handles as needed ... */
+
+    .tab-button.active { background: #0d413b; }
 </style>
-</head>
+
 <body>
-      <!--PHYSICAL UI-->
 <div class="studio-wrapper">
-  <!--LEFT PANEL - TOOLS & RESOURCES-->
-  <div id="toolbar" style="display: flex; flex-direction: column; min-height: auto; background: #f3e595; border: 1px solid #ddd; border-radius: 8px; padding: 10px; box-sizing: border-box;">
-    <div id="textEditor" style="background: #f3e595; padding: 10px; border-radius: 8px;">
-      <h3 style = "display:flex; justify-content: center;">Tools</h3>
-      <input type="text" id="textInput" placeholder="Enter text..." value="" class="span-2" style="height: 20px; width:95% !important;;  padding: 0 8px; display: flex; gap: 2px; margin-bottom: 10px;">
-      <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 10px;">
-          <label style="font-size: 11px; color: #000;">Font</label>
-          <select id="fontFamily" style="width: 120px; height: 28px; cursor: pointer; flex-grow: 1;">
-              <option value="'Montserrat', sans-serif" style="font-family: 'Montserrat';">Montserrat</option>
-              <option value="'Playfair Display', serif" style="font-family: 'Playfair Display';">Playfair Display</option>
-              <option value="'Pacifico', cursive" style="font-family: 'Pacifico';">Pacifico</option>
-              <option value="'Lobster', cursive" style="font-family: 'Lobster';">Lobster</option>
-              <option value="'Bungee', cursive" style="font-family: 'Bungee';">Bungee</option>
-              <option value="'Anton', sans-serif" style="font-family: 'Anton';">Anton</option>
-              <option value="'Bangers', cursive" style="font-family: 'Bangers';">Bangers</option>
-              <option value="'Rock Salt', cursive" style="font-family: 'Rock Salt';">Rock Salt</option>
-              <option value="'Monoton', cursive" style="font-family: 'Monoton';">Monoton</option>
-              <option value="'Special Elite', cursive" style="font-family: 'Special Elite';">Special Elite</option>
-              <option value="'Creepster', cursive" style="font-family: 'Creepster';">Creepster</option>
-              <option value="'Press Start 2P', cursive" style="font-family: 'Press Start 2P';">Pixel</option>
-          </select>
-          <button id="addTextBtn" style="background: #125850; color: #fff; height: 28px; border-radius: 4px;">Add to Canvas</button>
-      </div>
-    
-      <div style="display: grid; grid-template-columns: auto 30px auto 50px 1fr 1fr; gap: 8px; align-items: center; margin-bottom: 10px;">
-          <label style="font-size: 12px; color: #000;">Color</label>
-          <div id="fontColorPicker" style="font-size: 18px; cursor: pointer; text-align: center;">🎨</div>
-          
-          <label style="font-size: 12px; color: #000;">Size</label>
-          <input type="number" id="fontSizeInput" min="8" max="200" value="30" style="width: 100%; height: 20px;">
-          
-          <button id="btnBold" style="background: #125850; color: #fff; height: 28px; border-radius: 4px;">B</button>
-          <button id="btnItalic" style="background: #125850; color: #fff; height: 28px; border-radius: 4px;">I</button>
-    </div>
-  
-    <div class="effects-control" style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div>
-            <label style="font-size: 12px;">Slant</label>
-            <input type="range" id="shearSlider" min="-30" max="30" value="0" style="width:100%;">
-        </div>
-          <div>
-            <label style="font-size: 12px;">Tilt</label>
-            <input type="range" id="curveSlider" min="-40" max="40" value="0" style="width:100%;">
-        </div>
-    </div>
-                  
-    <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
-    <h3>Upload Image</h3>
-    <input type="file" id="imageInput" accept="image/*">
-    <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
-    <hr>
-  
-
-    <div style="display: flex; gap: 2px; margin-bottom: 10px;">
-        <button class="tab-button active" onclick="showTab('pixabay-tab', this)">Pixabay</button>
-        <button class="tab-button" onclick="showTab('template-tab', this)">Templates</button>
-    </div>
-
-    <div id="pixabay-tab" class="tab-pane">
-        <div style="display: flex; gap: 5px;">
-            <input type="text" id="gallerySearch" placeholder="Search graphics..." style="flex: 1; padding: 5px;">
-            <button id="searchBtn">Go</button>
-        </div>
-        <div id="pixabayGrid"></div>
-    </div>
-
-    <div id="template-tab" class="tab-pane" style="display: none;">
-        <input type="text" id="templateSearch" placeholder="Filter templates..." 
-              style="width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;" 
-              onkeyup="filterTemplates()">
+    <div id="toolbar">
+        <h3 style="text-align:center;">Tools</h3>
+        <input type="text" id="textInput" placeholder="Enter text..." style="width:100%; margin-bottom:10px;">
         
-        <div id="templateGrid">
+        <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+            <select id="fontFamily" style="flex:1;">
+                <option value="'Montserrat'">Montserrat</option>
+                <option value="'Pacifico'">Pacifico</option>
+                <option value="'Bungee'">Bungee</option>
+            </select>
+            <button id="addTextBtn">Add</button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div id="fontColorPicker" style="font-size: 24px; cursor: pointer;">🎨</div>
+            <input type="number" id="fontSizeInput" value="30" style="width: 50px;">
+            <button id="btnBold">B</button>
+            <button id="btnItalic">I</button>
+        </div>
+
+        <hr>
+        <h3>Upload Image</h3>
+        <input type="file" id="imageInput" accept="image/*">
+        
+        <div style="margin-top: 20px;">
+            <button class="tab-button active" onclick="showTab('pixabay-tab', this)">Pixabay</button>
+            <button class="tab-button" onclick="showTab('template-tab', this)">Templates</button>
+        </div>
+
+        <div id="pixabay-tab" class="tab-pane">
+            <input type="text" id="gallerySearch" placeholder="Search..." style="width:70%;">
+            <button id="searchBtn">Go</button>
+            <div id="pixabayGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px;"></div>
+        </div>
+        
+        <button id="downloadBtn" style="margin-top: auto; width:100%;">Download PNG</button>
+    </div>
+
+    <div id="workspace">
+        <div class="canvas-toolbar" style="margin-bottom: 10px;">
+            <button onclick="undo()">Undo</button>
+            <button onclick="redo()">Redo</button>
+            <button onclick="deleteSelected()" style="background:#f15f6e;">Delete</button>
+        </div>
+        <div id="designCanvas">
             </div>
     </div>
-    <hr>
-    <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
-    <div id="layerList"></div>
-    <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
-    <button id="downloadBtn" style="width:100%">Download PNG</button>
-    <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
+
+    <div id="varietyPanel">
+        <h3>Styles</h3>
+        <div id="thumbContainer"></div>
+        <button id="submitOrderBtn" style="margin-top: 20px;">Submit</button>
     </div>
+</div>
 
-  </div>
-  <!--CENTER PANEL - CANVAS & TOOLBAR-->
-  <div id="workspace">
-      <div class="canvas-container">
-          <div class="canvas-toolbar">
-              <button onclick="changeZIndex('front')">To Front</button>
-              <button onclick="changeZIndex('back')">To Back</button>
-              <button onclick="changeZIndex('forward')">Forward</button>
-              <button onclick="changeZIndex('backward')">Backward</button>
-              <button onclick="undo()">Undo</button>
-              <button onclick="redo()">Redo</button>
-              <button onclick="groupSelected()">Group</button>
-              <button onclick="ungroupSelected()">Ungroup</button>
-              <button onclick="deleteSelected()">Delete</button>
-              <button onclick="clearCanvas()" style="background: #f15f6e; color: white;">Clear All</button>
-          </div>
-
-          <div id="designCanvas"></div>
-      </div>
-  </div>   
+<script>
+// IMPORTANT: Ensure this is at the top of your loadTemplate function
+function loadTemplate(src) {
+    if (!src) return;
     
-<!--RIGHT PANEL - VARIETY-->
-  <div id="varietyPanel" style="width: 120px;display: flex; flex-direction: column; min-height: auto; background: #f3e595; border: 1px solid #ddd; border-radius: 8px; padding: 10px; box-sizing: border-box;">
-    <h3 style="display: flex; justify-content: center;">Styles</h3>
-    <div id="thumbContainer" style="flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center;"></div>
-    <div id="submitSection"><button id="submitOrderBtn">Submit Design</button></div>
-  </div>
-  <!--SWATCH CONTAINER(NOT DISPLAYED ON SCREEN)-->
-  <div id="swatchContainer"> </div>
-<div id="pwa-welcome" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10001; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
-    <div style="background:white; padding:25px; border-radius:15px; text-align:center; max-width:300px; position:relative;">
-        <h3 style="margin-top:0; color:#125850;">App Version Available</h3>
-        <p id="pwa-instructions" style="font-size:14px; color:#555; line-height:1.5;">
-            Add this studio to your home screen for a full-screen experience and faster access!
-        </p>
-        <div id="ios-instructions" style="display:none; margin-top:15px;">
-            <p style="font-size:13px; font-weight:bold;">Tap the "Share" icon <img src="https://img.icons8.com/ios/50/000000/export.png" style="width:18px; vertical-align:middle;"> then "Add to Home Screen".</p>
-        </div>
-        <button id="pwa-install-btn" style="display:none; width:100%; background:#125850; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; margin-top:10px;">Install Now</button>
-        <button onclick="document.getElementById('pwa-welcome').style.display='none'" style="background:none; border:none; color:#999; margin-top:15px; cursor:pointer; font-size:12px;">Maybe Later</button>
-    </div>
-</div>
-</div>
+    const div = document.createElement('div');
+    div.className = 'draggable';
+    
+    // Explicitly set styling so it shows up
+    div.style.width = "150px";
+    div.style.height = "150px";
+    div.style.left = "50px";
+    div.style.top = "50px";
+    div.style.position = "absolute"; 
+    div.style.zIndex = "5"; // Ensure it's above the background
+
+    div.innerHTML = `
+        <img src="${src}" style="width:100%; height:100%; object-fit:contain; pointer-events:none;">
+        <div class="resize-handle handle-br" data-handle="br"></div>
+    `;
+    
+    document.getElementById('designCanvas').appendChild(div);
+    
+    // Re-bind dragging logic
+    makeDraggable(div);
+    saveHistory();
+}
+</script>
+</body>
 <script>
 /********************************************* GLOBAL STATE & CONFIG ********************************************/
 const PIXABAY_API_KEY = '54841320-2fc493da46915b0eb0a6f740c';
