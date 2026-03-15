@@ -209,9 +209,17 @@
     }
         }
       .draggable {
-    transition: transform 0.05s ease-out; /* Tiny delay makes it feel fluid */
-    transform-origin: center center; /* Scale from the middle */
-    will-change: transform; /* Optimizes mobile GPU performance */
+        transition: transform 0.05s ease-out; /* Tiny delay makes it feel fluid */
+        transform-origin: center center; /* Scale from the middle */
+        will-change: transform; /* Optimizes mobile GPU performance */
+    }
+      #product-bg {
+            z-index: 0 !important;
+            pointer-events: none; /* Allows you to click 'through' the shirt to hit your images */
+        }
+
+.draggable {
+    z-index: 10;
 }
 }
 </style>
@@ -864,12 +872,10 @@ function loadTemplate(src) {
     div.style.height = "150px";
     div.style.left = "50px"; 
     div.style.top = "50px";
+    div.style.position = "absolute"; // Essential for desktop movement
     
-    // Set initial scale for the pinch-to-zoom logic
     div.setAttribute('data-scale', '1');
     
-    // Ensure the image inside is constrained
-    // Added 'user-select: none' and 'pointer-events: none' to prevent mobile browser popups
     div.innerHTML = `
         <img src="${src}" style="width:100%; height:100%; object-fit:contain; pointer-events:none; user-select:none; -webkit-user-drag:none;">
         ${getHandleHTML()}
@@ -877,14 +883,58 @@ function loadTemplate(src) {
     
     designCanvas.appendChild(div);
     
-    // 1. Desktop logic (Mouse)
-    makeDraggable(div);
+    // Desktop: Classic Mouse Movement
+    if (typeof makeDraggable === "function") {
+        makeDraggable(div);
+    }
     
-    // 2. Mobile logic (Single-finger drag)
-    bridgeTouchEvents(div);
+    // Mobile: Touch Mapping
+    if (typeof bridgeTouchEvents === "function") {
+        bridgeTouchEvents(div);
+    }
     
-    // 3. Mobile logic (Two-finger pinch/scale)
-    addPinchSupport(div);
+    // Mobile: Two-Finger Pinch
+    if (typeof addPinchSupport === "function") {
+        addPinchSupport(div);
+    }
+    
+    saveHistory();
+}function loadTemplate(src) {
+    if (!src) return;
+    
+    const div = document.createElement('div');
+    div.className = 'draggable';
+    
+    // Set size and position
+    div.style.width = "150px"; 
+    div.style.height = "150px";
+    div.style.left = "50px"; 
+    div.style.top = "50px";
+    div.style.position = "absolute"; // Essential for desktop movement
+    
+    div.setAttribute('data-scale', '1');
+    
+    div.innerHTML = `
+        <img src="${src}" style="width:100%; height:100%; object-fit:contain; pointer-events:none; user-select:none; -webkit-user-drag:none;">
+        ${getHandleHTML()}
+    `;
+    
+    designCanvas.appendChild(div);
+    
+    // Desktop: Classic Mouse Movement
+    if (typeof makeDraggable === "function") {
+        makeDraggable(div);
+    }
+    
+    // Mobile: Touch Mapping
+    if (typeof bridgeTouchEvents === "function") {
+        bridgeTouchEvents(div);
+    }
+    
+    // Mobile: Two-Finger Pinch
+    if (typeof addPinchSupport === "function") {
+        addPinchSupport(div);
+    }
     
     saveHistory();
 }
@@ -1267,71 +1317,76 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
 function bridgeTouchEvents(element) {
-        element.addEventListener("touchstart", function (e) {
-            if (e.touches.length === 1) {
-                // Re-sync the scale so dragging doesn't "jump"
-                const currentScale = element.getAttribute('data-scale') || 1;
-                element.style.transform = `scale(${currentScale})`;
-                
-                const touch = e.touches[0];
-                const mouseEvent = new MouseEvent("mousedown", {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                });
-                element.dispatchEvent(mouseEvent);
-            }
-        }, { passive: false });
-        // ... rest of your move/end code
-    }
+    element.addEventListener("touchstart", function (e) {
+        if (e.touches.length === 1) {
+            const currentScale = element.getAttribute('data-scale') || 1;
+            element.style.transform = `scale(${currentScale})`;
+            
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent("mousedown", {
+                clientX: touch.clientX,
+                clientY: touch.clientY,
+                bubbles: true, // Vital for desktop logic to "hear" the event
+                cancelable: true
+            });
+            element.dispatchEvent(mouseEvent);
+        }
+    }, { passive: false });
 
     element.addEventListener("touchmove", function (e) {
-        const touch = e.touches[0];
-        const mouseEvent = new MouseEvent("mousemove", {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        element.dispatchEvent(mouseEvent);
-        // CRITICAL: Prevents the screen from scrolling while you drag
-        e.preventDefault(); 
+        if (e.touches.length === 1) {
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent("mousemove", {
+                clientX: touch.clientX,
+                clientY: touch.clientY,
+                bubbles: true,
+                cancelable: true
+            });
+            element.dispatchEvent(mouseEvent);
+            e.preventDefault(); // Stops the app from scrolling while dragging
+        }
     }, { passive: false });
 
     element.addEventListener("touchend", function (e) {
-        const mouseEvent = new MouseEvent("mouseup", {});
+        const mouseEvent = new MouseEvent("mouseup", {
+            bubbles: true,
+            cancelable: true
+        });
         element.dispatchEvent(mouseEvent);
     }, { passive: false });
 }
-    function addPinchSupport(element) {
+
+function addPinchSupport(element) {
     let initialDist = 0;
     let initialScale = 1;
 
     element.addEventListener('touchstart', function(e) {
         if (e.touches.length === 2) {
-            // Calculate starting distance between two fingers
             initialDist = Math.hypot(
                 e.touches[0].pageX - e.touches[1].pageX,
                 e.touches[0].pageY - e.touches[1].pageY
             );
-            // Get the current scale of the element (default to 1)
             initialScale = parseFloat(element.getAttribute('data-scale')) || 1;
         }
     }, { passive: false });
 
     element.addEventListener('touchmove', function(e) {
         if (e.touches.length === 2) {
-            e.preventDefault(); // Prevent page zooming
+            e.preventDefault(); 
             
             const currentDist = Math.hypot(
                 e.touches[0].pageX - e.touches[1].pageX,
                 e.touches[0].pageY - e.touches[1].pageY
             );
 
-            // Calculate the new scale ratio
             const zoomFactor = currentDist / initialDist;
             const newScale = initialScale * zoomFactor;
 
-            // Apply the scale (and keep existing rotation if you have it)
-            element.style.transform = `scale(${newScale})`;
-            element.setAttribute('data-scale', newScale);
+            // Optional: Limit the size so it doesn't disappear or cover the whole screen
+            if (newScale > 0.2 && newScale < 4) {
+                element.style.transform = `scale(${newScale})`;
+                element.setAttribute('data-scale', newScale);
+            }
         }
     }, { passive: false });
 }
