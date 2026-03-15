@@ -88,6 +88,7 @@
     /* Force the workspace to be visible */
     #workspace {
         display: flex !important;
+        flex-shrink: 0;
         width: 100% !important;
         height: 400px !important; /* Fixed height for mobile */
         min-height: 400px !important;
@@ -116,12 +117,14 @@
         width: 100% !important;
         height: auto !important;
         order: 2; /* Move tools below the canvas for better UX */
+        flex-shrink: 0;
     }
     #varietyPanel {
         width: 100% !important;
         height: auto !important;
         order: 3; /* Move styles to the bottom */
         flex-direction: column !important;
+        flex-shrink: 0;
     }
 
     #thumbContainer {
@@ -150,24 +153,37 @@
         /* Prevents the 'pull-to-refresh' gesture in mobile browsers */
         overscroll-behavior-y: contain; 
         } 
-        html, body {
-        position: fixed; /* Prevents the body from scrolling/bouncing */
-        overflow: hidden;
+
+   html, body {
+        /* Keep this to prevent the whole page from bouncing */
+        position: fixed; 
         width: 100%;
         height: 100%;
         margin: 0;
         padding: 0;
-        /* This handles the "Notch" area on newer iPhones */
-        padding-top: env(safe-area-inset-top);
-        padding-bottom: env(safe-area-inset-bottom);
+        overflow: hidden; 
+        background-color: #CAE4DB; /* Matches your wrapper color */
     }
     
     .studio-wrapper {
-        height: 100%;
+        /* Change height to 100% of the visible area */
+        height: 100vh; 
+        width: 100vw;
         display: flex;
         flex-direction: column;
-        overflow: hidden; /* Only scroll the sections we want, like thumbnails */
-    }
+        
+        /* This allows the user to scroll through the studio tools */
+        overflow-y: auto !important; 
+        overflow-x: hidden;
+        
+        /* Smooth scrolling for mobile */
+        -webkit-overflow-scrolling: touch; 
+        
+        /* Padding to handle iPhone notches and home bars */
+        padding-bottom: env(safe-area-inset-bottom, 20px); 
+        box-sizing: border-box;
+    } 
+ 
 }
 </style>
 </head>
