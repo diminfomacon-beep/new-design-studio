@@ -1,0 +1,20 @@
+{
+  "short_name": "DesignStudio",
+  "name": "My Custom Design Studio",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/user/repo/main/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/user/repo/main/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "www.dimbrightideas.com",
+  "background_color": "#CAE4DB",
+  "display": "standalone",
+  "theme_color": "#125850"
+}
