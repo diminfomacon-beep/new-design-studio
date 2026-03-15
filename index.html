@@ -94,6 +94,9 @@
         min-height: 400px !important;
         padding: 10px 0 !important;
         order: 1; /* Move to top */
+        position: sticky; 
+        top: 0; 
+        z-index: 10;
     }
 
     /* Make sure the container inside doesn't hide the canvas */
@@ -183,7 +186,9 @@
         padding-bottom: env(safe-area-inset-bottom, 20px); 
         box-sizing: border-box;
     } 
- 
+     #submitSection {
+        padding-bottom: 40px !important; /* Creates a "buffer" at the bottom */
+    }
 }
 </style>
 </head>
