@@ -189,6 +189,30 @@
      #submitSection {
         padding-bottom: 40px !important; /* Creates a "buffer" at the bottom */
     }
+    #designCanvas, .draggable, .resize-handle {
+        touch-action: none; /* Tells the browser: 'I handle the touch, don't scroll' */
+        -webkit-user-select: none; /* Prevents the "Copy" pop-up */
+        user-select: none;
+        }
+    @media (max-width: 768px) {
+        .resize-handle {
+            width: 20px !important; /* Larger visual handle */
+            height: 20px !important;
+    }
+        
+        /* Make the handle appear smaller but have a big invisible click zone */
+        .resize-handle::after {
+            content: '';
+            position: absolute;
+            top: -10px; left: -10px; right: -10px; bottom: -10px;
+            /* This invisible box makes it easy to grab with a thumb */
+    }
+        }
+      .draggable {
+    transition: transform 0.05s ease-out; /* Tiny delay makes it feel fluid */
+    transform-origin: center center; /* Scale from the middle */
+    will-change: transform; /* Optimizes mobile GPU performance */
+}
 }
 </style>
 </head>
@@ -927,6 +951,7 @@ document.getElementById('imageInput').onchange = function(e) {
         e.target.value = ""; 
     };
     reader.readAsDataURL(file);
+    bridgeTouchEvents(theNewElement);
 };
 document.getElementById('fontSizeInput').oninput = function() {
     if (activeItem && activeItem.querySelector('span')) {
@@ -1004,6 +1029,7 @@ document.getElementById('addTextBtn').onclick = () => {
     designCanvas.appendChild(div);
     makeDraggable(div);
     saveHistory();
+    bridgeTouchEvents(theNewElement);
 };
 function filterTemplates() {
     const searchInput = document.getElementById('templateSearch');
@@ -1213,6 +1239,79 @@ window.addEventListener('DOMContentLoaded', () => {
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
+function bridgeTouchEvents(element) {
+    element.addEventListener("touchstart", function (e) {
+        if (e.touches.length === 1) {
+            // ONE FINGER: Logic for Dragging
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent("mousedown", {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            element.dispatchEvent(mouseEvent);
+        } else if (e.touches.length === 2) {
+            // TWO FINGERS: Logic for Pinching
+            // (Handled by the addPinchSupport function)
+        }
+    }, { passive: false });
+
+    element.addEventListener("touchmove", function (e) {
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent("mousemove", {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        element.dispatchEvent(mouseEvent);
+        // CRITICAL: Prevents the screen from scrolling while you drag
+        e.preventDefault(); 
+    }, { passive: false });
+
+    element.addEventListener("touchend", function (e) {
+        const mouseEvent = new MouseEvent("mouseup", {});
+        element.dispatchEvent(mouseEvent);
+    }, { passive: false });
+}
+    function addPinchSupport(element) {
+    let initialDist = 0;
+    let initialScale = 1;
+
+    element.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 2) {
+            // Calculate starting distance between two fingers
+            initialDist = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
+            // Get the current scale of the element (default to 1)
+            initialScale = parseFloat(element.getAttribute('data-scale')) || 1;
+        }
+    }, { passive: false });
+
+    element.addEventListener('touchmove', function(e) {
+        if (e.touches.length === 2) {
+            e.preventDefault(); // Prevent page zooming
+            
+            const currentDist = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
+
+            // Calculate the new scale ratio
+            const zoomFactor = currentDist / initialDist;
+            const newScale = initialScale * zoomFactor;
+
+            // Apply the scale (and keep existing rotation if you have it)
+            element.style.transform = `scale(${newScale})`;
+            element.setAttribute('data-scale', newScale);
+        }
+    }, { passive: false });
+}
+// Run this on every layer/item you add to the canvas
+// Example: bridgeTouchEvents(newTextLayer);
+    if (newScale > 3 || newScale < 0.2) {
+        if (window.navigator.vibrate) window.navigator.vibrate(10); // Quick 10ms buzz
+        return; // Stop scaling
+    }
 window.onload = () => {
     // 1. Inject the mockup first
    
