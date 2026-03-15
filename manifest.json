@@ -3,12 +3,12 @@
   "name": "My Custom Design Studio",
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/user/repo/main/icon-192.png",
+      "src": "https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/dimmi.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "https://raw.githubusercontent.com/user/repo/main/icon-512.png",
+      "src": "https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/New%20logo%20no%20background.png",
       "type": "image/png",
       "sizes": "512x512"
     }
