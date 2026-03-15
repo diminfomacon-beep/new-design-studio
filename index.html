@@ -147,9 +147,27 @@
         flex-shrink: 0;
     }
    body {
-    /* Prevents the 'pull-to-refresh' gesture in mobile browsers */
-    overscroll-behavior-y: contain; 
-    } 
+        /* Prevents the 'pull-to-refresh' gesture in mobile browsers */
+        overscroll-behavior-y: contain; 
+        } 
+        html, body {
+        position: fixed; /* Prevents the body from scrolling/bouncing */
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        /* This handles the "Notch" area on newer iPhones */
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    .studio-wrapper {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; /* Only scroll the sections we want, like thumbnails */
+    }
 }
 </style>
 </head>
