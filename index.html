@@ -18,209 +18,78 @@
     </script>
 <style>
   :root {--primary:#111827; --accent:#3b82f6; --bg-light:#f5f5f5; --border-color:#ddd;}
-  body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:2px;display:flex;justify-content:center;user-select:none;}
-  .studio-wrapper {display: grid;grid-template-columns: 300px 1fr 50px;gap: 15px;height: 95vh;padding: 15px;background: #CAE4DB;border-radius: 16px;box-sizing: border-box;margin: 0 auto;}      
-  .studio-wrapper {display: flex !important;flex-direction: row;width: 100%;max-width: 100vw;overflow: hidden;}
-  #workspace {flex: 1;min-width: 0;display: flex;flex-direction: column;align-items: center;justify-content: center; background: #e9e9e9;}
-  #toolbar, #varietyPanel {flex-shrink: 0;}
-  #workspace {display: flex;flex-direction: column;width: 100%; height: 100%;min-width: 0;}        
-  .canvas-container {flex: 1; width: 100%; background: #f3e595;border-radius: 12px;display: flex;flex-direction: column;padding: 20px;box-sizing: border-box;position: relative;}
-  .canvas-toolbar {display: flex;gap: 5px;flex-wrap: wrap;justify-content: center;margin-bottom: 15px;width: 100%;}
-  #designCanvas {padding: 0 !important;flex: 1;width: 100%;background: white;position: relative;border: 2px dashed #ccc;border-radius: 8px; overflow: hidden;}
-  .resize-handle {width: 10px; height: 10px; background: #007bff;position: absolute; border-radius: 50%;}
-  .handle-tl { top: -5px; left: -5px; cursor: nw-resize; }
-  .handle-tr { top: -5px; right: -5px; cursor: ne-resize; }
-  .handle-bl { bottom: -5px; left: -5px; cursor: sw-resize; }
-  .handle-br { bottom: -5px; right: -5px; cursor: se-resize; }
-  .handle-t { top: -5px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
-  .handle-b { bottom: -5px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
-  .handle-l { left: -5px; top: 50%; transform: translateY(-50%); cursor: w-resize; }
-  .handle-r { right: -5px; top: 50%; transform: translateY(-50%); cursor: e-resize; }
-  .tab-button {flex: 1;background: #e0e0e0;color: #333;border: 1px solid #ccc;padding: 10px;cursor: pointer;font-weight: bold;transition: background 0.2s;}
-  .tab-button.active {background: #125850 !important;color: white !important;}
-  .tab-button:hover:not(.active) {background: #d0d0d0;}
-  .tab-pane::-webkit-scrollbar {width: 6px;}
-  .tab-pane::-webkit-scrollbar-thumb {background-color: #125850;border-radius: 10px;}
-  .tab-pane {  max-height: 480px;overflow-y: auto;overflow-x: hidden;padding-right: 5px;background: #fff;border: 1px solid #eee;}
-  #pixabayGrid, #templateGrid {display: grid !important;grid-template-columns: repeat(4, 1fr) !important;gap: 8px;padding: 10px;height: 300px}
-  .gallery-item {width: 60px;aspect-ratio: 1 / 1; object-fit:contain;border-radius: 4px; display: block;}
-  .gallery-item:hover {z-index: 9999;transform: scale(3.5); transform-origin: center;}
-  #templateGrid .gallery-item:hover, #pixabayGrid .gallery-item:hover {transition-delay: 0.1s;}
-  button {font-size:12px;background:#125850;color:rgb(253, 249, 249);border:none;padding:8px 8px;cursor:pointer;border-radius:6px;}
-  .span-2 {grid-column: span 2;    width: 100% !important;}
-  #swatchContainer {display: none; position: absolute; top: 80px; left: 310px; z-index: 9999 !important; pointer-events: auto !important; width: 220px; grid-template-columns: repeat(10, 1fr); gap: 2px; background: white; padding: 8px; border: 2px solid #3b82f6; border-radius: 8px;max-height: 200px;overflow-y: auto;box-shadow: 0 10px 25px rgba(0,0,0,0.3);}
-  .swatch-item {width: 100%;padding-bottom: 100%;cursor: pointer !important;border: 1px solid #eee;}
-  .resize-handle {display: none;width: 8px;height: 8px; background: #007bff;position: absolute; border-radius: 2px;z-index: 10;}
-  .active-layer .resize-handle {display: block;}
-  .active-layer {outline: 2px dashed #007bff; }
-  #selection-marquee {border: 1px dashed #007bff; background-color: rgba(0, 123, 255, 0.1); position: absolute;pointer-events: none; z-index: 10000;display: none;}
-  .multi-selected {outline: 2px solid rgba(0, 123, 255, 0.5) !important;}
-  .handle-tl { top: -4px; left: -4px; cursor: nw-resize; }
-  .handle-tr { top: -4px; right: -4px; cursor: ne-resize; }
-  .handle-bl { bottom: -4px; left: -4px; cursor: sw-resize; }
-  .handle-br { bottom: -4px; right: -4px; cursor: se-resize; }
-  .handle-t  { top: -4px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
-  .handle-b  { bottom: -4px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
-  .handle-l  { left: -4px; top: 50%; transform: translateY(-50%); cursor: w-resize; }
-  .handle-r  { right: -4px; top: 50%; transform: translateY(-50%); cursor: e-resize; }
-  .group-container .draggable {outline: none !important;border: none !important;}
-  .group-container.active-layer {outline: 2px solid #125850;}
-  .group-container.active-layer .draggable {pointer-events: none;}
-  .group-container .draggable img {width: 100% !important;height: 100% !important; object-fit: fill !important;}
-  .group-container span { white-space: nowrap;display: block;}
-  .draggable img {width: 100% !important;height: 100% !important;object-fit: contain !important;pointer-events: none;user-select: none; display: block;}
-  .active-layer {outline: 2px dashed #007bff;}
-  .draggable {position: absolute;cursor: move;overflow: visible !important;}
-  .draggable span {display: inline-block;padding: 15px;transition: transform 0.1s ease;transform-style: preserve-3d;line-height: 1.2;}
-  #varietyPanel {display: flex !important;flex-direction: column !important;height: 100% !important;overflow: hidden !important;}
-  #thumbContainer {flex-grow: 1;overflow-y: auto; display: flex;flex-direction: column;align-items: center;gap: 10px;padding: 10px 0;}
-  #submitSection {margin-top: auto; padding-top: 10px; border-top: 1px solid #ddd;}
 
-  @media (max-width: 900px) {
-    /* 1. Stack the columns vertically */
-   .studio-wrapper {
-        display: flex !important;
-        flex-direction: column !important;
-        height: auto !important; 
-        min-height: 100vh;
-    }
-
-    /* Force the workspace to be visible */
-    #workspace {
-        display: flex !important;
-        flex-shrink: 0;
-        width: 100% !important;
-        height: 400px !important; /* Fixed height for mobile */
-        min-height: 400px !important;
-        padding: 10px 0 !important;
-        order: 1; /* Move to top */
-        position: sticky; 
-        top: 0; 
-        z-index: 10;
-    }
-
-    /* Make sure the container inside doesn't hide the canvas */
-    .canvas-container {
-        width: 100% !important;
-        height: 100% !important;
-        background: transparent !important; /* Helps see if it's there */
-    }
-
-    /* The actual Canvas box */
-    #designCanvas {
-        width: 320px !important; /* Standard mobile width */
-        height: 320px !important;
-        margin: 0 auto;
-        display: block !important;
-        position: relative !important;
-        background: white;
-    }
-    /* 2. Make the toolbar full width */
-    #toolbar {
-        width: 100% !important;
-        height: auto !important;
-        order: 2; /* Move tools below the canvas for better UX */
-        flex-shrink: 0;
-    }
-    #varietyPanel {
-        width: 100% !important;
-        height: auto !important;
-        order: 3; /* Move styles to the bottom */
-        flex-direction: column !important;
-        flex-shrink: 0;
-    }
-
-    #thumbContainer {
-        flex-direction: row !important; /* Scroll left to right */
-        overflow-x: auto !important;
-        overflow-y: hidden !important;
-        justify-content: flex-start;
-        padding: 10px;
-        width: 100%;
-    }
-
-    .variety-thumb {
-        flex-shrink: 0; /* Prevent thumbs from squishing */
-        width: 60px !important;
-        height: 60px !important;
-    }
-
-    
-    .variety-item {
-        width: 85px !important; /* Fixed width so they don't squish labels */
-        margin-right: 15px !important;
-        margin-bottom: 0 !important; /* Remove bottom margin for horizontal scroll */
-        flex-shrink: 0;
-    }
-   body {
-        /* Prevents the 'pull-to-refresh' gesture in mobile browsers */
-        overscroll-behavior-y: contain; 
-        } 
-
-   html, body {
-        /* Keep this to prevent the whole page from bouncing */
-        position: fixed; 
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        overflow: hidden; 
-        background-color: #CAE4DB; /* Matches your wrapper color */
-    }
-    
-    .studio-wrapper {
-        /* Change height to 100% of the visible area */
-        height: 100vh; 
-        width: 100vw;
-        display: flex;
-        flex-direction: column;
-        
-        /* This allows the user to scroll through the studio tools */
-        overflow-y: auto !important; 
-        overflow-x: hidden;
-        
-        /* Smooth scrolling for mobile */
-        -webkit-overflow-scrolling: touch; 
-        
-        /* Padding to handle iPhone notches and home bars */
-        padding-bottom: env(safe-area-inset-bottom, 20px); 
-        box-sizing: border-box;
-    } 
-     #submitSection {
-        padding-bottom: 40px !important; /* Creates a "buffer" at the bottom */
-    }
-    #designCanvas, .draggable, .resize-handle {
-        touch-action: none; /* Tells the browser: 'I handle the touch, don't scroll' */
-        -webkit-user-select: none; /* Prevents the "Copy" pop-up */
-        user-select: none;
-        }
-    @media (max-width: 768px) {
-        .resize-handle {
-            width: 20px !important; /* Larger visual handle */
-            height: 20px !important;
-    }
-        
-        /* Make the handle appear smaller but have a big invisible click zone */
-        .resize-handle::after {
-            content: '';
-            position: absolute;
-            top: -10px; left: -10px; right: -10px; bottom: -10px;
-            /* This invisible box makes it easy to grab with a thumb */
-    }
-        }
-      .draggable {
-        transition: transform 0.05s ease-out; /* Tiny delay makes it feel fluid */
-        transform-origin: center center; /* Scale from the middle */
-        will-change: transform; /* Optimizes mobile GPU performance */
-    }
-      #product-bg {
-            z-index: 0 !important;
-            pointer-events: none; /* Allows you to click 'through' the shirt to hit your images */
-        }
-
-.draggable {
-    z-index: 10;
+/* BASE STYLES (Applies to both) */
+html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    background-color: #CAE4DB; font-family: sans-serif;
+    user-select: none; -webkit-user-select: none;
+    overflow: hidden; /* Critical for Standalone Mode */
+    position: fixed; /* Prevents browser bounce */
 }
+
+.studio-wrapper {
+    display: flex; flex-direction: row;
+    width: 100vw; height: 100vh;
+    padding: 15px; box-sizing: border-box;
+    background: #CAE4DB; overflow: hidden;
+}
+
+/* SIDEBARS & PANELS */
+#toolbar { width: 300px; flex-shrink: 0; background: white; border-radius: 12px; padding: 10px; overflow-y: auto; }
+#varietyPanel { width: 100px; flex-shrink: 0; display: flex; flex-direction: column; padding: 10px; }
+#workspace { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+
+/* CANVAS */
+.canvas-container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+#designCanvas { 
+    width: 500px; height: 500px; /* Default desktop size */
+    background: white; border: 2px dashed #ccc; position: relative; 
+    overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+#product-bg { z-index: 0 !important; pointer-events: none; width: 100%; height: 100%; object-fit: contain; }
+
+/* DRAGGABLE ITEMS */
+.draggable { 
+    position: absolute; cursor: move; z-index: 10; 
+    touch-action: none; will-change: transform;
+}
+.draggable img { width: 100%; height: 100%; pointer-events: none; display: block; }
+.active-layer { outline: 2px dashed #007bff; }
+
+/* HANDLES (Bigger for touch) */
+.resize-handle { 
+    display: none; width: 12px; height: 12px; background: #007bff; 
+    position: absolute; border-radius: 50%; z-index: 20; 
+}
+.active-layer .resize-handle { display: block; }
+
+/* SWATCHES & GALLERY */
+#swatchContainer { 
+    display: none; position: absolute; z-index: 9999; 
+    width: 220px; grid-template-columns: repeat(10, 1fr); 
+    background: white; padding: 8px; border-radius: 8px; border: 2px solid #3b82f6; 
+}
+
+/* 📱 MOBILE OVERRIDES */
+@media (max-width: 900px) {
+    .studio-wrapper { flex-direction: column; overflow-y: auto; }
+    
+    #workspace { 
+        order: 1; width: 100% !important; height: 400px !important; 
+        position: sticky; top: 0; z-index: 100; background: #CAE4DB;
+    }
+    
+    #designCanvas { width: 350px !important; height: 350px !important; }
+    
+    #toolbar { order: 2; width: 100% !important; height: auto; overflow: visible; }
+    
+    #varietyPanel { order: 3; width: 100% !important; height: auto; }
+    #thumbContainer { flex-direction: row !important; overflow-x: auto; }
+    
+    .resize-handle { width: 24px; height: 24px; } /* Fat-finger friendly */
+    .resize-handle::after { content: ''; position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px; }
 }
 </style>
 </head>
@@ -228,7 +97,7 @@
       <!--PHYSICAL UI-->
 <div class="studio-wrapper">
   <!--LEFT PANEL - TOOLS & RESOURCES-->
-  <div id="toolbar" style="display: flex; flex-direction: column; min-height: 600px; background: #f3e595; border: 1px solid #ddd; border-radius: 8px; padding: 10px; box-sizing: border-box;">
+  <div id="toolbar" style="display: flex; flex-direction: column; min-height: auto; background: #f3e595; border: 1px solid #ddd; border-radius: 8px; padding: 10px; box-sizing: border-box;">
     <div id="textEditor" style="background: #f3e595; padding: 10px; border-radius: 8px;">
       <h3 style = "display:flex; justify-content: center;">Tools</h3>
       <input type="text" id="textInput" placeholder="Enter text..." value="" class="span-2" style="height: 20px; width:95% !important;;  padding: 0 8px; display: flex; gap: 2px; margin-bottom: 10px;">
@@ -331,7 +200,7 @@
   </div>   
     
 <!--RIGHT PANEL - VARIETY-->
-  <div id="varietyPanel" style="width: 120px;display: flex; flex-direction: column; min-height: 600px; background: #f3e595; border: 1px solid #ddd; border-radius: 8px; padding: 10px; box-sizing: border-box;">
+  <div id="varietyPanel" style="width: 120px;display: flex; flex-direction: column; min-height: auto; background: #f3e595; border: 1px solid #ddd; border-radius: 8px; padding: 10px; box-sizing: border-box;">
     <h3 style="display: flex; justify-content: center;">Styles</h3>
     <div id="thumbContainer" style="flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center;"></div>
     <div id="submitSection"><button id="submitOrderBtn">Submit Design</button></div>
@@ -496,56 +365,54 @@ window.addEventListener('mouseup', () => {
 });
 function makeDraggable(el) {
     el.onmousedown = function(e) {
+        // Allow the Color Picker/Swatches to work without deselecting
+        if (e.target.closest('#swatchContainer')) return;
+        
         e.stopPropagation();
-
         activeItem = el; 
-    
-    // Visual feedback: show it's selected
-    deselectAll();
-    el.classList.add('active-layer');
 
+        // Handle Resizing first
         if (e.target.classList.contains('resize-handle')) {
             startResize(e, el, e.target.dataset.handle);
             return;
         }
 
-        if (e.shiftKey) {
-            // Toggle selection with Shift
-            if (selectedItems.includes(el)) {
-                el.classList.remove('active-layer', 'multi-selected');
-                selectedItems = selectedItems.filter(i => i !== el);
-            } else {
-                el.classList.add('active-layer', 'multi-selected');
-                selectedItems.push(el);
-            }
-        } else {
-            // Standard single selection
-            if (!selectedItems.includes(el)) {
-                deselectAll();
-                el.classList.add('active-layer');
-                selectedItems = [el];
-            }
+        // Selection Logic
+        if (!e.shiftKey && !selectedItems.includes(el)) {
+            deselectAll();
         }
         
-        activeItem = el;
+        if (!selectedItems.includes(el)) {
+            el.classList.add('active-layer');
+            selectedItems.push(el);
+        }
 
-        // Dragging logic for ALL selected items
-        let startPos = selectedItems.map(item => ({
-            item,
-            x: e.clientX - item.offsetLeft,
-            y: e.clientY - item.offsetTop
-        }));
+        // Get the Canvas boundaries to calculate relative movement correctly
+        const canvasRect = designCanvas.getBoundingClientRect();
+
+        let startPos = selectedItems.map(item => {
+            const rect = item.getBoundingClientRect();
+            return {
+                item,
+                offsetX: e.clientX - rect.left,
+                offsetY: e.clientY - rect.top
+            };
+        });
 
         document.onmousemove = (e) => {
             startPos.forEach(p => {
-                p.item.style.left = (e.clientX - p.x) + "px";
-                p.item.style.top = (e.clientY - p.y) + "px";
+                // Calculation relative to the Canvas, not the whole Screen
+                let x = e.clientX - p.offsetX - canvasRect.left;
+                let y = e.clientY - p.offsetY - canvasRect.top;
+                
+                p.item.style.left = x + "px";
+                p.item.style.top = y + "px";
             });
-            updatePreview(); // If you have a preview function
         };
 
         document.onmouseup = () => {
             document.onmousemove = null;
+            document.onmouseup = null;
             saveHistory();
         };
     };
@@ -593,12 +460,16 @@ function redo() {
         restoreCanvas();
     }
 }
+/********************************************* RE-ATTACHMENT ENGINE ********************************************/
 function restoreCanvas() {
     designCanvas.innerHTML = historyStack[historyIndex];
-    // RE-ATTACH ALL LISTENERS
+    
+    // CRITICAL FIX: Re-attach EVERYTHING
     const items = designCanvas.querySelectorAll('.draggable');
     items.forEach(item => {
-        makeDraggable(item);
+        makeDraggable(item);      // For Desktop
+        bridgeTouchEvents(item);  // For Mobile Drag
+        addPinchSupport(item);    // For Mobile Scale
     });
     deselectAll();
 }
@@ -867,76 +738,28 @@ function loadTemplate(src) {
     const div = document.createElement('div');
     div.className = 'draggable';
     
-    // Set size and position
-    div.style.width = "150px"; 
-    div.style.height = "150px";
-    div.style.left = "50px"; 
-    div.style.top = "50px";
-    div.style.position = "absolute"; // Essential for desktop movement
+    // Default starting position and size
+    Object.assign(div.style, {
+        width: "150px", height: "150px",
+        left: "50px", top: "50px",
+        position: "absolute"
+    });
     
     div.setAttribute('data-scale', '1');
-    
     div.innerHTML = `
-        <img src="${src}" style="width:100%; height:100%; object-fit:contain; pointer-events:none; user-select:none; -webkit-user-drag:none;">
+        <img src="${src}" style="width:100%; height:100%; object-fit:contain; pointer-events:none; user-select:none;">
         ${getHandleHTML()}
     `;
     
     designCanvas.appendChild(div);
     
-    // Desktop: Classic Mouse Movement
-    if (typeof makeDraggable === "function") {
-        makeDraggable(div);
-    }
-    
-    // Mobile: Touch Mapping
-    if (typeof bridgeTouchEvents === "function") {
-        bridgeTouchEvents(div);
-    }
-    
-    // Mobile: Two-Finger Pinch
-    if (typeof addPinchSupport === "function") {
-        addPinchSupport(div);
-    }
+    // BIND ALL LISTENERS IMMEDIATELY
+    makeDraggable(div);      // Desktop
+    bridgeTouchEvents(div);  // Mobile Drag
+    addPinchSupport(div);    // Mobile Scale
     
     saveHistory();
-}function loadTemplate(src) {
-    if (!src) return;
-    
-    const div = document.createElement('div');
-    div.className = 'draggable';
-    
-    // Set size and position
-    div.style.width = "150px"; 
-    div.style.height = "150px";
-    div.style.left = "50px"; 
-    div.style.top = "50px";
-    div.style.position = "absolute"; // Essential for desktop movement
-    
-    div.setAttribute('data-scale', '1');
-    
-    div.innerHTML = `
-        <img src="${src}" style="width:100%; height:100%; object-fit:contain; pointer-events:none; user-select:none; -webkit-user-drag:none;">
-        ${getHandleHTML()}
-    `;
-    
-    designCanvas.appendChild(div);
-    
-    // Desktop: Classic Mouse Movement
-    if (typeof makeDraggable === "function") {
-        makeDraggable(div);
-    }
-    
-    // Mobile: Touch Mapping
-    if (typeof bridgeTouchEvents === "function") {
-        bridgeTouchEvents(div);
-    }
-    
-    // Mobile: Two-Finger Pinch
-    if (typeof addPinchSupport === "function") {
-        addPinchSupport(div);
-    }
-    
-    saveHistory();
+    return div;
 }
 /********************************************* UI HANDLERS (Tabs, Search, Text) ********************************************/
 function showTab(tabId, clickedButton) {
@@ -1009,20 +832,11 @@ document.getElementById('imageInput').onchange = function(e) {
 
     const reader = new FileReader();
     reader.onload = function(event) {
-        // Inside your imageInput.onchange reader.onload:
-    const newImg = loadTemplate(event.target.result); 
-    if(newImg) {
-        bridgeTouchEvents(newImg);
-        addPinchSupport(newImg);
-    }
-        // Reuse your loadTemplate logic to maintain consistency
+        // Just call loadTemplate, it handles all listeners inside
         loadTemplate(event.target.result);
-        
-        // Clear the input so you can upload the same image twice if needed
         e.target.value = ""; 
     };
     reader.readAsDataURL(file);
-    bridgeTouchEvents(theNewElement);
 };
 document.getElementById('fontSizeInput').oninput = function() {
     if (activeItem && activeItem.querySelector('span')) {
@@ -1319,14 +1133,12 @@ if ('serviceWorker' in navigator) {
 function bridgeTouchEvents(element) {
     element.addEventListener("touchstart", function (e) {
         if (e.touches.length === 1) {
-            const currentScale = element.getAttribute('data-scale') || 1;
-            element.style.transform = `scale(${currentScale})`;
-            
+            activeItem = element; // Explicitly set active item on touch
             const touch = e.touches[0];
             const mouseEvent = new MouseEvent("mousedown", {
                 clientX: touch.clientX,
                 clientY: touch.clientY,
-                bubbles: true, // Vital for desktop logic to "hear" the event
+                bubbles: true,
                 cancelable: true
             });
             element.dispatchEvent(mouseEvent);
@@ -1342,8 +1154,8 @@ function bridgeTouchEvents(element) {
                 bubbles: true,
                 cancelable: true
             });
-            element.dispatchEvent(mouseEvent);
-            e.preventDefault(); // Stops the app from scrolling while dragging
+            document.dispatchEvent(mouseEvent); // Dispatch to document for smoother tracking
+            e.preventDefault(); 
         }
     }, { passive: false });
 
@@ -1352,10 +1164,9 @@ function bridgeTouchEvents(element) {
             bubbles: true,
             cancelable: true
         });
-        element.dispatchEvent(mouseEvent);
+        document.dispatchEvent(mouseEvent);
     }, { passive: false });
 }
-
 function addPinchSupport(element) {
     let initialDist = 0;
     let initialScale = 1;
@@ -1397,15 +1208,9 @@ function addPinchSupport(element) {
         return; // Stop scaling
     }
 window.onload = () => {
-    // 1. Inject the mockup first
-   
-
- 
-    // 2. Fetch other assets
+    initVarietyPanel(); // This was missing its call
     fetchPixabay();
     fetchTemplatesFromGitHub();
-    
-    // 3. Save the "Clean Slate" (Mockup only) to history
     saveHistory(); 
 };
 
