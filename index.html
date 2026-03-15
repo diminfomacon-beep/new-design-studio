@@ -858,19 +858,34 @@ function loadTemplate(src) {
     
     const div = document.createElement('div');
     div.className = 'draggable';
+    
+    // Set size and position
     div.style.width = "150px"; 
     div.style.height = "150px";
     div.style.left = "50px"; 
     div.style.top = "50px";
     
+    // Set initial scale for the pinch-to-zoom logic
+    div.setAttribute('data-scale', '1');
+    
     // Ensure the image inside is constrained
+    // Added 'user-select: none' and 'pointer-events: none' to prevent mobile browser popups
     div.innerHTML = `
-        <img src="${src}" style="width:100%; height:100%; object-fit:contain; pointer-events:none;">
+        <img src="${src}" style="width:100%; height:100%; object-fit:contain; pointer-events:none; user-select:none; -webkit-user-drag:none;">
         ${getHandleHTML()}
     `;
     
     designCanvas.appendChild(div);
+    
+    // 1. Desktop logic (Mouse)
     makeDraggable(div);
+    
+    // 2. Mobile logic (Single-finger drag)
+    bridgeTouchEvents(div);
+    
+    // 3. Mobile logic (Two-finger pinch/scale)
+    addPinchSupport(div);
+    
     saveHistory();
 }
 /********************************************* UI HANDLERS (Tabs, Search, Text) ********************************************/
