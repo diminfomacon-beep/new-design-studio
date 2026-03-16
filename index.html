@@ -19,12 +19,12 @@
 <style>
   :root {--primary:#111827; --accent:#3b82f6; --bg-light:#f5f5f5; --border-color:#ddd;}
   body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:2px;display:flex;justify-content:center;user-select:none;}
-  .studio-wrapper {display: grid;grid-template-columns: 300px 1fr 50px;gap: 15px;height: 95vh;padding: 15px;background: #021302;border-radius: 16px;box-sizing: border-box;margin: 0 auto;}      
+  .studio-wrapper {display: grid;grid-template-columns: 300px 1fr 50px;gap: 15px;height: 95vh;padding: 15px;background: #CAE4DB;border-radius: 16px;box-sizing: border-box;margin: 0 auto;}      
   .studio-wrapper {display: flex !important;flex-direction: row;width: 100%;max-width: 100vw;overflow: hidden;}
-  #workspace {flex: 1;min-width: 0;display: flex;flex-direction: column;align-items: center;justify-content: center; background: #021302;}
+  #workspace {flex: 1;min-width: 0;display: flex;flex-direction: column;align-items: center;justify-content: center; background: #e9e9e9;}
   #toolbar, #varietyPanel {flex-shrink: 0;}
   #workspace {display: flex;flex-direction: column;width: 100%; height: 100%;min-width: 0;}        
-  .canvas-container {flex: 1; width: 100%; background: #570a24;border-radius: 12px; border: solid 1px #fff; display: flex;flex-direction: column;padding: 20px;box-sizing: border-box;position: relative;}
+  .canvas-container {flex: 1; width: 100%; background: #f3e595;border-radius: 12px;display: flex;flex-direction: column;padding: 20px;box-sizing: border-box;position: relative;}
   .canvas-toolbar {display: flex;gap: 5px;flex-wrap: wrap;justify-content: center;margin-bottom: 15px;width: 100%;}
   #designCanvas {padding: 0 !important;flex: 1;width: 100%;background: white;position: relative;border: 2px dashed #ccc;border-radius: 8px; overflow: hidden;}
   .resize-handle {width: 10px; height: 10px; background: #007bff;position: absolute; border-radius: 50%;}
@@ -270,14 +270,6 @@
         box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
     }
 
-    .draggable span {
-        display: block;
-        width:100%; /* Prevents text from going off the 600px canvas */
-       white-space: pre-wrap;
-        word-wrap: break-word;
-        line-height: 1.2;
-        pointer-events: none; /* Ensures clicks hit the 'draggable' div, not the text */
-    }
     /* Ensure buttons don't get too tiny */
    
 </style>
@@ -286,77 +278,87 @@
       <!--PHYSICAL UI-->
 <div class="studio-wrapper">
   <!--LEFT PANEL - TOOLS & RESOURCES-->
-  <div id="toolbar" style="display: flex; flex-direction: column; min-height: 600px; background: #570a24; border: 1px solid #ddd; border-radius: 8px; padding: 10px; box-sizing: border-box;">
-        <div id="textEditor" style="background: #570a24; padding: 10px; border-radius: 8px;">
-            <h5 style = "display:flex; color: #fff; justify-content: center; margin-top:0px; padding: 1px 1px">Tools</h5>
-            <textarea id="textInput" placeholder="Enter text...&#10;Line 2..." style="width:95%; height: 60px; padding: 8px; margin-bottom: 5px; border-radius: 4px; border: 1px solid #ddd; font-family: inherit; resize: vertical;"></textarea>      
-            <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 10px;">
-                <label style="font-size: 11px; color: #fff;">Font</label>
-                <select id="fontFamily" style="width: 120px; height: 28px; cursor: pointer; flex-grow: 1;">
-                    <option value="'Montserrat', sans-serif" style="font-family: 'Montserrat';">Montserrat</option>
-                    <option value="'Playfair Display', serif" style="font-family: 'Playfair Display';">Playfair Display</option>
-                    <option value="'Pacifico', cursive" style="font-family: 'Pacifico';">Pacifico</option>
-                    <option value="'Lobster', cursive" style="font-family: 'Lobster';">Lobster</option>
-                    <option value="'Bungee', cursive" style="font-family: 'Bungee';">Bungee</option>
-                    <option value="'Anton', sans-serif" style="font-family: 'Anton';">Anton</option>
-                    <option value="'Bangers', cursive" style="font-family: 'Bangers';">Bangers</option>
-                    <option value="'Rock Salt', cursive" style="font-family: 'Rock Salt';">Rock Salt</option>
-                    <option value="'Monoton', cursive" style="font-family: 'Monoton';">Monoton</option>
-                    <option value="'Special Elite', cursive" style="font-family: 'Special Elite';">Special Elite</option>
-                    <option value="'Creepster', cursive" style="font-family: 'Creepster';">Creepster</option>
-                    <option value="'Press Start 2P', cursive" style="font-family: 'Press Start 2P';">Pixel</option>
-                </select>
-                <button id="addTextBtn" style="background: #125850; color: #fff; height: 28px; border-radius: 4px;">Add to Canvas</button>
-            </div>
-        
-            <div style="display: grid; grid-template-columns: auto 30px auto 30px 1fr 1fr 1fr 1fr 1fr; gap: 3px; align-items: center; margin-bottom: 10px;">
-                <label style="font-size: 12px; color: #fff;">Color</label>
-                <div id="fontColorPicker" style="font-size: 18px; cursor: pointer; text-align: center;">🎨</div>
-                <label style="font-size: 12px; color: #fff;">Size</label>
-                <input type="number" id="fontSizeInput" min="8" max="200" value="30" style="width: 100%; height: 20px;">
-                <button id="btnBold" style="background: #125850; color: #fff; height: 28px; border-radius: 4px; margin-left: 8px;">B</button>
-                <button id="btnItalic" style="background: #125850; color: #fff; height: 28px; border-radius: 4px;">I</button>
-                <button onclick="setTextAlignment('left')" style="flex: 1; padding: 5px; cursor: pointer;">Left</button>
-                <button onclick="setTextAlignment('center')" style="flex: 1; padding: 5px; cursor: pointer;">Center</button>
-                <button onclick="setTextAlignment('right')" style="flex: 1; padding: 5px; cursor: pointer;">Right</button>
-            </div>
-              
-            <div class="effects-control" style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div>
-                    <label style="font-size: 12px; color: #fff">Slant</label>
-                    <input type="range" id="shearSlider" min="-30" max="30" value="0" style="width:100%;">
-                </div>
-                <div>
-                    <label style="font-size: 12px; color: #fff">Tilt</label>
-                    <input type="range" id="curveSlider" min="-40" max="40" value="0" style="width:100%;">
-                </div>
-            </div>
-                    
-            <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
-            <div>
-                <h5 style="color: #fff;">Upload Image⬆️<input type="file" id="imageInput" accept="image/*"></h5>
-                <button id="downloadBtn" style="width:100%">Download PNG</button>
-            </div>
-            <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
-        
-            <div style="display: flex; gap: 2px; margin-bottom: 10px;">
-                <button class="tab-button active" onclick="showTab('pixabay-tab', this)">Pixabay Images</button>
-                <button class="tab-button" onclick="showTab('template-tab', this)">Design Templates</button>
-            </div>
-
-            <div id="pixabay-tab" class="tab-pane">
-                <div style="display: flex; gap: 5px;">
-                    <input type="text" id="gallerySearch" placeholder="Search graphics..." style="flex: 1; padding: 5px;">
-                    <button id="searchBtn">Go</button>
-                </div>
-                <div id="pixabayGrid"></div>
-            </div>
-
-            <div id="template-tab" class="tab-pane" style="display: none;">
-                <input type="text" id="templateSearch" placeholder="Filter templates..."style="width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;"onkeyup="filterTemplates()">
-                <div id="templateGrid"></div>
-            </div>
+  <div id="toolbar" style="display: flex; flex-direction: column; min-height: 600px; background: #f3e595; border: 1px solid #ddd; border-radius: 8px; padding: 10px; box-sizing: border-box;">
+    <div id="textEditor" style="background: #f3e595; padding: 10px; border-radius: 8px;">
+      <h3 style = "display:flex; justify-content: center;">Tools</h3>
+      <input type="text" id="textInput" placeholder="Enter text..." value="" class="span-2" style="height: 20px; width:95% !important;;  padding: 0 8px; display: flex; gap: 2px; margin-bottom: 10px;">
+      <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 10px;">
+          <label style="font-size: 11px; color: #000;">Font</label>
+          <select id="fontFamily" style="width: 120px; height: 28px; cursor: pointer; flex-grow: 1;">
+              <option value="'Montserrat', sans-serif" style="font-family: 'Montserrat';">Montserrat</option>
+              <option value="'Playfair Display', serif" style="font-family: 'Playfair Display';">Playfair Display</option>
+              <option value="'Pacifico', cursive" style="font-family: 'Pacifico';">Pacifico</option>
+              <option value="'Lobster', cursive" style="font-family: 'Lobster';">Lobster</option>
+              <option value="'Bungee', cursive" style="font-family: 'Bungee';">Bungee</option>
+              <option value="'Anton', sans-serif" style="font-family: 'Anton';">Anton</option>
+              <option value="'Bangers', cursive" style="font-family: 'Bangers';">Bangers</option>
+              <option value="'Rock Salt', cursive" style="font-family: 'Rock Salt';">Rock Salt</option>
+              <option value="'Monoton', cursive" style="font-family: 'Monoton';">Monoton</option>
+              <option value="'Special Elite', cursive" style="font-family: 'Special Elite';">Special Elite</option>
+              <option value="'Creepster', cursive" style="font-family: 'Creepster';">Creepster</option>
+              <option value="'Press Start 2P', cursive" style="font-family: 'Press Start 2P';">Pixel</option>
+          </select>
+          <button id="addTextBtn" style="background: #125850; color: #fff; height: 28px; border-radius: 4px;">Add to Canvas</button>
+      </div>
+    
+      <div style="display: grid; grid-template-columns: auto 30px auto 50px 1fr 1fr; gap: 8px; align-items: center; margin-bottom: 10px;">
+          <label style="font-size: 12px; color: #000;">Color</label>
+          <div id="fontColorPicker" style="font-size: 18px; cursor: pointer; text-align: center;">🎨</div>
+          
+          <label style="font-size: 12px; color: #000;">Size</label>
+          <input type="number" id="fontSizeInput" min="8" max="200" value="30" style="width: 100%; height: 20px;">
+          
+          <button id="btnBold" style="background: #125850; color: #fff; height: 28px; border-radius: 4px;">B</button>
+          <button id="btnItalic" style="background: #125850; color: #fff; height: 28px; border-radius: 4px;">I</button>
+    </div>
+  
+    <div class="effects-control" style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div>
+            <label style="font-size: 12px;">Slant</label>
+            <input type="range" id="shearSlider" min="-30" max="30" value="0" style="width:100%;">
         </div>
+          <div>
+            <label style="font-size: 12px;">Tilt</label>
+            <input type="range" id="curveSlider" min="-40" max="40" value="0" style="width:100%;">
+        </div>
+    </div>
+                  
+    <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
+    <h3>Upload Image</h3>
+    <input type="file" id="imageInput" accept="image/*">
+    <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
+    <hr>
+  
+
+    <div style="display: flex; gap: 2px; margin-bottom: 10px;">
+        <button class="tab-button active" onclick="showTab('pixabay-tab', this)">Pixabay</button>
+        <button class="tab-button" onclick="showTab('template-tab', this)">Templates</button>
+    </div>
+
+    <div id="pixabay-tab" class="tab-pane">
+        <div style="display: flex; gap: 5px;">
+            <input type="text" id="gallerySearch" placeholder="Search graphics..." style="flex: 1; padding: 5px;">
+            <button id="searchBtn">Go</button>
+        </div>
+        <div id="pixabayGrid"></div>
+    </div>
+
+    <div id="template-tab" class="tab-pane" style="display: none;">
+        <input type="text" id="templateSearch" placeholder="Filter templates..." 
+              style="width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;" 
+              onkeyup="filterTemplates()">
+        
+        <div id="templateGrid">
+            </div>
+    </div>
+    <hr>
+    <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
+    <div id="layerList"></div>
+    <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
+    <button id="downloadBtn" style="width:100%">Download PNG</button>
+    <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
+    </div>
+
   </div>
   <!--CENTER PANEL - CANVAS & TOOLBAR-->
   <div id="workspace">
@@ -379,33 +381,27 @@
       </div>
   </div>   
     
-    <!--RIGHT PANEL - VARIETY-->
-  <div id="varietyPanel" style="width: 120px; display: flex; flex-direction: column; height: 600px; background: #570a24; border: 1px solid #ddd; border-radius: 8px; padding: 10px; box-sizing: border-box; overflow: hidden;">
-        <h5 style="text-align: center; color: white; margin: 0 0 10px 0;">Styles</h5>
-        
-        <div id="thumbContainer" style="flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; width: 100%;"></div>
-        
-        <div id="submitSection" style="padding-top: 10px;">
-            <button id="submitOrderBtn" style="width: 100%; cursor: pointer; background: #125850; color: white; border: none; padding: 8px; border-radius: 4px; font-weight: bold;">
-                Submit
-            </button>
-        </div>
-    </div>
+<!--RIGHT PANEL - VARIETY-->
+  <div id="varietyPanel" style="width: 120px;display: flex; flex-direction: column; min-height: 600px; background: #f3e595; border: 1px solid #ddd; border-radius: 8px; padding: 10px; box-sizing: border-box;">
+    <h3 style="display: flex; justify-content: center;">Styles</h3>
+    <div id="thumbContainer" style="flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center;"></div>
+    <div id="submitSection"><button id="submitOrderBtn">Submit Design</button></div>
+  </div>
   <!--SWATCH CONTAINER(NOT DISPLAYED ON SCREEN)-->
-    <div id="swatchContainer"> </div>
-    <div id="pwa-welcome" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10001; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
-        <div style="background:white; padding:25px; border-radius:15px; text-align:center; max-width:300px; position:relative;">
-            <h5 style="margin-top:0; color:#125850;">App Version Available</h5>
-            <p id="pwa-instructions" style="font-size:14px; color:#555; line-height:1.5;">
-                Add this studio to your home screen for a full-screen experience and faster access!
-            </p>
-            <div id="ios-instructions" style="display:none; margin-top:15px;">
-                <p style="font-size:13px; font-weight:bold;">Tap the "Share" icon <img src="https://img.icons8.com/ios/50/000000/export.png" style="width:18px; vertical-align:middle;"> then "Add to Home Screen".</p>
-            </div>
-            <button id="pwa-install-btn" style="display:none; width:100%; background:#125850; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; margin-top:10px;">Install Now</button>
-            <button onclick="document.getElementById('pwa-welcome').style.display='none'" style="background:none; border:none; color:#999; margin-top:15px; cursor:pointer; font-size:12px;">Maybe Later</button>
+  <div id="swatchContainer"> </div>
+<div id="pwa-welcome" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10001; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
+    <div style="background:white; padding:25px; border-radius:15px; text-align:center; max-width:300px; position:relative;">
+        <h3 style="margin-top:0; color:#125850;">App Version Available</h3>
+        <p id="pwa-instructions" style="font-size:14px; color:#555; line-height:1.5;">
+            Add this studio to your home screen for a full-screen experience and faster access!
+        </p>
+        <div id="ios-instructions" style="display:none; margin-top:15px;">
+            <p style="font-size:13px; font-weight:bold;">Tap the "Share" icon <img src="https://img.icons8.com/ios/50/000000/export.png" style="width:18px; vertical-align:middle;"> then "Add to Home Screen".</p>
         </div>
+        <button id="pwa-install-btn" style="display:none; width:100%; background:#125850; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; margin-top:10px;">Install Now</button>
+        <button onclick="document.getElementById('pwa-welcome').style.display='none'" style="background:none; border:none; color:#999; margin-top:15px; cursor:pointer; font-size:12px;">Maybe Later</button>
     </div>
+</div>
 </div>
 <script>
 /********************************************* GLOBAL STATE & CONFIG ********************************************/
@@ -681,3 +677,964 @@ function handleInteractionStart(e, el, clientX, clientY) {
         item: el,
         x: clientX - el.offsetLeft,
         y: clientY - el.offsetTop
+    }];
+
+    // --- Desktop Move ---
+    document.onmousemove = (e) => {
+        el.style.left = (e.clientX - startPos[0].x) + "px";
+        el.style.top = (e.clientY - startPos[0].y) + "px";
+    };
+
+    // --- Mobile Move ---
+    const touchMoveHandler = (e) => {
+        if (e.touches.length === 1) { // Single finger move
+            const touch = e.touches[0];
+            el.style.left = (touch.clientX - startPos[0].x) + "px";
+            el.style.top = (touch.clientY - startPos[0].y) + "px";
+        } else if (e.touches.length === 2) { // Two finger pinch
+            handlePinch(e, el);
+        }
+    };
+
+    // Cleanup
+    const endHandler = () => {
+        document.onmousemove = null;
+        document.removeEventListener('touchmove', touchMoveHandler);
+        document.removeEventListener('touchend', endHandler);
+        saveHistory();
+    };
+
+    document.addEventListener('touchmove', touchMoveHandler, { passive: false });
+    document.addEventListener('touchend', endHandler);
+    document.onmouseup = endHandler;
+}
+let initialPinchDist = null;
+
+function handleMultiPinch(e, startPosArray) {
+    const t1 = e.touches[0];
+    const t2 = e.touches[1];
+    const currentDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+
+    if (initialPinchDist === null) {
+        initialPinchDist = currentDist;
+    } else {
+        const scale = currentDist / initialPinchDist;
+
+        startPosArray.forEach(data => {
+            const el = data.item;
+            const newW = data.startW * scale;
+            const newH = data.startH * scale;
+
+            // Apply size to the container
+            el.style.width = newW + "px";
+            el.style.height = newH + "px";
+
+            // Update internal assets (images and text)
+            const img = el.querySelector('img');
+            const span = el.querySelector('span');
+            
+            if (img) {
+                img.style.width = "100%";
+                img.style.height = "100%";
+            }
+            if (span) {
+                // Adjust font size proportionally to height
+                span.style.fontSize = (newH * 0.8) + "px"; 
+            }
+        });
+    }
+}
+
+let initialPinchSize = { w: 0, h: 0 };
+
+function handlePinch(e, el) {
+    const t1 = e.touches[0];
+    const t2 = e.touches[1];
+    const currentDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+
+    if (initialPinchDist === null) {
+        initialPinchDist = currentDist;
+        initialPinchSize.w = el.offsetWidth;
+        initialPinchSize.h = el.offsetHeight;
+    } else {
+        const scale = currentDist / initialPinchDist;
+        const newW = initialPinchSize.w * scale;
+        const newH = initialPinchSize.h * scale;
+
+        // Apply scaling to container
+        el.style.width = newW + "px";
+        el.style.height = newH + "px";
+
+        // Handle internal assets
+        const img = el.querySelector('img');
+        const span = el.querySelector('span');
+        
+        if (img) {
+            img.style.width = "100%";
+            img.style.height = "100%";
+        }
+        if (span) {
+            // Adjust font size based on height change
+            span.style.fontSize = (newH * 0.8) + "px"; 
+        }
+    }
+}
+function deselectAll() {
+    document.querySelectorAll('.draggable').forEach(d => {
+        d.classList.remove('active-layer', 'multi-selected');
+    });
+    selectedItems = []; // CRITICAL: Reset the array
+    activeItem = null;
+}
+const GH_CONFIG = {
+    owner: 'diminfomacon-beep',
+    repo: 'new-design-studio',
+    branch: 'main',
+    path: 'DesignTemplates' 
+};
+let githubFiles = []; 
+/********************************************* CORE ENGINE (Undo, Redo, History) ********************************************/
+function saveHistory() {
+    const currentState = designCanvas.innerHTML;
+    // Don't save if it's identical to the current index
+    if (historyStack[historyIndex] === currentState) return;
+
+    // Remove any "redo" future if we perform a new action
+    historyIndex++;
+    historyStack = historyStack.slice(0, historyIndex);
+    historyStack.push(currentState);
+
+    // Limit stack size
+    if (historyStack.length > 30) {
+        historyStack.shift();
+        historyIndex--;
+    }
+}
+function undo() {
+    if (historyIndex > 0) {
+        historyIndex--;
+        restoreCanvas();
+    }
+}
+function redo() {
+    if (historyIndex < historyStack.length - 1) {
+        historyIndex++;
+        restoreCanvas();
+    }
+}
+function restoreCanvas() {
+    designCanvas.innerHTML = historyStack[historyIndex];
+    // RE-ATTACH ALL LISTENERS
+    const items = designCanvas.querySelectorAll('.draggable');
+    items.forEach(item => {
+        makeDraggable(item);
+    });
+    deselectAll();
+}
+function changeZIndex(direction) {
+    if (!activeItem) return;
+    const parent = document.getElementById('designCanvas'); // Specific target
+    const children = Array.from(parent.children);
+    // ... rest of your logic
+ 
+    const currentIndex = children.indexOf(activeItem);
+
+    switch (direction) {
+        case 'front':
+            // Move to the very end of the parent
+            parent.appendChild(activeItem);
+            break;
+
+        case 'back':
+        // Move to the beginning, but AFTER the product background
+        const bg = document.getElementById('product-bg');
+        if (bg && designCanvas.firstChild === bg) {
+            designCanvas.insertBefore(activeItem, bg.nextSibling);
+        } else {
+            designCanvas.insertBefore(activeItem, designCanvas.firstChild);
+        }
+        break;
+
+        case 'forward':
+            // Swap with the next sibling
+            if (currentIndex < children.length - 1) {
+                parent.insertBefore(activeItem, children[currentIndex + 2] || null);
+            }
+            break;
+
+        case 'backward':
+            // Swap with the previous sibling
+            if (currentIndex > 0) {
+                parent.insertBefore(activeItem, children[currentIndex - 1]);
+            }
+            break;
+    }
+
+    saveHistory();
+}
+function applyHistoryState() {
+    designCanvas.innerHTML = historyStack[historyIndex];
+    // This is the most important part: re-bind the logic!
+    const items = designCanvas.querySelectorAll('.draggable');
+    items.forEach(item => {
+        makeDraggable(item);
+    });
+    deselectAll();
+}
+/********************************************* FIXED GROUP / UNGROUP ********************************************/
+function groupSelected() {
+    if (selectedItems.length < 2) return;
+
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+    // 1. Calculate bounding box
+    selectedItems.forEach(item => {
+        const l = parseInt(item.style.left) || 0;
+        const t = parseInt(item.style.top) || 0;
+        const w = item.offsetWidth;
+        const h = item.offsetHeight;
+        minX = Math.min(minX, l);
+        minY = Math.min(minY, t);
+        maxX = Math.max(maxX, l + w);
+        maxY = Math.max(maxY, t + h);
+    });
+
+    // 2. Create the group container
+    const group = document.createElement('div');
+    group.className = 'draggable group-container';
+    group.style.left = minX + 'px';
+    group.style.top = minY + 'px';
+    group.style.width = (maxX - minX) + 'px';
+    group.style.height = (maxY - minY) + 'px';
+    group.style.position = 'absolute';
+    
+    group.innerHTML = getHandleHTML();
+
+    // 3. Move items into the group AND CLEAN THEM
+    const itemsToGroup = [...selectedItems];
+    itemsToGroup.forEach(item => {
+        const currentL = parseInt(item.style.left) || 0;
+        const currentT = parseInt(item.style.top) || 0;
+        
+        item.style.left = (currentL - minX) + 'px';
+        item.style.top = (currentT - minY) + 'px';
+        
+        // CRITICAL: Remove all selection/active classes from the children
+        item.classList.remove('active-layer', 'multi-selected');
+        // Prevent the children from being clickable while inside the group
+        item.style.pointerEvents = 'none'; 
+        
+        group.appendChild(item);
+    });
+
+    designCanvas.appendChild(group);
+    
+    // 4. Reset State
+    deselectAll(); // This clears the selectedItems array and all CSS outlines
+    
+    // 5. Select ONLY the new group
+    makeDraggable(group);
+    activeItem = group;
+    group.classList.add('active-layer');
+    selectedItems = [group];
+    
+    saveHistory();
+}
+function ungroupSelected() {
+    const target = activeItem;
+    if (!target || !target.classList.contains('group-container')) return;
+
+    const gLeft = parseInt(target.style.left) || 0;
+    const gTop = parseInt(target.style.top) || 0;
+    
+    const children = Array.from(target.children).filter(child => 
+        child.classList.contains('draggable') || child.tagName === 'IMG' || child.tagName === 'SPAN'
+    );
+
+    children.forEach(child => {
+        if (!child.classList.contains('resize-handle')) {
+            const cLeft = parseInt(child.style.left) || 0;
+            const cTop = parseInt(child.style.top) || 0;
+            
+            child.style.left = (cLeft + gLeft) + 'px';
+            child.style.top = (cTop + gTop) + 'px';
+            
+            // RESTORE pointer events so they are clickable again
+            child.style.pointerEvents = 'auto'; 
+            
+            designCanvas.appendChild(child);
+            makeDraggable(child);
+        }
+    });
+
+    target.remove();
+    deselectAll();
+    saveHistory();
+}
+function reattachListeners() {
+    document.querySelectorAll('.draggable').forEach(el => makeDraggable(el));
+}
+/********************************************* INTERACTIVITY (Drag & Selection) ********************************************/
+function startResize(e, el, type) {
+    // Prevent scrolling or text selection while resizing
+    if (e.cancelable) e.preventDefault();
+    e.stopPropagation();
+
+    const startW = el.offsetWidth;
+    const startH = el.offsetHeight;
+    const startL = el.offsetLeft;
+    const startT = el.offsetTop;
+
+    // Support both Mouse and Touch initial positions
+    const startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+    const startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+
+    const isGroup = el.classList.contains('group-container');
+    let childrenData = [];
+
+    // Capture initial state of all children for proportional scaling
+    if (isGroup) {
+        Array.from(el.children).forEach(child => {
+            if (!child.classList.contains('resize-handle')) {
+                childrenData.push({
+                    el: child,
+                    left: parseInt(child.style.left) || 0,
+                    top: parseInt(child.style.top) || 0,
+                    width: child.offsetWidth,
+                    height: child.offsetHeight,
+                    fontSize: child.querySelector('span') ? parseFloat(window.getComputedStyle(child.querySelector('span')).fontSize) : null
+                });
+            }
+        });
+    }
+
+    const moveHandler = (moveEvent) => {
+        // Handle coordinates for both mouse and touch
+        const currentX = moveEvent.type.includes('touch') ? moveEvent.touches[0].clientX : moveEvent.clientX;
+        const currentY = moveEvent.type.includes('touch') ? moveEvent.touches[0].clientY : moveEvent.clientY;
+
+        const dx = currentX - startX;
+        const dy = currentY - startY;
+
+        let newW = startW, newH = startH, newL = startL, newT = startT;
+
+        // 1. Calculate New Container Dimensions
+        if (type.includes('r')) newW = startW + dx;
+        if (type.includes('b')) newH = startH + dy;
+        if (type.includes('l')) { newW = startW - dx; newL = startL + dx; }
+        if (type.includes('t')) { newH = startH - dy; newT = startT + dy; }
+
+        // Set minimum size constraints (e.g., 20px)
+        newW = Math.max(20, newW);
+        newH = Math.max(20, newH);
+
+        // Apply to container
+        el.style.width = newW + "px";
+        el.style.height = newH + "px";
+        el.style.left = newL + "px";
+        el.style.top = newT + "px";
+
+        // 2. Proportional Scaling Logic
+        if (isGroup) {
+            const scaleX = newW / startW;
+            const scaleY = newH / startH;
+
+            childrenData.forEach(data => {
+                data.el.style.left = (data.left * scaleX) + "px";
+                data.el.style.top = (data.top * scaleY) + "px";
+                data.el.style.width = (data.width * scaleX) + "px";
+                data.el.style.height = (data.height * scaleY) + "px";
+
+                if (data.fontSize) {
+                    const span = data.el.querySelector('span');
+                    span.style.fontSize = (data.fontSize * Math.min(scaleX, scaleY)) + "px";
+                }
+            });
+        } else {
+            // Normal single-item logic
+            const img = el.querySelector('img');
+            if (img) {
+                img.style.width = "100%";
+                img.style.height = "100%";
+            }
+            const text = el.querySelector('span');
+            if (text) text.style.fontSize = (newH * 0.8) + "px";
+        }
+    };
+
+    const stopResize = () => {
+        document.removeEventListener('mousemove', moveHandler);
+        document.removeEventListener('mouseup', stopResize);
+        document.removeEventListener('touchmove', moveHandler);
+        document.removeEventListener('touchend', stopResize);
+        saveHistory();
+    };
+
+    // Attach listeners to document
+    document.addEventListener('mousemove', moveHandler);
+    document.addEventListener('mouseup', stopResize);
+    document.addEventListener('touchmove', moveHandler, { passive: false });
+    document.addEventListener('touchend', stopResize);
+}
+/********************************************* STUDIO TOOLS (Group, Delete) ********************************************/
+function deleteSelected() {
+    selectedItems.forEach(item => item.remove());
+    selectedItems = [];
+    activeItem = null;
+    saveHistory();
+}
+/********************************************* ASSET LOADING (Pixabay & GitHub) ********************************************/
+async function fetchPixabay(query = 'vector') {
+    const res = await fetch(`https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(query)}&image_type=vector`);
+    const data = await res.json();
+    const grid = document.getElementById('pixabayGrid');
+    grid.innerHTML = "";
+    data.hits.forEach(hit => {
+        const img = document.createElement('img');
+        img.src = hit.previewURL;
+        img.className = 'gallery-item';
+        img.onclick = () => loadTemplate(hit.largeImageURL);
+        grid.appendChild(img);
+    });
+}
+function getHandleHTML() {
+    return `
+        <div class="resize-handle handle-tl" data-handle="tl"></div>
+        <div class="resize-handle handle-tr" data-handle="tr"></div>
+        <div class="resize-handle handle-bl" data-handle="bl"></div>
+        <div class="resize-handle handle-br" data-handle="br"></div>
+        <div class="resize-handle handle-t" data-handle="t"></div>
+        <div class="resize-handle handle-b" data-handle="b"></div>
+        <div class="resize-handle handle-l" data-handle="l"></div>
+        <div class="resize-handle handle-r" data-handle="r"></div>
+    `;
+}
+function loadProductVarieties(productKey) {
+    const container = document.getElementById('thumbContainer');
+    const varieties = studioConfig[productKey];
+
+    if (!container) return;
+    container.innerHTML = ''; 
+
+    if (!varieties) return;
+
+    varieties.forEach((item, index) => {
+        // 1. Container for the whole item
+        const itemWrapper = document.createElement('div');
+        itemWrapper.className = 'variety-item';
+        Object.assign(itemWrapper.style, {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            marginBottom: '15px',
+            cursor: 'pointer',
+            width: '100%',
+            transition: 'transform 0.1s'
+        });
+
+        // 2. Thumbnail
+        const thumb = document.createElement('img');
+        thumb.src = item.url;
+        thumb.className = 'variety-thumb';
+        Object.assign(thumb.style, {
+            width: '70px',
+            height: '70px',
+            objectFit: 'contain',
+            border: '2px solid #ddd',
+            borderRadius: '8px',
+            background: '#fff'
+        });
+
+        // 3. Name Label
+        const nameLabel = document.createElement('span');
+        nameLabel.innerText = item.name || 'Style';
+        Object.assign(nameLabel.style, {
+            fontSize: '11px',
+            color: '#111827',
+            marginTop: '6px',
+            fontWeight: '600',
+            textAlign: 'center'
+        });
+
+        // 4. Price Label
+        const priceLabel = document.createElement('span');
+        priceLabel.innerText = item.price ? `$${item.price}` : ''; 
+        Object.assign(priceLabel.style, {
+            fontSize: '10px',
+            color: '#125850', // Matching your theme green
+            fontWeight: '700',
+            marginTop: '2px'
+        });
+
+        itemWrapper.onclick = () => {
+            const mainMockup = document.getElementById('product-bg');
+            if (mainMockup) mainMockup.src = item.url;
+            
+            // UI Feedback
+            document.querySelectorAll('.variety-thumb').forEach(t => {
+                t.style.borderColor = '#ddd';
+                t.style.boxShadow = 'none';
+            });
+            thumb.style.borderColor = '#125850';
+            thumb.style.boxShadow = '0 0 5px rgba(18, 88, 80, 0.3)';
+        };
+
+        itemWrapper.appendChild(thumb);
+        itemWrapper.appendChild(nameLabel);
+        itemWrapper.appendChild(priceLabel);
+        container.appendChild(itemWrapper);
+
+        if (index === 0) itemWrapper.click();
+    });
+}
+function loadTemplate(src) {
+    if (!src) return;
+    
+    const div = document.createElement('div');
+    div.className = 'draggable';
+    div.style.width = "150px"; 
+    div.style.height = "150px";
+    div.style.left = "50px"; 
+    div.style.top = "50px";
+    
+    // Ensure the image inside is constrained
+    div.innerHTML = `
+        <img src="${src}" style="width:100%; height:100%; object-fit:contain; pointer-events:none;">
+        ${getHandleHTML()}
+    `;
+    
+    designCanvas.appendChild(div);
+    makeDraggable(div);
+    saveHistory();
+}
+/********************************************* UI HANDLERS (Tabs, Search, Text) ********************************************/
+function showTab(tabId, clickedButton) {
+    // Hide all panes
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.style.display = 'none';
+    });
+
+    // Reset button colors
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Show the active pane
+    const target = document.getElementById(tabId);
+    if (target) {
+        target.style.display = 'block';
+        target.scrollTop = 0; // Reset scroll to top
+    }
+
+    // Highlight active button
+    if (clickedButton) {
+        clickedButton.classList.add('active');
+    }
+}
+document.getElementById('searchBtn').onclick = () => {
+    const query = document.getElementById('gallerySearch').value;
+    if (query.trim()) fetchPixabay(query);
+};
+const extendedSwatches = [
+  '#FFFFFF', '#F2F2F2', '#D9D9D9', '#BFBFBF', '#A6A6A6', '#808080', '#595959', '#404040', '#262626', '#000000',
+  '#FFCCCC', '#FF9999', '#FF6666', '#FF3333', '#FF0000', '#CC0000', '#990000', '#660000', '#330000',
+  '#FFE5CC', '#FFCC99', '#FFB266', '#FF9933', '#FF8000', '#CC6600', '#994C00', '#663300', '#331900',
+  '#FFFFCC', '#FFFF99', '#FFFF66', '#FFFF33', '#FFFF00', '#CCCC00', '#999900', '#666600', '#333300',
+  '#CCFFCC', '#99FF99', '#66FF66', '#33FF33', '#00FF00', '#00CC00', '#009900', '#006600', '#003300',
+  '#CCFFFF', '#99FFFF', '#66FFFF', '#33FFFF', '#00FFFF', '#00CCCC', '#009999', '#006666', '#003333',
+  '#CCCCFF', '#9999FF', '#6666FF', '#3333FF', '#0000FF', '#0000CC', '#000099', '#000066', '#000033',
+  '#E5CCFF', '#CC99FF', '#B266FF', '#9933FF', '#8000FF', '#6600CC', '#4C0099', '#330066', '#190033',
+  '#FFCCFF', '#FF99FF', '#FF66FF', '#FF33FF', '#FF00FF', '#CC00CC', '#990099', '#660066', '#330033'
+];
+const swatchGrid = document.getElementById('swatchContainer');
+swatchGrid.innerHTML = ''; // Clear it first
+extendedSwatches.forEach(color => {
+    const s = document.createElement('div');
+    s.className = 'swatch-item'; // Assign class for styling
+    s.style.backgroundColor = color;
+    
+    // Use addEventListener instead of onclick for better reliability
+    s.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevents the click from "falling through" to the canvas
+        if (activeItem && activeItem.querySelector('span')) {
+            activeItem.querySelector('span').style.color = color;
+            saveHistory();
+        } else {
+            console.log("No text item selected to color");
+        }
+    });
+    
+    swatchGrid.appendChild(s);
+});
+document.getElementById('fontColorPicker').onclick = (e) => {
+    e.stopPropagation(); // Stop the click from immediately triggering the "close" logic above
+    const swatchGrid = document.getElementById('swatchContainer');
+    const isVisible = swatchGrid.style.display === 'grid';
+    swatchGrid.style.display = isVisible ? 'none' : 'grid';
+};
+document.getElementById('imageInput').onchange = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        // Reuse your loadTemplate logic to maintain consistency
+        loadTemplate(event.target.result);
+        
+        // Clear the input so you can upload the same image twice if needed
+        e.target.value = ""; 
+    };
+    reader.readAsDataURL(file);
+};
+document.getElementById('fontSizeInput').oninput = function() {
+    if (activeItem && activeItem.querySelector('span')) {
+        activeItem.querySelector('span').style.fontSize = this.value + 'px';
+        saveHistory();
+    }
+};
+document.getElementById('btnBold').onclick = () => {
+    if (activeItem && activeItem.querySelector('span')) {
+        const span = activeItem.querySelector('span');
+        span.style.fontWeight = (span.style.fontWeight === 'bold') ? 'normal' : 'bold';
+        saveHistory();
+    }
+};
+document.getElementById('btnItalic').onclick = () => {
+    if (activeItem && activeItem.querySelector('span')) {
+        const span = activeItem.querySelector('span');
+        span.style.fontStyle = (span.style.fontStyle === 'italic') ? 'normal' : 'italic';
+        saveHistory();
+    }
+};
+document.getElementById('fontFamily').onchange = function() {
+    if (activeItem && activeItem.querySelector('span')) {
+        activeItem.querySelector('span').style.fontFamily = this.value;
+        document.getElementById('fontFamily').onchange = function() {
+            // 1. Change the dropdown's own look to match the selection
+            this.style.fontFamily = this.value;
+
+            // 2. Apply to the active text on canvas (from previous logic)
+            if (activeItem && activeItem.querySelector('span')) {
+                activeItem.querySelector('span').style.fontFamily = this.value;
+                saveHistory();
+            }
+        };
+        saveHistory();
+    }
+};
+/********************************************* SMART POPUP CLOSING ********************************************/
+document.addEventListener('mousedown', (event) => {
+    const swatchContainer = document.getElementById('swatchContainer');
+    const colorPickerBtn = document.getElementById('fontColorPicker');
+
+    // If the menu is open...
+    if (swatchContainer.style.display === 'grid') {
+        
+        // Check if the click was OUTSIDE the container AND OUTSIDE the 🎨 button
+        if (!swatchContainer.contains(event.target) && !colorPickerBtn.contains(event.target)) {
+            swatchContainer.style.display = 'none';
+        }
+    }
+});
+function deselectAll() {
+    document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
+    activeItem = null;
+    selectedItems = [];
+}
+document.addEventListener('keydown', (e) => {
+    if ((e.key === 'Delete' || e.key === 'Backspace') && activeItem) {
+        // Don't delete if the user is typing in the text input!
+        if (document.activeElement.tagName === 'INPUT') return;
+        
+        activeItem.remove();
+        activeItem = null;
+        saveHistory();
+    }
+});
+document.getElementById('addTextBtn').onclick = () => {
+    const val = document.getElementById('textInput').value || "Text";
+    const font = document.getElementById('fontFamily').value;
+    const div = document.createElement('div');
+    div.className = 'draggable';
+    div.style.left = "100px"; 
+    div.style.top = "100px";
+    div.innerHTML = `<span style="font-size:30px; font-family:${font}; white-space:nowrap;">${val}</span>` + getHandleHTML();
+    designCanvas.appendChild(div);
+    makeDraggable(div);
+    saveHistory();
+};
+function filterTemplates() {
+    const searchInput = document.getElementById('templateSearch');
+    if (!searchInput) return; // Exit if search box isn't found
+
+    const searchTerm = searchInput.value.toLowerCase();
+    const items = document.querySelectorAll('#templateGrid .gallery-item');
+
+    items.forEach(item => {
+        // Safe check: get the attribute, default to empty string if null
+        const name = item.getAttribute('data-name') || "";
+        
+        if (name.includes(searchTerm)) {
+            item.style.display = "block";
+        } else {
+            item.style.display = "none";
+        }
+    });
+}
+function clearCanvas() {
+    // 1. Check if there's anything to clear besides the mockup
+    // We check if the count of children is more than 1 (the mockup)
+    const hasItems = Array.from(designCanvas.children).some(child => child.id !== 'product-bg');
+    if (!hasItems) return;
+
+    // 2. Confirmation
+    const confirmClear = confirm("Clear your design? (The product mockup will stay).");
+
+    if (confirmClear) {
+        // 3. Loop through children and remove them IF they aren't the mockup
+        const children = Array.from(designCanvas.children);
+        children.forEach(child => {
+            if (child.id !== 'product-bg' && !child.classList.contains('selection-marquee')) {
+                child.remove();
+            }
+        });
+        
+        // 4. Reset state
+        deselectAll();
+        saveHistory();
+        console.log("Design cleared, mockup preserved.");
+    }
+}
+function updateStroke() {
+    if (activeItem && activeItem.querySelector('span')) {
+        const span = activeItem.querySelector('span');
+        const width = document.getElementById('strokeSlider')?.value || 0;
+        const color = document.getElementById('strokeColor')?.value || "#000000";
+        
+        span.style.webkitTextStroke = `${width}px ${color}`;
+        saveHistory();
+    }
+}
+function applyTextTransforms() {
+    // 1. Safety Check: Only run if an item is selected
+    if (!activeItem) return;
+    const span = activeItem.querySelector('span');
+    if (!span) return;
+
+    // 2. Get the Slider Elements
+    const curveSlider = document.getElementById('curveSlider');
+    const shearSlider = document.getElementById('shearSlider');
+
+    // 3. Safety Check: Only run if the sliders actually exist in HTML
+    if (!curveSlider || !shearSlider) {
+        console.error("Sliders not found! Check your HTML IDs.");
+        return;
+    }
+
+    const curveVal = curveSlider.value;
+    const shearVal = shearSlider.value;
+
+    // 4. Apply the styles
+    activeItem.style.perspective = "1000px";
+    activeItem.style.overflow = "visible";
+    
+    span.style.display = "inline-block";
+    span.style.transform = `rotateX(${curveVal}deg) skewX(${-shearVal}deg)`;
+}
+const cSlider = document.getElementById('curveSlider');
+const sSlider = document.getElementById('shearSlider');
+if (cSlider) cSlider.oninput = applyTextTransforms;
+if (sSlider) sSlider.oninput = applyTextTransforms;
+/********************************************* EXPORT & INIT ********************************************/
+document.getElementById('downloadBtn').onclick = () => {
+    html2canvas(designCanvas, {
+        useCORS: true,       // This allows the GitHub image to show up
+        backgroundColor: null // Keeps background transparent if needed
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'product-design.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    });
+};
+const productVarieties = [
+        { name: 'Shirt',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/store-app-full-checkout/main/product-pics/SUBSHIRT%20s%20xx%20xxx.png' },
+        { name: 'Skinny Tumbler',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/skinny%20white%2020.png' },
+        { name: 'Tumbler',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/traveler.png' },
+        { name: 'Tote',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/tote%20white.png' },
+        { name: 'Other',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
+];
+function initVarietyPanel() {
+    const panel = document.getElementById('varietyPanel');
+    panel.innerHTML = '<h4 style="font-size: 12px; color: #666;">Varieties</h4>'; // Reset
+
+    productVarieties.forEach(product => {
+        const thumb = document.createElement('img');
+        thumb.src = product.url;
+        thumb.className = 'variety-thumb';
+        
+        // CSS via JS for the thumb
+        Object.assign(thumb.style, {
+            width: '80px',
+            height: '80px',
+            objectFit: 'contain',
+            cursor: 'pointer',
+            border: '2px solid #eee',
+            borderRadius: '5px',
+            padding: '5px'
+        });
+
+        thumb.onclick = () => {
+            const mockup = document.getElementById('product-bg');
+            if (mockup) {
+                mockup.src = product.url;
+            }
+            // Update UI highlight
+            document.querySelectorAll('.variety-thumb').forEach(t => t.style.borderColor = '#eee');
+            thumb.style.borderColor = '#007bff';
+        };
+
+        panel.appendChild(thumb);
+    });
+}
+function sendOrderToEmail() {
+    // 1. Show a 'Processing' message to the user
+    const btn = document.getElementById('submitOrderBtn');
+    const originalText = btn.innerText;
+    btn.innerText = "Processing Design...";
+    btn.disabled = true;
+
+    // 2. Capture the Canvas
+    html2canvas(designCanvas, { 
+        useCORS: true,
+        logging: false,
+        backgroundColor: null 
+    }).then(canvas => {
+        const base64Image = canvas.toDataURL("image/png");
+
+        // 3. Prepare the Email Template Parameters
+        const templateParams = {
+            customer_name: document.getElementById('customerName')?.value || "Guest",
+            customer_email: document.getElementById('customerEmail')?.value || "No Email Provided",
+            design_image: base64Image, // This sends the image as a Base64 string
+            product_type: activeProductKey || "Standard"
+        };
+                // Inside sendOrderToEmail after alert("SUCCESS!")
+        confetti(); // If you want to add a library for flair!
+        btn.innerText = "Order Sent!";
+        btn.style.background = "#28a745";
+
+        // 4. Send via EmailJS
+        emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+            .then(function(response) {
+                alert("SUCCESS! Your design has been sent to our production team.");
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }, function(error) {
+                console.error("FAILED...", error);
+                alert("Checkout failed. Please download the design and email it manually.");
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+    });
+}
+window.addEventListener('DOMContentLoaded', () => {
+    const pwaWelcome = document.getElementById('pwa-welcome');
+    const iosInstructions = document.getElementById('ios-instructions');
+    const installBtn = document.getElementById('pwa-install-btn');
+
+    // Check if the app is already installed/running in standalone mode
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+    if (!isStandalone) {
+        // Show the pop-up after 3 seconds
+        setTimeout(() => {
+            pwaWelcome.style.display = 'flex';
+
+            // Check if iOS
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (isIOS) {
+                iosInstructions.style.display = 'block';
+            }
+        }, 3000);
+    }
+
+    // Handle Android/Chrome Install Prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'block';
+
+        installBtn.addEventListener('click', () => {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choice) => {
+                if (choice.outcome === 'accepted') pwaWelcome.style.display = 'none';
+                deferredPrompt = null;
+            });
+        });
+    });
+});
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+
+const studioConfig = {
+    master: [
+        { name: 'Shirt',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/store-app-full-checkout/main/product-pics/SUBSHIRT%20s%20xx%20xxx.png' },
+        { name: 'Skinny Tumbler',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/skinny%20white%2020.png' },
+        { name: 'Tumbler',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/traveler.png' },
+        { name: 'Tote',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/tote%20white.png' },
+        { name: 'Other',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
+
+
+    ],
+}
+window.onload = () => {
+    // 1. Inject the mockup first (Make sure this function exists!)
+    injectProductBackground('https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png'); 
+
+    // 2. Initialize the side panel thumbs
+    if (typeof initVarietyPanel === "function") initVarietyPanel();
+
+     loadProductVarieties('master');
+
+    // 3. Fetch other assets
+    fetchPixabay();
+    fetchTemplatesFromGitHub();
+    
+    // 4. Save the "Clean Slate"
+    saveHistory(); 
+};
+
+let deferredPrompt;
+
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    
+    // Create an "Install App" button dynamically
+    const installBtn = document.createElement('button');
+    installBtn.innerText = "Install App for Better Experience";
+    installBtn.style = "position:fixed; bottom:10px; left:50%; transform:translateX(-50%); z-index:9999; background:#3b82f6; color:white; padding:10px 20px; border-radius:20px; box-shadow:0 4px 10px rgba(0,0,0,0.2);";
+    
+    document.body.appendChild(installBtn);
+
+    installBtn.addEventListener('click', (e) => {
+        // Show the prompt
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the A2HS prompt');
+            }
+            installBtn.remove();
+            deferredPrompt = null;
+        });
+    });
+});
+</script>
+</body>
+</html>
