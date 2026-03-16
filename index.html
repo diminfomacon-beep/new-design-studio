@@ -54,7 +54,7 @@
   .active-layer .resize-handle {display: block;}
   .active-layer {outline: 2px dashed #007bff; }
   #selection-marquee {border: 1px dashed #007bff; background-color: rgba(0, 123, 255, 0.1); position: absolute;pointer-events: none; z-index: 10000;display: none;}
-  .multi-selected {outline: 2px solid rgba(0, 123, 255, 0.5) !important;}
+  .multi-selected {outline: 2px dashed #3b82f6 !important; outline-offset: 2px;}
   .handle-tl { top: -4px; left: -4px; cursor: nw-resize; }
   .handle-tr { top: -4px; right: -4px; cursor: ne-resize; }
   .handle-bl { bottom: -4px; left: -4px; cursor: sw-resize; }
@@ -245,6 +245,22 @@
         outline: 2px dashed #3b82f6 !important;
         outline-offset: 4px;
     }
+    .toolbar {
+        display: flex;
+        flex-wrap: wrap; /* This allows buttons to drop to a second line on small screens */
+        gap: 5px;
+        padding: 10px;
+        justify-content: center; /* Centers buttons on mobile */
+        background: #f8f9fa;
+        border-bottom: 1px solid #ddd;
+    }
+
+    /* Ensure buttons don't get too tiny */
+    .tool-btn {
+        white-space: nowrap; /* Prevents the text inside the button from breaking */
+        min-height: 40px;    /* Makes it easier to tap with a finger */
+        font-size: 14px;
+    }
 </style>
 </head>
 <body>
@@ -388,6 +404,17 @@ let isSelecting = false;
 let startX, startY;
 let isMultiSelectMode = false;
 
+
+// Re-run the listener setup
+const multiBtn = document.getElementById('multiSelectToggle');
+if (multiBtn) {
+    multiBtn.onclick = function() {
+        isMultiSelectMode = !isMultiSelectMode;
+        this.innerText = isMultiSelectMode ? "Multiple: ON" : "Multiple: OFF";
+        this.classList.toggle('active-mode', isMultiSelectMode);
+        console.log("Multi-select mode:", isMultiSelectMode);
+    };
+}
 document.getElementById('multiSelectToggle').onclick = function() {
     isMultiSelectMode = !isMultiSelectMode;
     
@@ -544,8 +571,7 @@ function makeDraggable(el) {
             return;
         }
 
-        // 2. UPDATED SELECTION LOGIC
-        // We check if the Toggle Button is ON (isMultiSelectMode) OR Shift is held
+        // 2. Selection Logic (Based on Multi-Select Button)
         if (isMultiSelectMode || e.shiftKey) {
             if (selectedItems.includes(el)) {
                 el.classList.remove('active-layer', 'multi-selected');
@@ -555,7 +581,6 @@ function makeDraggable(el) {
                 selectedItems.push(el);
             }
         } else {
-            // Normal behavior: click a new item, deselect everything else
             if (!selectedItems.includes(el)) {
                 deselectAll();
                 el.classList.add('active-layer');
@@ -565,7 +590,7 @@ function makeDraggable(el) {
         
         activeItem = el;
 
-        // 3. Prepare Data for ALL selected items
+        // 3. Prepare Data for ALL selected items (Fixes "Breaking" images)
         let startPos = selectedItems.map(item => ({
             item,
             x: clientX - item.offsetLeft,
@@ -583,13 +608,20 @@ function makeDraggable(el) {
                 return; 
             }
 
-            // Normal Dragging
             const currentX = isTouch ? moveEvent.touches[0].clientX : moveEvent.clientX;
             const currentY = isTouch ? moveEvent.touches[0].clientY : moveEvent.clientY;
 
+            // 4. Update Position for all items
             startPos.forEach(p => {
                 p.item.style.left = (currentX - p.x) + "px";
                 p.item.style.top = (currentY - p.y) + "px";
+                
+                // CRITICAL: Ensure image doesn't vanish during movement
+                const img = p.item.querySelector('img');
+                if (img) {
+                    img.style.width = "100%";
+                    img.style.height = "100%";
+                }
             });
             
             if (typeof updatePreview === "function") updatePreview();
@@ -1046,4 +1078,450 @@ async function fetchPixabay(query = 'vector') {
     const grid = document.getElementById('pixabayGrid');
     grid.innerHTML = "";
     data.hits.forEach(hit => {
+        const img = document.createElement('img');
+        img.src = hit.previewURL;
+        img.className = 'gallery-item';
+        img.onclick = () => loadTemplate(hit.largeImageURL);
+        grid.appendChild(img);
+    });
+}
+function getHandleHTML() {
+    return `
+        <div class="resize-handle handle-tl" data-handle="tl"></div>
+        <div class="resize-handle handle-tr" data-handle="tr"></div>
+        <div class="resize-handle handle-bl" data-handle="bl"></div>
+        <div class="resize-handle handle-br" data-handle="br"></div>
+        <div class="resize-handle handle-t" data-handle="t"></div>
+        <div class="resize-handle handle-b" data-handle="b"></div>
+        <div class="resize-handle handle-l" data-handle="l"></div>
+        <div class="resize-handle handle-r" data-handle="r"></div>
+    `;
+}
+function loadTemplate(src) {
+    if (!src) return;
     
+    const div = document.createElement('div');
+    div.className = 'draggable';
+    div.style.width = "150px"; 
+    div.style.height = "150px";
+    div.style.left = "50px"; 
+    div.style.top = "50px";
+    
+    // Ensure the image inside is constrained
+    div.innerHTML = `
+        <img src="${src}" style="width:100%; height:100%; object-fit:contain; pointer-events:none;">
+        ${getHandleHTML()}
+    `;
+    
+    designCanvas.appendChild(div);
+    makeDraggable(div);
+    saveHistory();
+}
+/********************************************* UI HANDLERS (Tabs, Search, Text) ********************************************/
+function showTab(tabId, clickedButton) {
+    // Hide all panes
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.style.display = 'none';
+    });
+
+    // Reset button colors
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Show the active pane
+    const target = document.getElementById(tabId);
+    if (target) {
+        target.style.display = 'block';
+        target.scrollTop = 0; // Reset scroll to top
+    }
+
+    // Highlight active button
+    if (clickedButton) {
+        clickedButton.classList.add('active');
+    }
+}
+document.getElementById('searchBtn').onclick = () => {
+    const query = document.getElementById('gallerySearch').value;
+    if (query.trim()) fetchPixabay(query);
+};
+const extendedSwatches = [
+  '#FFFFFF', '#F2F2F2', '#D9D9D9', '#BFBFBF', '#A6A6A6', '#808080', '#595959', '#404040', '#262626', '#000000',
+  '#FFCCCC', '#FF9999', '#FF6666', '#FF3333', '#FF0000', '#CC0000', '#990000', '#660000', '#330000',
+  '#FFE5CC', '#FFCC99', '#FFB266', '#FF9933', '#FF8000', '#CC6600', '#994C00', '#663300', '#331900',
+  '#FFFFCC', '#FFFF99', '#FFFF66', '#FFFF33', '#FFFF00', '#CCCC00', '#999900', '#666600', '#333300',
+  '#CCFFCC', '#99FF99', '#66FF66', '#33FF33', '#00FF00', '#00CC00', '#009900', '#006600', '#003300',
+  '#CCFFFF', '#99FFFF', '#66FFFF', '#33FFFF', '#00FFFF', '#00CCCC', '#009999', '#006666', '#003333',
+  '#CCCCFF', '#9999FF', '#6666FF', '#3333FF', '#0000FF', '#0000CC', '#000099', '#000066', '#000033',
+  '#E5CCFF', '#CC99FF', '#B266FF', '#9933FF', '#8000FF', '#6600CC', '#4C0099', '#330066', '#190033',
+  '#FFCCFF', '#FF99FF', '#FF66FF', '#FF33FF', '#FF00FF', '#CC00CC', '#990099', '#660066', '#330033'
+];
+const swatchGrid = document.getElementById('swatchContainer');
+swatchGrid.innerHTML = ''; // Clear it first
+extendedSwatches.forEach(color => {
+    const s = document.createElement('div');
+    s.className = 'swatch-item'; // Assign class for styling
+    s.style.backgroundColor = color;
+    
+    // Use addEventListener instead of onclick for better reliability
+    s.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevents the click from "falling through" to the canvas
+        if (activeItem && activeItem.querySelector('span')) {
+            activeItem.querySelector('span').style.color = color;
+            saveHistory();
+        } else {
+            console.log("No text item selected to color");
+        }
+    });
+    
+    swatchGrid.appendChild(s);
+});
+document.getElementById('fontColorPicker').onclick = (e) => {
+    e.stopPropagation(); // Stop the click from immediately triggering the "close" logic above
+    const swatchGrid = document.getElementById('swatchContainer');
+    const isVisible = swatchGrid.style.display === 'grid';
+    swatchGrid.style.display = isVisible ? 'none' : 'grid';
+};
+document.getElementById('imageInput').onchange = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        // Reuse your loadTemplate logic to maintain consistency
+        loadTemplate(event.target.result);
+        
+        // Clear the input so you can upload the same image twice if needed
+        e.target.value = ""; 
+    };
+    reader.readAsDataURL(file);
+};
+document.getElementById('fontSizeInput').oninput = function() {
+    if (activeItem && activeItem.querySelector('span')) {
+        activeItem.querySelector('span').style.fontSize = this.value + 'px';
+        saveHistory();
+    }
+};
+document.getElementById('btnBold').onclick = () => {
+    if (activeItem && activeItem.querySelector('span')) {
+        const span = activeItem.querySelector('span');
+        span.style.fontWeight = (span.style.fontWeight === 'bold') ? 'normal' : 'bold';
+        saveHistory();
+    }
+};
+document.getElementById('btnItalic').onclick = () => {
+    if (activeItem && activeItem.querySelector('span')) {
+        const span = activeItem.querySelector('span');
+        span.style.fontStyle = (span.style.fontStyle === 'italic') ? 'normal' : 'italic';
+        saveHistory();
+    }
+};
+document.getElementById('fontFamily').onchange = function() {
+    if (activeItem && activeItem.querySelector('span')) {
+        activeItem.querySelector('span').style.fontFamily = this.value;
+        document.getElementById('fontFamily').onchange = function() {
+            // 1. Change the dropdown's own look to match the selection
+            this.style.fontFamily = this.value;
+
+            // 2. Apply to the active text on canvas (from previous logic)
+            if (activeItem && activeItem.querySelector('span')) {
+                activeItem.querySelector('span').style.fontFamily = this.value;
+                saveHistory();
+            }
+        };
+        saveHistory();
+    }
+};
+/********************************************* SMART POPUP CLOSING ********************************************/
+document.addEventListener('mousedown', (event) => {
+    const swatchContainer = document.getElementById('swatchContainer');
+    const colorPickerBtn = document.getElementById('fontColorPicker');
+
+    // If the menu is open...
+    if (swatchContainer.style.display === 'grid') {
+        
+        // Check if the click was OUTSIDE the container AND OUTSIDE the 🎨 button
+        if (!swatchContainer.contains(event.target) && !colorPickerBtn.contains(event.target)) {
+            swatchContainer.style.display = 'none';
+        }
+    }
+});
+function deselectAll() {
+    document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
+    activeItem = null;
+    selectedItems = [];
+}
+document.addEventListener('keydown', (e) => {
+    if ((e.key === 'Delete' || e.key === 'Backspace') && activeItem) {
+        // Don't delete if the user is typing in the text input!
+        if (document.activeElement.tagName === 'INPUT') return;
+        
+        activeItem.remove();
+        activeItem = null;
+        saveHistory();
+    }
+});
+document.getElementById('addTextBtn').onclick = () => {
+    const val = document.getElementById('textInput').value || "Text";
+    const font = document.getElementById('fontFamily').value;
+    const div = document.createElement('div');
+    div.className = 'draggable';
+    div.style.left = "100px"; 
+    div.style.top = "100px";
+    div.innerHTML = `<span style="font-size:30px; font-family:${font}; white-space:nowrap;">${val}</span>` + getHandleHTML();
+    designCanvas.appendChild(div);
+    makeDraggable(div);
+    saveHistory();
+};
+function filterTemplates() {
+    const searchInput = document.getElementById('templateSearch');
+    if (!searchInput) return; // Exit if search box isn't found
+
+    const searchTerm = searchInput.value.toLowerCase();
+    const items = document.querySelectorAll('#templateGrid .gallery-item');
+
+    items.forEach(item => {
+        // Safe check: get the attribute, default to empty string if null
+        const name = item.getAttribute('data-name') || "";
+        
+        if (name.includes(searchTerm)) {
+            item.style.display = "block";
+        } else {
+            item.style.display = "none";
+        }
+    });
+}
+function clearCanvas() {
+    // 1. Check if there's anything to clear besides the mockup
+    // We check if the count of children is more than 1 (the mockup)
+    const hasItems = Array.from(designCanvas.children).some(child => child.id !== 'product-bg');
+    if (!hasItems) return;
+
+    // 2. Confirmation
+    const confirmClear = confirm("Clear your design? (The product mockup will stay).");
+
+    if (confirmClear) {
+        // 3. Loop through children and remove them IF they aren't the mockup
+        const children = Array.from(designCanvas.children);
+        children.forEach(child => {
+            if (child.id !== 'product-bg' && !child.classList.contains('selection-marquee')) {
+                child.remove();
+            }
+        });
+        
+        // 4. Reset state
+        deselectAll();
+        saveHistory();
+        console.log("Design cleared, mockup preserved.");
+    }
+}
+function updateStroke() {
+    if (activeItem && activeItem.querySelector('span')) {
+        const span = activeItem.querySelector('span');
+        const width = document.getElementById('strokeSlider')?.value || 0;
+        const color = document.getElementById('strokeColor')?.value || "#000000";
+        
+        span.style.webkitTextStroke = `${width}px ${color}`;
+        saveHistory();
+    }
+}
+function applyTextTransforms() {
+    // 1. Safety Check: Only run if an item is selected
+    if (!activeItem) return;
+    const span = activeItem.querySelector('span');
+    if (!span) return;
+
+    // 2. Get the Slider Elements
+    const curveSlider = document.getElementById('curveSlider');
+    const shearSlider = document.getElementById('shearSlider');
+
+    // 3. Safety Check: Only run if the sliders actually exist in HTML
+    if (!curveSlider || !shearSlider) {
+        console.error("Sliders not found! Check your HTML IDs.");
+        return;
+    }
+
+    const curveVal = curveSlider.value;
+    const shearVal = shearSlider.value;
+
+    // 4. Apply the styles
+    activeItem.style.perspective = "1000px";
+    activeItem.style.overflow = "visible";
+    
+    span.style.display = "inline-block";
+    span.style.transform = `rotateX(${curveVal}deg) skewX(${-shearVal}deg)`;
+}
+const cSlider = document.getElementById('curveSlider');
+const sSlider = document.getElementById('shearSlider');
+if (cSlider) cSlider.oninput = applyTextTransforms;
+if (sSlider) sSlider.oninput = applyTextTransforms;
+/********************************************* EXPORT & INIT ********************************************/
+document.getElementById('downloadBtn').onclick = () => {
+    html2canvas(designCanvas, {
+        useCORS: true,       // This allows the GitHub image to show up
+        backgroundColor: null // Keeps background transparent if needed
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'product-design.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    });
+};
+const productVarieties = [
+    { name: 'White T-Shirt', url: 'DesignTemplates/mockups/white-tee.png' },
+    { name: 'Black T-Shirt', url: 'DesignTemplates/mockups/black-tee.png' },
+    { name: 'Navy Hoodie', url: 'DesignTemplates/mockups/navy-hoodie.png' }
+];
+function initVarietyPanel() {
+    const panel = document.getElementById('varietyPanel');
+    panel.innerHTML = '<h4 style="font-size: 12px; color: #666;">Varieties</h4>'; // Reset
+
+    productVarieties.forEach(product => {
+        const thumb = document.createElement('img');
+        thumb.src = product.url;
+        thumb.className = 'variety-thumb';
+        
+        // CSS via JS for the thumb
+        Object.assign(thumb.style, {
+            width: '80px',
+            height: '80px',
+            objectFit: 'contain',
+            cursor: 'pointer',
+            border: '2px solid #eee',
+            borderRadius: '5px',
+            padding: '5px'
+        });
+
+        thumb.onclick = () => {
+            const mockup = document.getElementById('product-bg');
+            if (mockup) {
+                mockup.src = product.url;
+            }
+            // Update UI highlight
+            document.querySelectorAll('.variety-thumb').forEach(t => t.style.borderColor = '#eee');
+            thumb.style.borderColor = '#007bff';
+        };
+
+        panel.appendChild(thumb);
+    });
+}
+function sendOrderToEmail() {
+    // 1. Show a 'Processing' message to the user
+    const btn = document.getElementById('submitOrderBtn');
+    const originalText = btn.innerText;
+    btn.innerText = "Processing Design...";
+    btn.disabled = true;
+
+    // 2. Capture the Canvas
+    html2canvas(designCanvas, { 
+        useCORS: true,
+        logging: false,
+        backgroundColor: null 
+    }).then(canvas => {
+        const base64Image = canvas.toDataURL("image/png");
+
+        // 3. Prepare the Email Template Parameters
+        const templateParams = {
+            customer_name: document.getElementById('customerName')?.value || "Guest",
+            customer_email: document.getElementById('customerEmail')?.value || "No Email Provided",
+            design_image: base64Image, // This sends the image as a Base64 string
+            product_type: activeProductKey || "Standard"
+        };
+
+        // 4. Send via EmailJS
+        emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+            .then(function(response) {
+                alert("SUCCESS! Your design has been sent to our production team.");
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }, function(error) {
+                console.error("FAILED...", error);
+                alert("Checkout failed. Please download the design and email it manually.");
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+    });
+}
+window.addEventListener('DOMContentLoaded', () => {
+    const pwaWelcome = document.getElementById('pwa-welcome');
+    const iosInstructions = document.getElementById('ios-instructions');
+    const installBtn = document.getElementById('pwa-install-btn');
+
+    // Check if the app is already installed/running in standalone mode
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+    if (!isStandalone) {
+        // Show the pop-up after 3 seconds
+        setTimeout(() => {
+            pwaWelcome.style.display = 'flex';
+
+            // Check if iOS
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (isIOS) {
+                iosInstructions.style.display = 'block';
+            }
+        }, 3000);
+    }
+
+    // Handle Android/Chrome Install Prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'block';
+
+        installBtn.addEventListener('click', () => {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choice) => {
+                if (choice.outcome === 'accepted') pwaWelcome.style.display = 'none';
+                deferredPrompt = null;
+            });
+        });
+    });
+});
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+window.onload = () => {
+    // 1. Inject the mockup first
+   
+
+ 
+    // 2. Fetch other assets
+    fetchPixabay();
+    fetchTemplatesFromGitHub();
+    
+    // 3. Save the "Clean Slate" (Mockup only) to history
+    saveHistory(); 
+};
+
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    
+    // Create an "Install App" button dynamically
+    const installBtn = document.createElement('button');
+    installBtn.innerText = "Install App for Better Experience";
+    installBtn.style = "position:fixed; bottom:10px; left:50%; transform:translateX(-50%); z-index:9999; background:#3b82f6; color:white; padding:10px 20px; border-radius:20px; box-shadow:0 4px 10px rgba(0,0,0,0.2);";
+    
+    document.body.appendChild(installBtn);
+
+    installBtn.addEventListener('click', (e) => {
+        // Show the prompt
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the A2HS prompt');
+            }
+            installBtn.remove();
+            deferredPrompt = null;
+        });
+    });
+});
+</script>
+</body>
+</html>
