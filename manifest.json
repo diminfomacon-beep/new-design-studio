@@ -5,16 +5,20 @@
     {
       "src": "https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/dimmi.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any"
     },
     {
       "src": "https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/New%20logo%20no%20background.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
-  "start_url": "https://diminfomacon.github.io/new-design-studio/",
+  "start_url": "/new-design-studio/",
+  "scope": "/new-design-studio/",
   "background_color": "#CAE4DB",
   "display": "standalone",
-  "theme_color": "#125850"
+  "theme_color": "#125850",
+  "orientation": "portrait"
 }
