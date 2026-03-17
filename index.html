@@ -19,12 +19,12 @@
 <style>
   :root {--primary:#111827; --accent:#3b82f6; --bg-light:#f5f5f5; --border-color:#ddd;}
   body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:2px;display:flex;justify-content:center;user-select:none;}
-  .studio-wrapper {display: grid;grid-template-columns: 300px 1fr 50px;gap: 15px;height: 95vh;padding: 15px;background: #CAE4DB;border-radius: 16px;box-sizing: border-box;margin: 0 auto;}      
+  .studio-wrapper {display: grid;grid-template-columns: 300px 1fr 50px;gap: 15px;height: 95vh;padding: 15px;background: #021302;border-radius: 16px;box-sizing: border-box;margin: 0 auto;}      
   .studio-wrapper {display: flex !important;flex-direction: row;width: 100%;max-width: 100vw;overflow: hidden;}
-  #workspace {flex: 1;min-width: 0;display: flex;flex-direction: column;align-items: center;justify-content: center; background: #e9e9e9;}
+  #workspace {flex: 1;min-width: 0;display: flex;flex-direction: column;align-items: center;justify-content: center; background: #021302}
   #toolbar, #varietyPanel {flex-shrink: 0;}
   #workspace {display: flex;flex-direction: column;width: 100%; height: 100%;min-width: 0;}        
-  .canvas-container {flex: 1; width: 100%; background: #f3e595;border-radius: 12px;display: flex;flex-direction: column;padding: 20px;box-sizing: border-box;position: relative;}
+  .canvas-container {flex: 1; width: 100%; background: #570a24;border-radius: 12px;display: flex;flex-direction: column;padding: 20px;box-sizing: border-box;position: relative;}
   .canvas-toolbar {display: flex;gap: 5px;flex-wrap: wrap;justify-content: center;margin-bottom: 15px;width: 100%;}
   #designCanvas {padding: 0 !important;flex: 1;width: 100%;background: white;position: relative;border: 2px dashed #ccc;border-radius: 8px; overflow: hidden;}
   .resize-handle {width: 10px; height: 10px; background: #007bff;position: absolute; border-radius: 50%;}
@@ -37,16 +37,16 @@
   .handle-l { left: -5px; top: 50%; transform: translateY(-50%); cursor: w-resize; }
   .handle-r { right: -5px; top: 50%; transform: translateY(-50%); cursor: e-resize; }
   .tab-button {flex: 1;background: #e0e0e0;color: #333;border: 1px solid #ccc;padding: 10px;cursor: pointer;font-weight: bold;transition: background 0.2s;}
-  .tab-button.active {background: #125850 !important;color: white !important;}
+  .tab-button.active {background: #024069 !important;color: white !important;}
   .tab-button:hover:not(.active) {background: #d0d0d0;}
   .tab-pane::-webkit-scrollbar {width: 6px;}
-  .tab-pane::-webkit-scrollbar-thumb {background-color: #125850;border-radius: 10px;}
+  .tab-pane::-webkit-scrollbar-thumb {background-color: #024069;border-radius: 10px;}
   .tab-pane {  max-height: 480px;overflow-y: auto;overflow-x: hidden;padding-right: 5px;background: #fff;border: 1px solid #eee;}
-  #pixabayGrid, #templateGrid {display: grid !important;grid-template-columns: repeat(4, 1fr) !important;gap: 8px;padding: 10px;height: 300px}
+  #pixabayGrid, #templateGrid {display: grid !important;grid-template-columns: repeat(6, 1fr) !important;gap: 8px;padding: 10px;height: 300px}
   .gallery-item {width: 60px;aspect-ratio: 1 / 1; object-fit:contain;border-radius: 4px; display: block;}
   .gallery-item:hover {z-index: 9999;transform: scale(3.5); transform-origin: center;}
   #templateGrid .gallery-item:hover, #pixabayGrid .gallery-item:hover {transition-delay: 0.1s;}
-  button {font-size:12px;background:#125850;color:rgb(253, 249, 249);border:none;padding:8px 8px;cursor:pointer;border-radius:6px;}
+  button {font-size:12px;background:#024069;color:rgb(253, 249, 249);border:none;padding:8px 8px;cursor:pointer;border-radius:6px;}
   .span-2 {grid-column: span 2;    width: 100% !important;}
   #swatchContainer {display: none; position: absolute; top: 80px; left: 310px; z-index: 9999 !important; pointer-events: auto !important; width: 220px; grid-template-columns: repeat(10, 1fr); gap: 2px; background: white; padding: 8px; border: 2px solid #3b82f6; border-radius: 8px;max-height: 200px;overflow-y: auto;box-shadow: 0 10px 25px rgba(0,0,0,0.3);}
   .swatch-item {width: 100%;padding-bottom: 100%;cursor: pointer !important;border: 1px solid #eee;}
@@ -64,7 +64,7 @@
   .handle-l  { left: -4px; top: 50%; transform: translateY(-50%); cursor: w-resize; }
   .handle-r  { right: -4px; top: 50%; transform: translateY(-50%); cursor: e-resize; }
   .group-container .draggable {outline: none !important;border: none !important;}
-  .group-container.active-layer {outline: 2px solid #125850;}
+  .group-container.active-layer {outline: 2px solid #024069;}
   .group-container.active-layer .draggable {pointer-events: none;}
   .group-container .draggable img {width: 100% !important;height: 100% !important; object-fit: fill !important;}
   .group-container span { white-space: nowrap;display: block;}
@@ -165,7 +165,7 @@
         margin: 0;
         padding: 0;
         overflow: hidden; 
-        background-color: #CAE4DB; /* Matches your wrapper color */
+        background-color: #021302; /* Matches your wrapper color */
     }
     
     .studio-wrapper {
@@ -255,7 +255,7 @@
         padding: 8px 12px;
         border: 1px solid #ccc;
         color: white;
-        background: #125850;
+        background: #024069;
         cursor: pointer;
         border-radius: 4px;
         transition: all 0.2s ease;
@@ -264,11 +264,22 @@
     /* Style when Multi-Select is ON */
     .tool-btn.active-mode {
         background-color: #3b82f6 !important; /* Blue background */
-        color: rgb(13, 78, 46) !important;
+        color: #024069 !important;
         border-color: #2563eb !important;
         font-weight: bold;
         box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
     }
+    .draggable span {
+    display: inline-block;
+    width: 100px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.2;
+    pointer-events: none; /* Ensures clicks hit the 'draggable' div, not the text */
+}
+.curveSlider {
+    color: #cbee4c;
+}
 
     /* Ensure buttons don't get too tiny */
    
@@ -278,12 +289,12 @@
       <!--PHYSICAL UI-->
 <div class="studio-wrapper">
   <!--LEFT PANEL - TOOLS & RESOURCES-->
-  <div id="toolbar" style="display: flex; flex-direction: column; min-height: 600px; background: #f3e595; border: 1px solid #ddd; border-radius: 8px; padding: 10px; box-sizing: border-box;">
-    <div id="textEditor" style="background: #f3e595; padding: 10px; border-radius: 8px;">
-      <h3 style = "display:flex; justify-content: center;">Tools</h3>
-      <input type="text" id="textInput" placeholder="Enter text..." value="" class="span-2" style="height: 20px; width:95% !important;;  padding: 0 8px; display: flex; gap: 2px; margin-bottom: 10px;">
-      <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 10px;">
-          <label style="font-size: 11px; color: #000;">Font</label>
+  <div id="toolbar" style="display: flex; flex-direction: column; min-height: 600px; background: #570a24; border: 1px solid #ddd; border-radius: 8px; padding: 10px; box-sizing: border-box;">
+    <div id="textEditor" style="background: #570a24; padding: 3px; border-radius: 8px;">
+    <h5 style = "display:flex; justify-content: center; color: #fff;">Tools</h5>
+    <textarea id="textInput" placeholder="Enter text...&#10;Line 2..." style="width:95%; height: 60px; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ddd; font-family: inherit; resize: vertical;"></textarea>      
+    <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 10px;">
+          <label style="font-size: 11px; color: #fff;">Font</label>
           <select id="fontFamily" style="width: 120px; height: 28px; cursor: pointer; flex-grow: 1;">
               <option value="'Montserrat', sans-serif" style="font-family: 'Montserrat';">Montserrat</option>
               <option value="'Playfair Display', serif" style="font-family: 'Playfair Display';">Playfair Display</option>
@@ -298,41 +309,45 @@
               <option value="'Creepster', cursive" style="font-family: 'Creepster';">Creepster</option>
               <option value="'Press Start 2P', cursive" style="font-family: 'Press Start 2P';">Pixel</option>
           </select>
-          <button id="addTextBtn" style="background: #125850; color: #fff; height: 28px; border-radius: 4px;">Add to Canvas</button>
+          <button id="addTextBtn" style="background: #024069; color: #fff; height: 28px; border-radius: 4px;">Add to Canvas</button>
       </div>
     
-      <div style="display: grid; grid-template-columns: auto 30px auto 50px 1fr 1fr; gap: 8px; align-items: center; margin-bottom: 10px;">
-          <label style="font-size: 12px; color: #000;">Color</label>
+      <div style="display: grid; grid-template-columns: auto 25px auto 35px 1fr 1fr 1fr 1fr 1fr; gap: 3px; align-items: center; margin-bottom: 10px;">
+          <label style="font-size: 12px; color: #fff;">Color</label>
           <div id="fontColorPicker" style="font-size: 18px; cursor: pointer; text-align: center;">🎨</div>
-          
-          <label style="font-size: 12px; color: #000;">Size</label>
-          <input type="number" id="fontSizeInput" min="8" max="200" value="30" style="width: 100%; height: 20px;">
-          
-          <button id="btnBold" style="background: #125850; color: #fff; height: 28px; border-radius: 4px;">B</button>
-          <button id="btnItalic" style="background: #125850; color: #fff; height: 28px; border-radius: 4px;">I</button>
-    </div>
+          <label style="font-size: 12px; color: #fff;">Size</label>
+          <input type="number" id="fontSizeInput" min="8" max="200" value="30" style="width: 100%; height: 20px;margin-right: 3px;">
+          <button id="btnBold" style="background: #024069; color: #fff; height: 28px; border-radius: 4px; margin-left:6px;">B</button>
+          <button id="btnItalic" style="background: #024069; color: #fff; height: 28px; border-radius: 4px;">I</button>
+          <button onclick="setTextAlignment('left')" style="flex: 1; padding: 5px; cursor: pointer;">Left</button>
+          <button onclick="setTextAlignment('center')" style="flex: 1; padding: 5px; cursor: pointer;">Center</button>
+          <button onclick="setTextAlignment('right')" style="flex: 1; padding: 5px; cursor: pointer;">Right</button>  
+        </div>
   
     <div class="effects-control" style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
         <div>
-            <label style="font-size: 12px;">Slant</label>
+            <label style="font-size: 12px;color: #fff;">Slant</label>
             <input type="range" id="shearSlider" min="-30" max="30" value="0" style="width:100%;">
         </div>
           <div>
-            <label style="font-size: 12px;">Tilt</label>
+            <label style="font-size: 12px;color: #fff;">Tilt</label>
             <input type="range" id="curveSlider" min="-40" max="40" value="0" style="width:100%;">
         </div>
     </div>
                   
-    <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
-    <h3>Upload Image</h3>
-    <input type="file" id="imageInput" accept="image/*">
-    <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
-    <hr>
+    <hr style="border:0;border-top:1px solid #eee;margin:3px 0;">
+    <div style="display: grid; grid-template-columns: auto auto auto auto; gap: 3px; align-items: center; margin-bottom: 3px; color: #fff;">
+        <h5 style="color: #fff;">Upload Image</h5>
+        <input type="file" id="imageInput" accept="image/*">
+        <button id="downloadBtn">Download PNG</button>
+    </div>
+    <hr style="border:0;border-top:1px solid #eee;margin:3px 0;">
+   
   
 
     <div style="display: flex; gap: 2px; margin-bottom: 10px;">
-        <button class="tab-button active" onclick="showTab('pixabay-tab', this)">Pixabay</button>
-        <button class="tab-button" onclick="showTab('template-tab', this)">Templates</button>
+        <button class="tab-button active" onclick="showTab('pixabay-tab', this)">Pixabay Images</button>
+        <button class="tab-button" onclick="showTab('template-tab', this)">Design Templates</button>
     </div>
 
     <div id="pixabay-tab" class="tab-pane">
@@ -351,12 +366,6 @@
         <div id="templateGrid">
             </div>
     </div>
-    <hr>
-    <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
-    <div id="layerList"></div>
-    <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
-    <button id="downloadBtn" style="width:100%">Download PNG</button>
-    <hr style="border:0;border-top:1px solid #eee;margin:7px 0;">
     </div>
 
   </div>
@@ -374,7 +383,7 @@
               <button onclick="groupSelected()">Group</button>
               <button onclick="ungroupSelected()">Ungroup</button>
               <button onclick="deleteSelected()">Delete</button>
-              <button onclick="clearCanvas()" style="background: #f15f6e; color: white;">Clear All</button>
+              <button onclick="clearCanvas()" style="background: #cbee4c; color: #000;">Clear All</button>
           </div>
 
           <div id="designCanvas"></div>
@@ -382,8 +391,8 @@
   </div>   
     
 <!--RIGHT PANEL - VARIETY-->
-  <div id="varietyPanel" style="width: 120px;display: flex; flex-direction: column; min-height: 600px; background: #f3e595; border: 1px solid #ddd; border-radius: 8px; padding: 10px; box-sizing: border-box;">
-    <h3 style="display: flex; justify-content: center;">Styles</h3>
+  <div id="varietyPanel" style="width: 120px;display: flex; flex-direction: column; min-height: 600px; background: #570a24; border: 1px solid #ddd; border-radius: 8px; padding: 10px; box-sizing: border-box;">
+    <h5 style="display: flex; justify-content: center;color: #fff;">Styles</h5>
     <div id="thumbContainer" style="flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center;"></div>
     <div id="submitSection"><button id="submitOrderBtn">Submit Design</button></div>
   </div>
@@ -391,14 +400,14 @@
   <div id="swatchContainer"> </div>
 <div id="pwa-welcome" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10001; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
     <div style="background:white; padding:25px; border-radius:15px; text-align:center; max-width:300px; position:relative;">
-        <h3 style="margin-top:0; color:#125850;">App Version Available</h3>
+        <h5 style="margin-top:0; color:#024069;">App Version Available</h5>
         <p id="pwa-instructions" style="font-size:14px; color:#555; line-height:1.5;">
             Add this studio to your home screen for a full-screen experience and faster access!
         </p>
         <div id="ios-instructions" style="display:none; margin-top:15px;">
             <p style="font-size:13px; font-weight:bold;">Tap the "Share" icon <img src="https://img.icons8.com/ios/50/000000/export.png" style="width:18px; vertical-align:middle;"> then "Add to Home Screen".</p>
         </div>
-        <button id="pwa-install-btn" style="display:none; width:100%; background:#125850; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; margin-top:10px;">Install Now</button>
+        <button id="pwa-install-btn" style="display:none; width:100%; background:#024069; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; margin-top:10px;">Install Now</button>
         <button onclick="document.getElementById('pwa-welcome').style.display='none'" style="background:none; border:none; color:#999; margin-top:15px; cursor:pointer; font-size:12px;">Maybe Later</button>
     </div>
 </div>
@@ -474,6 +483,22 @@ async function fetchTemplatesFromGitHub() {
     } catch (error) {
         console.error("Metadata/File fetch failed:", error);
         grid.innerHTML = "<p style='color:red;'>Error loading library.</p>";
+    }
+}
+function setTextAlignment(align) {
+    if (activeItem && activeItem.querySelector('span')) {
+        const span = activeItem.querySelector('span');
+        
+        // Update the text alignment
+        span.style.textAlign = align;
+        
+        // Important: For multiline text, we must ensure the span fills the width
+        // of its draggable container so the alignment is visible.
+        span.style.width = "100%";
+        
+        saveHistory();
+    } else {
+        console.log("Select a text item first to align it.");
     }
 }
 function injectProductBackground(imageUrl) {
@@ -1161,7 +1186,7 @@ function loadProductVarieties(productKey) {
         priceLabel.innerText = item.price ? `$${item.price}` : ''; 
         Object.assign(priceLabel.style, {
             fontSize: '10px',
-            color: '#125850', // Matching your theme green
+            color: '#024069', // Matching your theme green
             fontWeight: '700',
             marginTop: '2px'
         });
@@ -1175,7 +1200,7 @@ function loadProductVarieties(productKey) {
                 t.style.borderColor = '#ddd';
                 t.style.boxShadow = 'none';
             });
-            thumb.style.borderColor = '#125850';
+            thumb.style.borderColor = '#024069';
             thumb.style.boxShadow = '0 0 5px rgba(18, 88, 80, 0.3)';
         };
 
@@ -1352,16 +1377,32 @@ document.addEventListener('keydown', (e) => {
     }
 });
 document.getElementById('addTextBtn').onclick = () => {
+    // 1. Get value from Textarea instead of Input
     const val = document.getElementById('textInput').value || "Text";
     const font = document.getElementById('fontFamily').value;
+    
     const div = document.createElement('div');
     div.className = 'draggable';
     div.style.left = "100px"; 
     div.style.top = "100px";
-    div.innerHTML = `<span style="font-size:30px; font-family:${font}; white-space:nowrap;">${val}</span>` + getHandleHTML();
+    
+    // 2. Use 'pre-wrap' so line breaks (\n) create new lines on the canvas
+    div.innerHTML = `
+        <span style="
+            font-size:30px; 
+            font-family:${font}; 
+            white-space: pre-wrap; 
+            display: inline-block; 
+            line-height: 1.2;
+            text-align: center;
+        ">${val}</span>` + getHandleHTML();
+        
     designCanvas.appendChild(div);
     makeDraggable(div);
     saveHistory();
+    
+    // 3. Optional: Clear the textarea after adding
+    document.getElementById('textInput').value = "";
 };
 function filterTemplates() {
     const searchInput = document.getElementById('templateSearch');
@@ -1466,7 +1507,7 @@ const productVarieties = [
 ];
 function initVarietyPanel() {
     const panel = document.getElementById('varietyPanel');
-    panel.innerHTML = '<h4 style="font-size: 12px; color: #666;">Varieties</h4>'; // Reset
+    panel.innerHTML = '<h5 style="font-size: 12px; color: #fff; text-align: center;">Product Selection</h5>'; // Reset
 
     productVarieties.forEach(product => {
         const thumb = document.createElement('img');
