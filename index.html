@@ -2002,12 +2002,30 @@ document.getElementById('downloadBtn').onclick = () => {
     });
 };
 const productVarieties = [
-        { name: 'Shirt',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/store-app-full-checkout/main/product-pics/SUBSHIRT%20s%20xx%20xxx.png' },
-        { name: 'Skinny Tumbler',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/skinny%20white%2020.png' },
-        { name: 'Tumbler',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/traveler.png' },
-        { name: 'Tote',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/tote%20white.png' },
-        { name: 'Other',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
-];
+        { name: 'Blank',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
+        { name: 'Shirt',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Shirt.png' },
+        { name: 'Skinny',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/20oz%20Skinny.png' },
+        { name: 'Skinny Ombre',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/20oz%20Ombre%20Skinny%20Tumblers.png' },
+        { name: 'Big Tumbler',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/40oz%20and%2030oz%20Tumblers.png' },
+        { name: 'Big Tumbler Ombre',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/40oz%20and%2030oz%20Ombre%20Tumblers.png' },
+        { name: 'Bib',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Bib.png' },
+        { name: 'Onesie',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Onesie.png' },
+        { name: 'Blanket 14-Moon',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%2014%20Panel%20Moon.png' },
+        { name: 'Blanket 15-Paw',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%2015%20Panel%20Paw.png' },
+        { name: 'Blanket 9',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%209%20Panel.png' },
+        { name: 'Blanket 20',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%2020%20Panel.png' },
+        { name: 'Candle',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Candle.png' },
+        { name: 'Cards',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Cards.png' },
+        { name: 'Flask',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Flask.png' },
+        { name: 'Water Bottle',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Hydro%20Handle.png' },
+        { name: 'Hydro Hound',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Hydro%20Hound.png' },
+        { name: 'Kids Water bottle',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Kids%20Water%20Bottle.png' },
+        { name: 'Mug',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Mug.png' },
+        { name: 'Sassy Storage',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Sassy%20Storage.png' },
+        { name: 'Wine',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Stemless%20Wine.png' },
+        { name: 'Tote',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Tote.png' },
+        { name: 'Frames and Puzzles',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/photo%20frames%20and%20puzzle.png' },
+    ]
 function initVarietyPanel() {
     // 1. Target the SPECIFIC container for images, NOT the whole panel
     const container = document.getElementById('thumbContainer'); 
@@ -2142,24 +2160,32 @@ if ('serviceWorker' in navigator) {
 
 const studioConfig = {
     master: [
-        { name: 'Blank',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
-        { name: 'Shirt',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/store-app-full-checkout/main/product-pics/SUBSHIRT%20s%20xx%20xxx.png' },
-        { name: 'Skinny Tumbler',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/skinny%20white%2020.png' },
-        { name: 'Tumbler',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/traveler.png' },
-        { name: 'Tote',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/tote%20white.png' },
-        { name: 'Other',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
-        { name: 'Other',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
-        { name: 'Other',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
-        { name: 'Other',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
-        { name: 'Other',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
-        { name: 'Other',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
-        { name: 'Other',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
-        { name: 'Other',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
-        { name: 'Other',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
-
-
-    ],
-}
+        { name: 'Blank', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
+        { name: 'Shirt', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Shirt.png' },
+        { name: 'Skinny', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/20oz%20Skinny.png' },
+        { name: 'Skinny Ombre', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/20oz%20Ombre%20Skinny%20Tumblers.png' },
+        { name: 'Big Tumbler', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/40oz%20and%2030oz%20Tumblers.png' },
+        // FIXED URL BELOW (Removed the Tote link from the Tumbler name)
+        { name: 'Big Tumbler Ombre', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/40oz%20and%2030oz%20Ombre%20Tumblers.png' }, 
+        { name: 'Bib', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Bib.png' },
+        { name: 'Onesie', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Onesie.png' },
+        { name: 'Blanket 14-Moon', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%2014%20Panel%20Moon.png' },
+        { name: 'Blanket 15-Paw', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%2015%20Panel%20Paw.png' },
+        { name: 'Blanket 9', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%209%20Panel.png' },
+        { name: 'Blanket 20', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%2020%20Panel.png' },
+        { name: 'Candle', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Candle.png' },
+        { name: 'Cards', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Cards.png' },
+        { name: 'Flask', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Flask.png' },
+        { name: 'Water Bottle', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Hydro%20Handle.png' },
+        { name: 'Hydro Hound', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Hydro%20Hound.png' },
+        { name: 'Kids Water bottle', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Kids%20Water%20Bottle.png' },
+        { name: 'Mug', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Mug.png' },
+        { name: 'Sassy Storage', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Sassy%20Storage.png' },
+        { name: 'Wine', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Stemless%20Wine.png' },
+        { name: 'Tote', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Tote.png' },
+        { name: 'Frames and Puzzles', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/photo%20frames%20and%20puzzle.png' }
+    ]
+};
 window.onload = () => {
     // 1. Inject the mockup first
     injectProductBackground('https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png'); 
