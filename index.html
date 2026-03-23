@@ -26,7 +26,7 @@
   :root {--primary:#111827; --accent:#3b82f6; --bg-light:#f5f5f5; --border-color:#ddd;}
   body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:2px;display:flex;justify-content:center;user-select:none;}
   #toolbar, #varietyPanel {flex-shrink: 0;}
-  .canvas-container {flex: 1; width: 100%; background: #570a24;border-radius: 12px;display: flex;flex-direction: column;padding: 20px;box-sizing: border-box;position: relative;}
+  .canvas-container {flex: 1; width: 100%; background: #091119;border-radius: 12px;display: flex;flex-direction: column;padding: 20px;box-sizing: border-box;position: relative;}
   .canvas-toolbar {display: flex;gap: 5px;flex-wrap: wrap;justify-content: center;margin-bottom: 15px;width: 100%;}
   .tab-button {flex: 1;background: #e0e0e0;color: #333;border: 1px solid #ccc;padding: 10px;cursor: pointer;font-weight: bold;transition: background 0.2s;}
   .tab-button.active {background: #024069 !important;color: white !important;}
@@ -482,7 +482,7 @@
         flex-direction: row;
         width: 100vw;
         height: 100vh;
-        background: #021302;
+        background: #091119;
         overflow: hidden;
         box-sizing: border-box;
     }
@@ -505,7 +505,7 @@
         width: 140px; /* Slightly wider to prevent label clipping */
         display: flex;
         flex-direction: column;
-        background: #570a24;
+        background: #091119;
         border-left: 1px solid #444;
         height: 100%;
         flex-shrink: 0;
@@ -626,7 +626,7 @@
       <!--PHYSICAL UI-->
 <div class="studio-wrapper">
   <!--LEFT PANEL - TOOLS & RESOURCES-->
-    <div id="toolbar" style="display: flex; flex-direction: column; width: 260px; min-height: 600px; background: #570a24; padding: 10px; box-sizing: border-box; overflow-x: hidden;">    <div id="textEditor" style="background: #570a24; padding: 3px; border-radius: 8px;">
+    <div id="toolbar" style="display: flex; flex-direction: column; width: 260px; min-height: 600px; background: #091119; padding: 10px; box-sizing: border-box; overflow-x: hidden;">    <div id="textEditor" style="background: #091119; padding: 3px; border-radius: 8px;">
         <h4 style = "display:flex; justify-content: center; color: #fff; margin-bottom: 3px;">Tools</h4>
         <textarea id="textInput" placeholder="Enter text...&#10;Line 2..." style="width:95%; height: 60px; padding: 8px; margin-bottom: 5px; border-radius: 4px; border: 1px solid #ddd; font-family: inherit; resize: vertical;"></textarea>      
         <div style="display: flex; justify-content: center; margin-bottom: 5px;"><button id="addTextBtn" style="background: #024069; color: #fff; height: 28px; border-radius: 4px;" onclick="addTextToCanvas()">Add to Canvas</button></div>
