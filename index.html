@@ -2,31 +2,59 @@
 <html lang="en">
     <!-- Part 1/7 -->
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Design Studio">
-    <link rel="manifest" href="manifest.json">    
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#091119">
+    
     <title>Design Studio</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat&family=Pacifico&family=Playfair+Display&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Aladin&family=Chango&family=Chewy&family=Chicle&family=Coiny&family=DynaPuff:wght@400..700&family=Honk&family=Irish+Grover&family=Macondo&family=Matemasie&family=Miltonian+Tattoo&family=Monofett&family=Nabla&family=Noto+Color+Emoji&family=Oleo+Script+Swash+Caps:wght@400;700&family=Ranchers&family=Ribeye&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Aladin&family=Chango&family=Chewy&family=Chicle&family=Coiny&family=DynaPuff:wght@400..700&family=Honk&family=Irish+Grover&family=Macondo&family=Matemasie&family=Miltonian+Tattoo&family=Monofett&family=Nabla&family=Noto+Color+Emoji&family=Oleo+Script+Swash+Caps:wght@400;700&family=Ranchers&family=Ribeye&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
       (function(){
           emailjs.init("1LZbCPvH49G_r0ypB"); // Get this from EmailJS Account tab
       })();
     </script>
+    <script>
+  window.addEventListener('DOMContentLoaded', () => {
+    // Check if it's a mobile device (Android/iOS)
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // Create the popup element
+      const overlay = document.createElement('div');
+      overlay.id = 'mobile-warning-overlay';
+      overlay.style.display = 'flex';
+      overlay.innerHTML = `
+        <div class="warning-card">
+          <h2>Performance Tip</h2>
+          <p>For the best design experience and full features, we recommend using a <b>computer or laptop</b>.</p>
+          <button onclick="document.getElementById('mobile-warning-overlay').style.display='none'">Continue Anyway</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+    }
+  });
+</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <style>
-   
+        /* Performance Warning Popup */
+    #mobile-warning-overlay {display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10001; justify-content: center;align-items: center; padding: 20px;box-sizing: border-box;text-align: center;}
+    .warning-card {background: #fff;padding: 30px;border-radius: 15px; max-width: 400px; color: #333;}
+    .warning-card h2 { color: #024069; margin-top: 0; }
+    .warning-card button {margin-top: 20px;background: #3b82f6;padding: 10px 25px;font-size: 16px;}
   :root {--primary:#111827; --accent:#3b82f6; --bg-light:#f5f5f5; --border-color:#ddd;}
   body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:2px;display:flex;justify-content:center;user-select:none;}
   #toolbar, #varietyPanel {flex-shrink: 0;}
-  .canvas-container {flex: 1; width: 100%; background: #091119;border-radius: 12px;display: flex;flex-direction: column;padding: 20px;box-sizing: border-box;position: relative;}
+  .canvas-container {flex: 1; width: 100%; background: #091119;border-radius: 12px;display: flex; flex-direction: column; max-height: 700px; padding: 20px;box-sizing: border-box;position: relative;}
   .canvas-toolbar {display: flex;gap: 5px;flex-wrap: wrap;justify-content: center;margin-bottom: 15px;width: 100%;}
   .tab-button {flex: 1;background: #e0e0e0;color: #333;border: 1px solid #ccc;padding: 10px;cursor: pointer;font-weight: bold;transition: background 0.2s;}
   .tab-button.active {background: #024069 !important;color: white !important;}
@@ -55,41 +83,15 @@
    /* =========================
    BASE RESIZE HANDLE
 ========================= */
-.resize-handle {
-    position: absolute;
-    
-    width: 12px;
-    height: 12px;
-
-    background: #3b82f6;
-    border: 2px solid #ffffff;
-    border-radius: 50%;
-
-    z-index: 9999;
-    display: none;
-
-    /* Interaction */
-    pointer-events: all;
-    touch-action: none;
-    cursor: pointer;
-}
+.resize-handle {position: absolute; width: 12px;height: 12px;background: #3b82f6;border: 2px solid #ffffff;border-radius: 50%; z-index: 9999;display: none; pointer-events: all;touch-action: none;cursor: pointer;}
 
 /* Bigger invisible touch target for mobile */
-.resize-handle::after {
-    content: '';
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
-}
+.resize-handle::after {content: '';position: absolute;top: -10px;left: -10px;right: -10px;bottom: -10px;}
 
 /* =========================
    SHOW HANDLES WHEN ACTIVE
 ========================= */
-.draggable.active-layer .resize-handle {
-    display: block;
-}
+.draggable.active-layer .resize-handle {display: block;}
 
 /* =========================
    HANDLE POSITIONS
@@ -314,6 +316,67 @@
     /* Prevent weird scaling issues */
     transform-origin: top left;
 }
+
+:root {--primary:#111827; --accent:#3b82f6; --bg-light:#f5f5f5; --border-color:#ddd;}
+
+/* Global Mobile Fixes */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent body bounce */
+    background-color: #091119;
+}
+
+.studio-wrapper {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    background: #091119;
+    overflow: hidden;
+}
+
+/* Tablet & Mobile Layout Adjustment */
+@media (max-width: 1024px) {
+    .studio-wrapper {
+        flex-direction: column !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    #workspace {
+        order: 1;
+        width: 100% !important;
+        height: 50vh !important; /* Half screen for canvas */
+        min-height: 350px;
+        position: sticky;
+        top: 0;
+    }
+    
+    #toolbar {
+        order: 2;
+        width: 100% !important;
+        height: auto !important;
+    }
+    
+    #varietyPanel {
+        order: 3;
+        width: 100% !important;
+        height: auto !important;
+        flex-direction: row !important; /* Horizontal scroll for styles */
+        overflow-x: auto;
+    }
+
+    #designCanvas {
+        width: 90vw !important; /* Scales to screen width */
+        height: 90vw !important; /* Stays square */
+        max-width: 350px;
+        max-height: 350px;
+    }
+}
+
+/* Rest of your existing CSS below... */
 
 /* =========================
    TEXT CONTENT
@@ -601,6 +664,7 @@
     #designCanvas {
         flex: 1;
         width: 100%;
+        max-height: 1080px;
         background: white;
         position: relative;
         border: 2px dashed #ccc;
@@ -623,48 +687,52 @@
 </head>
 <!-- Part 2/7 -->
 <body>
-      <!--PHYSICAL UI-->
-<div class="studio-wrapper">
-  <!--LEFT PANEL - TOOLS & RESOURCES-->
-    <div id="toolbar" style="display: flex; flex-direction: column; width: 260px; min-height: 600px; background: #091119; padding: 10px; box-sizing: border-box; overflow-x: hidden;">    <div id="textEditor" style="background: #091119; padding: 3px; border-radius: 8px;">
-        <h4 style = "display:flex; justify-content: center; color: #fff; margin-bottom: 3px;">Tools</h4>
-        <textarea id="textInput" placeholder="Enter text...&#10;Line 2..." style="width:95%; height: 60px; padding: 8px; margin-bottom: 5px; border-radius: 4px; border: 1px solid #ddd; font-family: inherit; resize: vertical;"></textarea>      
-        <div style="display: flex; justify-content: center; margin-bottom: 5px;"><button id="addTextBtn" style="background: #024069; color: #fff; height: 28px; border-radius: 4px;" onclick="addTextToCanvas()">Add to Canvas</button></div>
-        <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 10px;">
-          <label style="font-size: 11px; color: #fff;">Font</label>
-          <select id="fontFamily" style="width: 120px; height: 28px; cursor: pointer; flex-grow: 1;">
-            <option value="'Montserrat', sans-serif" style="font-family: 'Montserrat';">Montserrat</option>
-            <option value="'Playfair Display', serif" style="font-family: 'Playfair Display';">Playfair Display</option>
-            <option value="'Pacifico', cursive" style="font-family: 'Pacifico';">Pacifico</option>
-            <option value="'Lobster', cursive" style="font-family: 'Lobster';">Lobster</option>
-            <option value="'Bungee', cursive" style="font-family: 'Bungee';">Bungee</option>
-            <option value="'Anton', sans-serif" style="font-family: 'Anton';">Anton</option>
-            <option value="'Bangers', cursive" style="font-family: 'Bangers';">Bangers</option>
-            <option value="'Rock Salt', cursive" style="font-family: 'Rock Salt';">Rock Salt</option>
-            <option value="'Monoton', cursive" style="font-family: 'Monoton';">Monoton</option>
-            <option value="'Special Elite', cursive" style="font-family: 'Special Elite';">Special Elite</option>
-            <option value="'Creepster', cursive" style="font-family: 'Creepster';">Creepster</option>
-            <option value="'Press Start 2P', cursive" style="font-family: 'Press Start 2P';">Pixel</option>
-            <option value="Arial">Standard Arial</option>
-            <option value="Aladin" style="font-family: 'Aladin';">Aladin</option>
-            <option value="Chango" style="font-family: 'Chango';">Chango</option>
-            <option value="Chewy" style="font-family: 'Chewy';">Chewy</option>
-            <option value="Chicle" style="font-family: 'Chicle';">Chicle</option>
-            <option value="Coiny" style="font-family: 'Coiny';">Coiny</option>
-            <option value="DynaPuff" style="font-family: 'DynaPuff';">DynaPuff</option>
-            <option value="Honk" style="font-family: 'Honk';">Honk (Color Font)</option>
-            <option value="Irish Grover" style="font-family: 'Irish Grover';">Irish Grover</option>
-            <option value="Macondo" style="font-family: 'Macondo';">Macondo</option>
-            <option value="Matemasie" style="font-family: 'Matemasie';">Matemasie</option>
-            <option value="Miltonian Tattoo" style="font-family: 'Miltonian Tattoo';">Miltonian Tattoo</option>
-            <option value="Monofett" style="font-family: 'Monofett';">Monofett</option>
-            <option value="Nabla" style="font-family: 'Nabla';">Nabla (3D Color)</option>
-            <option value="Noto Color Emoji" style="font-family: 'Noto Color Emoji';">Emoji Font</option>
-            <option value="Oleo Script Swash Caps" style="font-family: 'Oleo Script Swash Caps';">Oleo Script</option>
-            <option value="Ranchers" style="font-family: 'Ranchers';">Ranchers</option>
-            <option value="Ribeye" style="font-family: 'Ribeye';">Ribeye</option>
-          </select>
-        </div>
+    <div class="studio-wrapper">
+        <div id="toolbar">
+            <div id="textEditor">
+                <h4 style="display:flex; justify-content: center; color: #fff; margin-bottom: 5px;">Tools</h4>
+                
+                <textarea id="textInput" placeholder="Enter text...&#10;Line 2..."></textarea>
+                
+                <div style="display: flex; justify-content: center; margin-bottom: 8px;">
+                    <button id="addTextBtn" onclick="addTextToCanvas()">Add to Canvas</button>
+                </div>
+
+                <div class="tool-row" style="display: flex; align-items: center; gap: 5px; margin-bottom: 10px;">
+                    <label style="font-size: 11px; color: #fff;">Font</label>
+                    <select id="fontFamily" style="flex-grow: 1; height: 30px;">
+                    <option value="'Montserrat', sans-serif" style="font-family: 'Montserrat';">Montserrat</option>
+                    <option value="'Playfair Display', serif" style="font-family: 'Playfair Display';">Playfair Display</option>
+                    <option value="'Pacifico', cursive" style="font-family: 'Pacifico';">Pacifico</option>
+                    <option value="'Lobster', cursive" style="font-family: 'Lobster';">Lobster</option>
+                    <option value="'Bungee', cursive" style="font-family: 'Bungee';">Bungee</option>
+                    <option value="'Anton', sans-serif" style="font-family: 'Anton';">Anton</option>
+                    <option value="'Bangers', cursive" style="font-family: 'Bangers';">Bangers</option>
+                    <option value="'Rock Salt', cursive" style="font-family: 'Rock Salt';">Rock Salt</option>
+                    <option value="'Monoton', cursive" style="font-family: 'Monoton';">Monoton</option>
+                    <option value="'Special Elite', cursive" style="font-family: 'Special Elite';">Special Elite</option>
+                    <option value="'Creepster', cursive" style="font-family: 'Creepster';">Creepster</option>
+                    <option value="'Press Start 2P', cursive" style="font-family: 'Press Start 2P';">Pixel</option>
+                    <option value="Arial">Standard Arial</option>
+                    <option value="Aladin" style="font-family: 'Aladin';">Aladin</option>
+                    <option value="Chango" style="font-family: 'Chango';">Chango</option>
+                    <option value="Chewy" style="font-family: 'Chewy';">Chewy</option>
+                    <option value="Chicle" style="font-family: 'Chicle';">Chicle</option>
+                    <option value="Coiny" style="font-family: 'Coiny';">Coiny</option>
+                    <option value="DynaPuff" style="font-family: 'DynaPuff';">DynaPuff</option>
+                    <option value="Honk" style="font-family: 'Honk';">Honk (Color Font)</option>
+                    <option value="Irish Grover" style="font-family: 'Irish Grover';">Irish Grover</option>
+                    <option value="Macondo" style="font-family: 'Macondo';">Macondo</option>
+                    <option value="Matemasie" style="font-family: 'Matemasie';">Matemasie</option>
+                    <option value="Miltonian Tattoo" style="font-family: 'Miltonian Tattoo';">Miltonian Tattoo</option>
+                    <option value="Monofett" style="font-family: 'Monofett';">Monofett</option>
+                    <option value="Nabla" style="font-family: 'Nabla';">Nabla (3D Color)</option>
+                    <option value="Noto Color Emoji" style="font-family: 'Noto Color Emoji';">Emoji Font</option>
+                    <option value="Oleo Script Swash Caps" style="font-family: 'Oleo Script Swash Caps';">Oleo Script</option>
+                    <option value="Ranchers" style="font-family: 'Ranchers';">Ranchers</option>
+                    <option value="Ribeye" style="font-family: 'Ribeye';">Ribeye</option>
+                </select>
+                </div>
     
         <div style="display: grid; grid-template-columns: auto 30px 1fr 60px; gap: 8px; align-items: center; margin-bottom: 8px;">
             <label style="font-size: 11px; color: #fff;">Color</label>
@@ -744,8 +812,8 @@
                 <button onclick="ungroupSelected()">Ungroup</button>
                 <button onclick="applyRotation(-15)">Rotate ↺</button>
                 <button onclick="applyRotation(15)">Rotate ↻</button>
-                <button onclick="flip('h')">↔️ Mirror H</button>
-                <button onclick="flip('v')">↕️ Mirror V</button>
+                <button onclick="flip('h')">↔️ Flip Horizontal</button>
+                <button onclick="flip('v')">↕️ Flip Vertical</button>
                 <button onclick="deleteSelected()">Delete</button>
                 <button onclick="clearCanvas()" style="background: #cbee4c; color: #000;">Clear All</button>
           </div>
@@ -1635,7 +1703,7 @@ function loadProductVarieties(productKey) {
         if (index === 0) itemWrapper.click();
     });
 }
-// Add this helper to bridge Part 3 and Part 5
+
 function loadTemplate(url) {
     const img = new Image();
     img.crossOrigin = "anonymous";
@@ -2140,23 +2208,11 @@ function sendOrderToEmail() {
         btn.innerText = "Try Again";
     });
 }
-window.addEventListener('DOMContentLoaded', () => {
-    const pwaWelcome = document.getElementById('pwa-welcome');
-    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 
-    if (isMobile && !isStandalone && pwaWelcome) {
-        setTimeout(() => {
-            pwaWelcome.style.display = 'flex';
-        }, 3000);
-    }
-    
-    // Call your panel init here so it runs when the page loads
+window.addEventListener('DOMContentLoaded', () => {
     initVarietyPanel(); 
 });
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
-}
+
 
 const studioConfig = {
     master: [
@@ -2212,35 +2268,7 @@ window.onload = () => {
     saveHistory(); 
 };
 
-let deferredPrompt;
 
-
-window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent Chrome 67 and earlier from automatically showing the prompt
-    e.preventDefault();
-    // Stash the event so it can be triggered later.
-    deferredPrompt = e;
-    
-    // Create an "Install App" button dynamically
-    const installBtn = document.createElement('button');
-    installBtn.innerText = "Install App for Better Experience";
-    installBtn.style = "position:fixed; bottom:10px; left:50%; transform:translateX(-50%); z-index:9999; background:#3b82f6; color:white; padding:10px 20px; border-radius:20px; box-shadow:0 4px 10px rgba(0,0,0,0.2);";
-    
-    document.body.appendChild(installBtn);
-
-    installBtn.addEventListener('click', (e) => {
-        // Show the prompt
-        deferredPrompt.prompt();
-        // Wait for the user to respond to the prompt
-        deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('User accepted the A2HS prompt');
-            }
-            installBtn.remove();
-            deferredPrompt = null;
-        });
-    });
-});
 </script>
 </body>
 </html>
