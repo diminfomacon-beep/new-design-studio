@@ -692,12 +692,12 @@ html, body {
             <div id="textEditor">
                 <h4 style="display:flex; justify-content: center; color: #fff; margin-bottom: 5px;">Tools</h4>
                 
-                <textarea id="textInput" placeholder="Enter text...&#10;Line 2..."></textarea>
+                <textarea id="textInput" placeholder="Enter text...&#10;Line 2..." style="width:95%; height: 60px; padding: 8px; margin-bottom: 5px; border-radius: 4px; border: 1px solid #ddd; font-family: inherit; resize: vertical;"></textarea>      
                 
                 <div style="display: flex; justify-content: center; margin-bottom: 8px;">
                     <button id="addTextBtn" onclick="addTextToCanvas()">Add to Canvas</button>
                 </div>
-
+                        <!-- FONT -->
                 <div class="tool-row" style="display: flex; align-items: center; gap: 5px; margin-bottom: 10px;">
                     <label style="font-size: 11px; color: #fff;">Font</label>
                     <select id="fontFamily" style="flex-grow: 1; height: 30px;">
@@ -733,32 +733,32 @@ html, body {
                     <option value="Ribeye" style="font-family: 'Ribeye';">Ribeye</option>
                 </select>
                 </div>
-    
-        <div style="display: grid; grid-template-columns: auto 30px 1fr 60px; gap: 8px; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 11px; color: #fff;">Color</label>
-            <div id="fontColorPicker" style="font-size: 18px; cursor: pointer;">🎨</div>
-            <label style="font-size: 11px; color: #fff; text-align: right;">Size</label>
-            <input type="number" id="fontSizeInput" min="8" max="200" value="30" style="width: 100%; height: 24px;">
-        </div>
-
-        <div style="display: flex; gap: 3px; margin-bottom: 10px;">
-            <button id="btnBold" style="flex: 1; background: #024069; color: #fff; height: 28px; border-radius: 4px;">B</button>
-            <button id="btnItalic" style="flex: 1; background: #024069; color: #fff; height: 28px; border-radius: 4px;">I</button>
-            <button onclick="setTextAlignment('left')" style="flex: 1; padding: 5px; cursor: pointer; font-size: 10px;">Left</button>
-            <button onclick="setTextAlignment('center')" style="flex: 1; padding: 5px; cursor: pointer; font-size: 10px;">Center</button>
-            <button onclick="setTextAlignment('right')" style="flex: 1; padding: 5px; cursor: pointer; font-size: 10px;">Right</button>
-        </div>
-  
-    <div class="effects-control" style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div>
-            <label style="font-size: 12px;color: #fff;">Slant</label>
-            <input type="range" id="shearSlider" min="-30" max="30" value="0" style="width:100%;">
-        </div>
-          <div>
-            <label style="font-size: 12px;color: #fff;">Tilt</label>
-            <input type="range" id="curveSlider" min="-40" max="40" value="0" style="width:100%;">
-        </div>
-    </div>
+                        <!-- FONT SIZE -->
+                <div style="display: grid; grid-template-columns: auto 30px 1fr 60px; gap: 8px; align-items: center; margin-bottom: 8px;">
+                    <label style="font-size: 11px; color: #fff;">Color</label>
+                    <div id="fontColorPicker" style="font-size: 18px; cursor: pointer;">🎨</div>
+                    <label style="font-size: 11px; color: #fff; text-align: right;">Size</label>
+                    <input type="number" id="fontSizeInput" min="8" max="200" value="30" style="width: 100%; height: 24px;">
+                </div>
+                        <!-- FONT EDIT BUTTONS -->
+                <div style="display: flex; gap: 3px; margin-bottom: 10px;">
+                    <button id="btnBold" style="flex: 1; background: #024069; color: #fff; height: 28px; border-radius: 4px;">B</button>
+                    <button id="btnItalic" style="flex: 1; background: #024069; color: #fff; height: 28px; border-radius: 4px;">I</button>
+                    <button onclick="setTextAlignment('left')" style="flex: 1; padding: 5px; cursor: pointer; font-size: 10px;">Left</button>
+                    <button onclick="setTextAlignment('center')" style="flex: 1; padding: 5px; cursor: pointer; font-size: 10px;">Center</button>
+                    <button onclick="setTextAlignment('right')" style="flex: 1; padding: 5px; cursor: pointer; font-size: 10px;">Right</button>
+                </div>
+                        <!-- TEXT EFFECTS -->
+                <div class="effects-control" style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label style="font-size: 12px;color: #fff;">Slant</label>
+                        <input type="range" id="shearSlider" min="-30" max="30" value="0" style="width:100%;">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px;color: #fff;">Tilt</label>
+                        <input type="range" id="curveSlider" min="-40" max="40" value="0" style="width:100%;">
+                    </div>
+                </div>
                   
     <hr style="border:0;border-top:1px solid #eee;margin:3px 0;">
     <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px;">
