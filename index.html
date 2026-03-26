@@ -1,546 +1,2274 @@
 <!DOCTYPE html>
 <html lang="en">
+    <!-- Part 1/7 -->
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="products.js"></script>
-
-    <title>Gift Catalog</title>
-
-    <style>
-        body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #9cbdb1; color: #1f2937; margin: 5px; padding: 0;}
-       /* Add this to your CSS */
-      html, body {
-          overflow: visible !important; /* Force the content to expand */
-          height: auto !important;     /* Prevent the 100vh constraint */
-          margin: 0;
-          padding: 0;
-      }
-
-      /* Hide the scrollbar track specifically */
-      ::-webkit-scrollbar {
-          display: none;
-      } 
-        /* Sticky Header */
-        .sticky-header {
-            position: fixed;
-            top: 0; left: 0; width: 100%; z-index: 1000;
-            background: #2F6B64; color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        .header-content { max-width: 1000px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        h1 { margin: 0; font-size: 1.4rem; }
-
-        .bundle-bar { background: #CAE4DB; color: #1f2937; border-bottom: 2px solid #e5e7eb; padding: 10px 0; }
-        .bundle-bar-content { max-width: 1000px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
-        .bundle-header-title { font-weight: 800; text-transform: uppercase; font-size: 0.85rem; color: #2F6B64; cursor: pointer; text-decoration: underline; }
-        .total-display { font-size: 1.2rem; font-weight: bold; color: #059669; }
-
-        .btn-customize { background: #FEE84A; color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s;}
-        .btn-customize:hover { background: #cab723; }
-        .btn-customize:disabled { background: #d1d5db; cursor: not-allowed; }
-
-        /* Drawer */
-        #bundle-drawer { max-width: 1000px; margin: 0 auto; background: #CAE4DB; display: none; padding: 10px 20px; border-top: 1px solid #f3f4f6; max-height: 300px; overflow-y: auto; }
-        .drawer-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f9fafb; font-size: 0.9rem; align-items: center; }
-        /* The Floating Button */
-        .floating-bundle-btn {
-            position: fixed;
-            top: 15px; /* Pinned to the top instead of bottom */
-            right: 15px;
-            background: #FEE84A;
-            color: #000;
-            padding: 10px 18px;
-            border-radius: 30px; /* Clean oval shape */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            z-index: 9999;
-            cursor: pointer;
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: row; /* Horizontal layout for the top bar */
-            align-items: center;
-            gap: 12px;
-            transition: transform 0.2s ease, background 0.2s;
-        }
-
-        .floating-bundle-btn:hover {
-            transform: translateY(3px); /* Subtle downward push on hover */
-            background: #cebd3c;
-        }
-
-        #count-badge {
-            background: #BE123C;
-            color: white;
-            font-size: 11px;
-            font-weight: bold;
-            padding: 2px 8px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #floating-total {
-            font-weight: bold;
-            font-size: 14px;
-            border-left: 1px solid rgba(255,255,255,0.3);
-            padding-left: 10px;
-        }
-        #bundle-drawer {
-            display: none;
-            position: fixed;
-            /* This centers it in the Google Sites embed window */
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%); 
-            
-            width: 90%;
-            max-width: 400px;
-            max-height: 70vh;
-            background: #fff39c;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            z-index: 10000;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        /* Promo Banner */
-        #promo-banner {
-            background: #FEE84A; color: #000; text-align: center; 
-            padding: 12px; font-weight: bold; font-size: 0.9rem; 
-            border-bottom: 2px solid #92820b; margin-top: 145px;
-        }
-      
-        #promo-banner {
-            animation: pulse-soft 3s infinite ease-in-out;
-            transition: all 0.3s ease;
-        }
-
-        @keyframes pulse-soft {
-            0% { transform: scale(1); }
-            50% { transform: scale(1); }
-            100% { transform: scale(1); }
-        }
-
-        .container { max-width: 1000px; margin: 20px auto 40px; padding: 0 20px; }
-        .category { margin-bottom: 15px; border-radius: 12px; background: #CAE4DB; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .category-header { padding: 18px 25px; cursor: pointer; display: flex; justify-content: space-between; background: #2F6B64; border-bottom: 1px solid #1b3d39; font-weight: bold; }
-        .category-header:hover { background: #2F6B64 !important; color: #fff !important;}
-        .category-content { display: block; padding: 25px; } 
-        
-        .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-        .item-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; text-align: center; background: #fff; }
-        .item-card img { width: 100%; height: 130px; object-fit: contain !important; border-radius: 8px; margin-bottom: 10px; background: #fff; display: block;}
-        
-        .variety-select { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #d1d5db; font-size: 0.85rem; }
-        .add-btn { width: 100%; padding: 10px; border-radius: 8px; border: none; background: #2F6B64; color: white; cursor: pointer; font-weight: bold;  }
-
-        #toast {
-            visibility: hidden; min-width: 250px; background-color: #333; color: #fff;
-            text-align: center; border-radius: 8px; padding: 16px; position: fixed;
-            z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%);
-        }
-        #toast.show { visibility: visible; }
-
-        .qty-circle { background: #fff; border: 1px solid #ccc; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-        @media (max-width: 600px) { 
-          #promo-banner { margin-top: 160px; }
-          .header-content h1 { font-size: 1rem; }
-          .bundle-bar-content { padding: 0 10px; }
-          .floating-bundle-btn { font-size: 0.8rem; padding: 6px 10px; }
-          .btn-customize { padding: 8px 12px; font-size: 0.8rem; }
-          
-          /* Ensure the drawer doesn't take up the whole screen on tiny phones */
-          #bundle-drawer {
-              max-height: 250px;
-          }
-        }
-
-        #bundle-drawer {
-            transition: opacity 0.2s ease; /* Optional: makes it feel smoother */
-        }
-        /* Add this to your <style> block */
-        #bundle-drawer span[onclick="toggleDrawer()"]:hover {
-            color: #BE123C !important;
-            transform: scale(1.2);
-            display: inline-block;
-        }
-        .drawer-item {
-            transition: transform 0.1s ease;
-        }
-        .drawer-item:active {
-            transform: scale(0.98); /* Tactile feel when clicking +/- on mobile */
-        }
-
-   /* 1. The Container: Keeps the drawer centered with your buttons */
-    .bundle-bar {
-        position: relative;
-        width: 100%;
-        background: #CAE4DB;
-    }
-
-    /* 2. The Drawer: Set to absolute so it floats and doesn't create blank space */
-    #bundle-drawer {
-        display: none;
-        position: absolute;
-        top: 100%;         /* Starts right under the bar */
-        left: 50%;         /* Move to middle of screen */
-        transform: translateX(-50%); /* Centering magic */
-        
-        width: 100%;
-        max-width: 1000px; /* MATCH THIS to your .header-content max-width */
-        
-        background: rgba(255, 243, 156, 0.95); /* 95% solid yellow */
-        backdrop-filter: blur(5px);           /* Blurs the catalog behind it slightly */
-        z-index: 9999;
-        max-height: 60vh;
-        overflow-y: auto;
-        padding: 20px;
-        box-sizing: border-box;
-        border-bottom: 3px solid #2F6B64;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-
-    /* 3. Mobile Adjustment: On small screens, let it be full width */
-    @media (max-width: 1000px) {
-        #bundle-drawer {
-            width: 100%;
-            left: 0;
-            transform: none;
-        }
-    }
-    </style>
-</head>
-<body>
-
-<div id="toast">Item added to bundle!</div>
-
-<div class="sticky-header">
-    <div class="header-content"><h1>Bundles & Gifts Catalog</h1></div>
-    <div class="bundle-bar">
-        <div class="bundle-bar-content">
-           <div class="floating-bundle-btn" onclick="toggleDrawer(event)">
-              🛒 View Bundle 
-              <span id="count-badge">0</span>
-          </div>
-            <button id="go-to-bundle" class="btn-customize" disabled>Customize Items</button>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Design Studio">
+    <meta name="theme-color" content="#091119">
+    
+    <title>Design Studio</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat&family=Pacifico&family=Playfair+Display&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Aladin&family=Chango&family=Chewy&family=Chicle&family=Coiny&family=DynaPuff:wght@400..700&family=Honk&family=Irish+Grover&family=Macondo&family=Matemasie&family=Miltonian+Tattoo&family=Monofett&family=Nabla&family=Noto+Color+Emoji&family=Oleo+Script+Swash+Caps:wght@400;700&family=Ranchers&family=Ribeye&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script type="text/javascript">
+      (function(){
+          emailjs.init("1LZbCPvH49G_r0ypB"); // Get this from EmailJS Account tab
+      })();
+    </script>
+    <script>
+  window.addEventListener('DOMContentLoaded', () => {
+    // Check if it's a mobile device (Android/iOS)
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // Create the popup element
+      const overlay = document.createElement('div');
+      overlay.id = 'mobile-warning-overlay';
+      overlay.style.display = 'flex';
+      overlay.innerHTML = `
+        <div class="warning-card">
+          <h2>Performance Tip</h2>
+          <p>For the best design experience and full features, we recommend using a <b>computer or laptop</b>.</p>
+          <button onclick="document.getElementById('mobile-warning-overlay').style.display='none'">Continue Anyway</button>
         </div>
-        <div id="bundle-drawer"></div>
+      `;
+      document.body.appendChild(overlay);
+    }
+  });
+</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+        /* Performance Warning Popup */
+    #mobile-warning-overlay {display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10001; justify-content: center;align-items: center; padding: 20px;box-sizing: border-box;text-align: center;}
+    .warning-card {background: #fff;padding: 30px;border-radius: 15px; max-width: 400px; color: #333;}
+    .warning-card h2 { color: #024069; margin-top: 0; }
+    .warning-card button {margin-top: 20px;background: #3b82f6;padding: 10px 25px;font-size: 16px;}
+  :root {--primary:#111827; --accent:#3b82f6; --bg-light:#f5f5f5; --border-color:#ddd;}
+  body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:2px;display:flex;justify-content:center;user-select:none;}
+  #toolbar, #varietyPanel {flex-shrink: 0;}
+  .canvas-container {flex: 1; width: 100%; background: #091119;border-radius: 12px;display: flex; flex-direction: column; max-height: 700px; padding: 20px;box-sizing: border-box;position: relative;}
+  .canvas-toolbar {display: flex;gap: 5px;flex-wrap: wrap;justify-content: center;margin-bottom: 15px;width: 100%;}
+  .tab-button {flex: 1;background: #e0e0e0;color: #333;border: 1px solid #ccc;padding: 10px;cursor: pointer;font-weight: bold;transition: background 0.2s;}
+  .tab-button.active {background: #024069 !important;color: white !important;}
+  .tab-button:hover:not(.active) {background: #d0d0d0;}
+  .tab-pane::-webkit-scrollbar {width: 6px;}
+  .tab-pane::-webkit-scrollbar-thumb {background-color: #024069;border-radius: 10px;}
+  .tab-pane {  max-height: 480px;overflow-y: auto;overflow-x: hidden;padding-right: 5px;background: #fff;border: 1px solid #eee;}
+  #pixabayGrid, #templateGrid {display: grid !important;grid-template-columns: repeat(4, 1fr) !important;gap: 3px;padding: 10px;height: 300px}
+  .gallery-item {width: 45px;aspect-ratio: 1 / 1; object-fit:contain;border-radius: 4px; display: block;}
+  .gallery-item:hover {z-index: 9999;transform: scale(1.5); transform-origin: center;}
+  #templateGrid .gallery-item:hover, #pixabayGrid .gallery-item:hover {transition-delay: 0.1s;}
+  button {font-size:12px;background:#024069;color:rgb(253, 249, 249);border:none;padding:8px 8px;cursor:pointer;border-radius:6px;}
+  .span-2 {grid-column: span 2;    width: 100% !important;}
+  #swatchContainer {display: none; position: absolute; top: 80px; left: 310px; z-index: 9999 !important; pointer-events: auto !important; width: 220px; grid-template-columns: repeat(10, 1fr); gap: 2px; background: white; padding: 8px; border: 2px solid #3b82f6; border-radius: 8px;max-height: 200px;overflow-y: auto;box-shadow: 0 10px 25px rgba(0,0,0,0.3);}
+  .swatch-item {width: 100%;padding-bottom: 100%;cursor: pointer !important;border: 1px solid #eee;}
+  .active-layer {outline: 2px dashed #007bff; }
+  #selection-marquee {border: 1px dashed #007bff; background-color: rgba(0, 123, 255, 0.1); position: absolute;pointer-events: none; z-index: 10000;display: none;}
+  .multi-selected {outline: 2px dashed #3b82f6 !important; outline-offset: 2px;}
+  .group-container .draggable {outline: none !important;border: none !important;}
+  .group-container.active-layer {outline: 2px solid #024069;}
+  .group-container.active-layer .draggable {pointer-events: none;}
+  .group-container .draggable img {width: 100% !important;height: 100% !important; object-fit: fill !important;}
+  .group-container span { white-space: nowrap;display: block;}
+  .draggable img {width: 100% !important;height: 100% !important;object-fit: contain !important;pointer-events: none;user-select: none; display: block;-webkit-user-drag: none;}
+  .active-layer {outline: 2px dashed #007bff;}
+   /* =========================
+   BASE RESIZE HANDLE
+========================= */
+.resize-handle {position: absolute; width: 12px;height: 12px;background: #3b82f6;border: 2px solid #ffffff;border-radius: 50%; z-index: 9999;display: none; pointer-events: all;touch-action: none;cursor: pointer;}
+
+/* Bigger invisible touch target for mobile */
+.resize-handle::after {content: '';position: absolute;top: -10px;left: -10px;right: -10px;bottom: -10px;}
+
+/* =========================
+   SHOW HANDLES WHEN ACTIVE
+========================= */
+.draggable.active-layer .resize-handle {display: block;}
+
+/* =========================
+   HANDLE POSITIONS
+========================= */
+
+/* Corners */
+.handle-tl { top: -6px; left: -6px; cursor: nwse-resize; }
+.handle-tr { top: -6px; right: -6px; cursor: nesw-resize; }
+.handle-bl { bottom: -6px; left: -6px; cursor: nesw-resize; }
+.handle-br { bottom: -6px; right: -6px; cursor: nwse-resize; }
+
+/* Edges */
+.handle-t  { top: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.handle-b  { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.handle-l  { left: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+.handle-r  { right: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+
+/* =========================
+   CRITICAL: PREVENT CLIPPING
+========================= */
+.draggable {
+    overflow: visible !important;
+} 
+  @media (max-width: 900px) {
+    /* 1. Stack the columns vertically */
+   .studio-wrapper {
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important; 
+        min-height: 100vh;
+    }
+
+    /* Force the workspace to be visible */
+    #workspace {
+        display: flex !important;
+        flex-shrink: 0;
+        width: 100% !important;
+        height: 400px !important; /* Fixed height for mobile */
+        min-height: 400px !important;
+        padding: 10px 0 !important;
+        order: 1; /* Move to top */
+        position: sticky; 
+        top: 0; 
+        z-index: 10;
+    }
+
+    /* Make sure the container inside doesn't hide the canvas */
+    .canvas-container {
+        width: 100% !important;
+        height: 100% !important;
+        background: transparent !important; /* Helps see if it's there */
+    }
+
+    /* The actual Canvas box */
+    #designCanvas {
+        width: 320px !important; /* Standard mobile width */
+        height: 320px !important;
+        margin: 0 auto;
+        display: block !important;
+        position: relative !important;
+        background: white;
+    }
+    /* 2. Make the toolbar full width */
+    #toolbar {
+        width: 100% !important;
+        height: auto !important;
+        order: 2; /* Move tools below the canvas for better UX */
+        flex-shrink: 0;
+    }
+    #varietyPanel {
+        width: 100% !important;
+        height: auto;
+        order: 3; /* Move styles to the bottom */
+        flex-direction: column !important;
+        flex-shrink: 0;
+    }
+
+  
+
+    .variety-thumb {
+        flex-shrink: 0; /* Prevent thumbs from squishing */
+        width: 60px !important;
+        height: 60px !important;
+        gap: 10px;
+    }
+
+    
+    .variety-item {
+        width: 85px !important; /* Fixed width so they don't squish labels */
+        margin-right: 15px !important;
+        margin-bottom: 10px !important; /* Remove bottom margin for horizontal scroll */
+        gap: 10px;
+        flex-shrink: 0;
+    }
+   body {
+        /* Prevents the 'pull-to-refresh' gesture in mobile browsers */
+        overscroll-behavior-y: contain; 
+        } 
+
+   html, body {
+        /* Keep this to prevent the whole page from bouncing */
+        position: fixed; 
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden; 
+        background-color: #021302; /* Matches your wrapper color */
+    }
+    
+    .studio-wrapper {
+        /* Change height to 100% of the visible area */
+        height: 100vh; 
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+        
+        /* This allows the user to scroll through the studio tools */
+        overflow-y: auto !important; 
+        overflow-x: hidden;
+        
+        /* Smooth scrolling for mobile */
+        -webkit-overflow-scrolling: touch; 
+        
+        /* Padding to handle iPhone notches and home bars */
+        padding-bottom: env(safe-area-inset-bottom, 20px); 
+        box-sizing: border-box;
+    } 
+    
+    
+   
+    /* Position handles correctly */
+    .handle-tl { top: -6px; left: -6px; cursor: nwse-resize; }
+    .handle-tr { top: -6px; right: -6px; cursor: nesw-resize; }
+    .handle-bl { bottom: -6px; left: -6px; cursor: nesw-resize; }
+    .handle-br { bottom: -6px; right: -6px; cursor: nwse-resize; }
+    .handle-t  { top: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+    .handle-b  { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+    .handle-l  { left: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+    .handle-r  { right: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+    }
+
+    .multi-selected {
+        outline: 2px dashed #3b82f6 !important;
+        background: rgba(59, 130, 246, 0.1);
+    }
+
+    /* Optional: Add a small scale effect when long-pressing */
+    .draggable:active {
+        transform: scale(1.02);
+        transition: transform 0.1s;
+    }
+    #multiSelectToggle.active-mode {
+        background-color: #3b82f6;
+        color: white;
+        border-color: #2563eb;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .toolbar {
+        display: flex;
+        flex-wrap: wrap; /* This allows buttons to drop to a second line on small screens */
+        gap: 5px;
+        padding: 10px;
+        justify-content: center; /* Centers buttons on mobile */
+        background: #f8f9fa;
+        border-bottom: 1px solid #ddd;
+    }
+    /* Base style for the button */
+    .tool-btn {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        color: white;
+        background: #024069;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+    }
+
+    /* Style when Multi-Select is ON */
+    .tool-btn.active-mode {
+        background-color: #3b82f6 !important; /* Blue background */
+        color: #024069 !important;
+        border-color: #2563eb !important;
+        font-weight: bold;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+.text-wrapper {
+    position: relative;
+    pointer-events: none; /* Let the drag events pass through to the parent */
+}
+
+
+/* This forces the text container to ignore all wrap commands */
+
+.text-wrapper {
+    display: inline-block;
+    white-space: pre; /* Keeps the word on one line */
+}
+/* =========================
+   DRAGGABLE TEXT CONTAINER
+========================= */
+.draggable {
+    position: absolute;
+    display: inline-block;
+    
+    /* Size behavior */
+    width: fit-content;
+    max-width: 100%;
+    height: auto;
+
+    /* Spacing + visuals */
+    padding: 8px 12px;
+    border: 2px solid transparent;
+    box-sizing: border-box;
+
+    /* Interaction */
+    cursor: move;
+    touch-action: none;
+
+    /* Prevent weird scaling issues */
+    transform-origin: top left;
+}
+
+:root {--primary:#111827; --accent:#3b82f6; --bg-light:#f5f5f5; --border-color:#ddd;}
+
+/* Global Mobile Fixes */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent body bounce */
+    background-color: #091119;
+}
+
+.studio-wrapper {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    background: #091119;
+    overflow: hidden;
+}
+
+/* Tablet & Mobile Layout Adjustment */
+@media (max-width: 1024px) {
+    .studio-wrapper {
+        flex-direction: column !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    #workspace {
+        order: 1;
+        width: 100% !important;
+        height: 50vh !important; /* Half screen for canvas */
+        min-height: 350px;
+        position: sticky;
+        top: 0;
+    }
+    
+    #toolbar {
+        order: 2;
+        width: 100% !important;
+        height: auto !important;
+    }
+    
+    #varietyPanel {
+        order: 3;
+        width: 100% !important;
+        height: auto !important;
+        flex-direction: row !important; /* Horizontal scroll for styles */
+        overflow-x: auto;
+    }
+
+    #designCanvas {
+        width: 90vw !important; /* Scales to screen width */
+        height: 90vw !important; /* Stays square */
+        max-width: 350px;
+        max-height: 350px;
+    }
+}
+
+/* Rest of your existing CSS below... */
+
+/* =========================
+   TEXT CONTENT
+========================= */
+.draggable span {
+    display: block;
+
+    /* TEXT BEHAVIOR */
+    white-space: pre-wrap;       /* ✅ supports multi-line */
+    word-break: break-word;      /* ✅ prevents overflow */
+    overflow-wrap: break-word;
+
+    /* SIZE */
+    width: 100%;
+    min-width: 1px;
+
+    /* TEXT RENDERING */
+    line-height: 1.2;
+
+    /* Prevent text from blocking drag */
+    pointer-events: none;
+}
+
+/* =========================
+   SINGLE LINE MODE (optional toggle)
+========================= */
+.draggable.single-line span {
+    white-space: nowrap;
+    width: auto;
+}
+
+/* =========================
+   ACTIVE STATE (selection)
+========================= */
+.draggable.active-layer {
+    border: 2px dashed #3b82f6;
+}
+
+/* =========================
+   MOBILE IMPROVEMENTS
+========================= */
+@media (max-width: 900px) {
+    .draggable {
+        padding: 10px 14px; /* bigger touch area */
+    }
+
+    .draggable span {
+        font-size: 16px; /* prevents iOS zoom issues */
+    }
+}
+
+    /* ... (Your existing layout styles) ... */
+
+    
+
+    .draggable {
+        position: absolute;
+        cursor: move;
+        padding: 0;
+        border: 2px solid transparent;
+        user-select: none;
+        display: inline-block;
+        box-sizing: content-box; /* Important for handle alignment */
+    }
+
+    .active-layer {
+        border: 2px solid #024069 !important;
+    }
+
+    /* 8-Point Handle System */
+    .resize-handle {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: #024069;
+        border: 1px solid white;
+        border-radius: 50%;
+        display: none; /* Only show when active */
+        z-index: 100;
+    }
+
+    .active-layer .resize-handle { display: block; }
+
+    .handle-tl { top: -6px; left: -6px; cursor: nw-resize; }
+    .handle-tr { top: -6px; right: -6px; cursor: ne-resize; }
+    .handle-bl { bottom: -6px; left: -6px; cursor: sw-resize; }
+    .handle-br { bottom: -6px; right: -6px; cursor: se-resize; }
+    .handle-t { top: -6px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+    .handle-b { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+    .handle-l { left: -6px; top: 50%; transform: translateY(-50%); cursor: w-resize; }
+    .handle-r { right: -6px; top: 50%; transform: translateY(-50%); cursor: e-resize; }
+
+    .text-wrapper span {
+        display: block;
+        line-height: 1.2;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+    /* Change 'tomato' to your preferred hex code (e.g., #024069) */
+    input[type="range"] {
+        accent-color: #024069; /* This is the modern, easy way to change slider colors */
+    }
+
+    /* For older browsers or more control */
+    input[type="range"]::-webkit-slider-thumb {
+        background: #024069;
+    }
+    /* While editing, keep the outline clear but don't show resize handles */
+    .draggable span[contenteditable="true"] {
+        outline: none;
+        cursor: text;
+        background: rgba(255, 255, 255, 0.5); /* Slight highlight to show edit mode */
+    }
+
+    .draggable span[contenteditable="true"] ~ .resize-handle {
+        display: none !important; /* Hide handles so they don't get in the way of the cursor */
+    }
+    .draggable {
+        /* ... existing styles ... */
+        transform-origin: center center;
+        display: inline-block; /* Ensures the box wraps tightly around content */
+    }
+    
+
+    .draggable {
+        /* Ensure no weird filters are applied during capture */
+        will-change: transform;
+    }
+    #product-bg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Centers the mockup perfectly */
+        width: auto !important;
+        height: auto !important;
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain; /* The magic property */
+        z-index: 0;
+        pointer-events: none;
+    }
+   
+    .draggable img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important; /* Force proportion */
+        display: block;
+    }
+     
+    #thumbContainer::-webkit-scrollbar {
+        width: 5px;
+    }
+    #thumbContainer::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    #thumbContainer::-webkit-scrollbar-thumb {
+        background: #fbbf24;
+        border-radius: 10px;
+    }
+    
+    /* =========================================
+   1. MAIN LAYOUT (The Framework)
+   ========================================= */
+    .studio-wrapper {
+        display: flex !important;
+        flex-direction: row;
+        width: 100vw;
+        height: 100vh;
+        background: #091119;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    #workspace {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #021302;
+        min-width: 0;
+        padding: 10px;
+    }
+
+    /* =========================================
+    2. VARIETY PANEL (The Sidebar)
+    ========================================= */
+    #varietyPanel {
+        width: 140px; /* Slightly wider to prevent label clipping */
+        display: flex;
+        flex-direction: column;
+        background: #091119;
+        border-left: 1px solid #444;
+        height: 100%;
+        flex-shrink: 0;
+        z-index: 1000;
+    }
+
+    #varietyPanel h5 {
+        color: #fff;
+        text-align: center;
+        margin: 15px 0 10px 0;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        letter-spacing: 1px;
+    }
+
+    #thumbContainer {
+        flex: 1; /* This takes up all available space above the button */
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        padding: 10px;
+        scrollbar-width: thin; /* Firefox */
+    }
+
+    /* Custom Scrollbar for the Thumbnails */
+    #thumbContainer::-webkit-scrollbar {
+        width: 5px;
+    }
+    #thumbContainer::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    #thumbContainer::-webkit-scrollbar-thumb {
+        background: #fbbf24;
+        border-radius: 10px;
+    }
+
+    /* =========================================
+    3. SUBMIT SECTION (The Sticky Bottom)
+    ========================================= */
+    #submitSection {
+        margin-top: auto; /* Forces it to the bottom */
+        padding: 15px 10px;
+        background: rgba(0, 0, 0, 0.4); /* Darker contrast */
+        border-top: 2px solid #7d1236;
+        z-index: 1001;
+    }
+
+    #submitOrderBtn {
+        width: 100% !important;
+        padding: 12px 5px;
+        background: #cbee4c !important; /* Success Green */
+        color: #000 !important;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        transition: transform 0.2s, background 0.2s;
+        display: block !important; /* Force visibility */
+    }
+
+    #submitOrderBtn:hover {
+        background: #218838 !important;
+        transform: translateY(-1px);
+    }
+
+    #submitOrderBtn:active {
+        transform: translateY(1px);
+    }
+    /* Hide the app download popup on desktops */
+    @media (min-width: 769px) {
+        #app-download-popup {
+            display: none !important;
+        }
+    }
+
+    /* =========================================
+    4. CANVAS & DRAGGABLES
+    ========================================= */
+    .canvas-container {
+        flex: 1;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    #designCanvas {
+        flex: 1;
+        width: 100%;
+        max-height: 1080px;
+        background: white;
+        position: relative;
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        overflow: hidden;
+        contain: paint; /* Optimization for capture */
+    }
+
+    .draggable {
+        position: absolute;
+        cursor: move;
+        user-select: none;
+        display: inline-block;
+        transform-origin: center center;
+        will-change: transform;
+    }
+    
+    
+</style>
+</head>
+<!-- Part 2/7 -->
+<body>
+    <div class="studio-wrapper">
+        <div id="toolbar">
+            <div id="textEditor">
+                <h4 style="display:flex; justify-content: center; color: #fff; margin-bottom: 5px;">Tools</h4>
+                
+                <textarea id="textInput" placeholder="Enter text...&#10;Line 2..." style="width:95%; height: 60px; padding: 8px; margin-bottom: 5px; border-radius: 4px; border: 1px solid #ddd; font-family: inherit; resize: vertical;"></textarea>      
+                
+                <div style="display: flex; justify-content: center; margin-bottom: 8px;">
+                    <button id="addTextBtn" onclick="addTextToCanvas()">Add to Canvas</button>
+                </div>
+                        <!-- FONT -->
+                <div class="tool-row" style="display: flex; align-items: center; gap: 5px; margin-bottom: 10px;">
+                    <label style="font-size: 11px; color: #fff;">Font</label>
+                    <select id="fontFamily" style="flex-grow: 1; height: 30px;">
+                    <option value="'Montserrat', sans-serif" style="font-family: 'Montserrat';">Montserrat</option>
+                    <option value="'Playfair Display', serif" style="font-family: 'Playfair Display';">Playfair Display</option>
+                    <option value="'Pacifico', cursive" style="font-family: 'Pacifico';">Pacifico</option>
+                    <option value="'Lobster', cursive" style="font-family: 'Lobster';">Lobster</option>
+                    <option value="'Bungee', cursive" style="font-family: 'Bungee';">Bungee</option>
+                    <option value="'Anton', sans-serif" style="font-family: 'Anton';">Anton</option>
+                    <option value="'Bangers', cursive" style="font-family: 'Bangers';">Bangers</option>
+                    <option value="'Rock Salt', cursive" style="font-family: 'Rock Salt';">Rock Salt</option>
+                    <option value="'Monoton', cursive" style="font-family: 'Monoton';">Monoton</option>
+                    <option value="'Special Elite', cursive" style="font-family: 'Special Elite';">Special Elite</option>
+                    <option value="'Creepster', cursive" style="font-family: 'Creepster';">Creepster</option>
+                    <option value="'Press Start 2P', cursive" style="font-family: 'Press Start 2P';">Pixel</option>
+                    <option value="Arial">Standard Arial</option>
+                    <option value="Aladin" style="font-family: 'Aladin';">Aladin</option>
+                    <option value="Chango" style="font-family: 'Chango';">Chango</option>
+                    <option value="Chewy" style="font-family: 'Chewy';">Chewy</option>
+                    <option value="Chicle" style="font-family: 'Chicle';">Chicle</option>
+                    <option value="Coiny" style="font-family: 'Coiny';">Coiny</option>
+                    <option value="DynaPuff" style="font-family: 'DynaPuff';">DynaPuff</option>
+                    <option value="Honk" style="font-family: 'Honk';">Honk (Color Font)</option>
+                    <option value="Irish Grover" style="font-family: 'Irish Grover';">Irish Grover</option>
+                    <option value="Macondo" style="font-family: 'Macondo';">Macondo</option>
+                    <option value="Matemasie" style="font-family: 'Matemasie';">Matemasie</option>
+                    <option value="Miltonian Tattoo" style="font-family: 'Miltonian Tattoo';">Miltonian Tattoo</option>
+                    <option value="Monofett" style="font-family: 'Monofett';">Monofett</option>
+                    <option value="Nabla" style="font-family: 'Nabla';">Nabla (3D Color)</option>
+                    <option value="Noto Color Emoji" style="font-family: 'Noto Color Emoji';">Emoji Font</option>
+                    <option value="Oleo Script Swash Caps" style="font-family: 'Oleo Script Swash Caps';">Oleo Script</option>
+                    <option value="Ranchers" style="font-family: 'Ranchers';">Ranchers</option>
+                    <option value="Ribeye" style="font-family: 'Ribeye';">Ribeye</option>
+                </select>
+                </div>
+                        <!-- FONT SIZE -->
+                <div style="display: grid; grid-template-columns: auto 30px 1fr 60px; gap: 8px; align-items: center; margin-bottom: 8px;">
+                    <label style="font-size: 11px; color: #fff;">Color</label>
+                    <div id="fontColorPicker" style="font-size: 18px; cursor: pointer;">🎨</div>
+                    <label style="font-size: 11px; color: #fff; text-align: right;">Size</label>
+                    <input type="number" id="fontSizeInput" min="8" max="200" value="30" style="width: 100%; height: 24px;">
+                </div>
+                        <!-- FONT EDIT BUTTONS -->
+                <div style="display: flex; gap: 3px; margin-bottom: 10px;">
+                    <button id="btnBold" style="flex: 1; background: #024069; color: #fff; height: 28px; border-radius: 4px;">B</button>
+                    <button id="btnItalic" style="flex: 1; background: #024069; color: #fff; height: 28px; border-radius: 4px;">I</button>
+                    <button onclick="setTextAlignment('left')" style="flex: 1; padding: 5px; cursor: pointer; font-size: 10px;">Left</button>
+                    <button onclick="setTextAlignment('center')" style="flex: 1; padding: 5px; cursor: pointer; font-size: 10px;">Center</button>
+                    <button onclick="setTextAlignment('right')" style="flex: 1; padding: 5px; cursor: pointer; font-size: 10px;">Right</button>
+                </div>
+                        <!-- TEXT EFFECTS -->
+                <div class="effects-control" style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label style="font-size: 12px;color: #fff;">Slant</label>
+                        <input type="range" id="shearSlider" min="-30" max="30" value="0" style="width:100%;">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px;color: #fff;">Tilt</label>
+                        <input type="range" id="curveSlider" min="-40" max="40" value="0" style="width:100%;">
+                    </div>
+                </div>
+                  
+    <hr style="border:0;border-top:1px solid #eee;margin:3px 0;">
+    <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px;">
+        <h5 style="color: #fff; margin: 5px 0;">Upload</h5>
+        <input type="file" id="imageInput" accept="image/*" style="color: #fff; font-size: 11px;">
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px;">
+        <h5 style="color: #fff; margin: 5px 0;">Save</h5>
+        <button id="downloadBtn" style="width: 60%; padding: 8px; background: #cbee4c; color: #000; border: none; border-radius: 4px; cursor: pointer;">Download PNG</button>
+    </div>
+    <hr style="border:0;border-top:1px solid #eee;margin:3px 0;">
+   
+  
+
+    <div style="display: flex; gap: 2px; margin-bottom: 10px;">
+        <button class="tab-button active" onclick="showTab('pixabay-tab', this)">Pixabay Images</button>
+        <button class="tab-button" onclick="showTab('template-tab', this)">Design Templates</button>
+    </div>
+
+    <div id="pixabay-tab" class="tab-pane">
+        <div style="display: flex; gap: 5px;">
+            <input type="text" id="gallerySearch" placeholder="Search graphics..." style="flex: 1; padding: 5px;">
+            <button id="searchBtn">Go</button>
+        </div>
+        <div id="pixabayGrid"></div>
+    </div>
+
+    <div id="template-tab" class="tab-pane" style="display: none;">
+        <input type="text" id="templateSearch" placeholder="Filter templates..." 
+              style="width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;" 
+              onkeyup="filterTemplates()">
+        
+        <div id="templateGrid">
+            </div>
+    </div>
+    </div>
+
+  </div>
+  <!--CENTER PANEL - CANVAS & TOOLBAR-->
+  <div id="workspace">
+      <div class="canvas-container">
+          <div class="canvas-toolbar">
+                <button onclick="changeZIndex('front')">To Front</button>
+                <button onclick="changeZIndex('back')">To Back</button>
+                <button onclick="changeZIndex('forward')">Forward</button>
+                <button onclick="changeZIndex('backward')">Backward</button>
+                <button onclick="undo()">Undo</button>
+                <button onclick="redo()">Redo</button>
+                <button id="multiSelectToggle" class="tool-btn" title="Toggle Multi-Select">Multiple: OFF</button>
+                <button onclick="groupSelected()">Group</button>
+                <button onclick="ungroupSelected()">Ungroup</button>
+                <button onclick="applyRotation(-15)">Rotate ↺</button>
+                <button onclick="applyRotation(15)">Rotate ↻</button>
+                <button onclick="flip('h')">↔️ Flip Horizontal</button>
+                <button onclick="flip('v')">↕️ Flip Vertical</button>
+                <button onclick="deleteSelected()">Delete</button>
+                <button onclick="clearCanvas()" style="background: #cbee4c; color: #000;">Clear All</button>
+          </div>
+
+          <div id="designCanvas"></div>
+      </div>
+  </div>   
+    
+<!--RIGHT PANEL - VARIETY-->
+  <div id="varietyPanel" style="display: flex; flex-direction: column; height: 100%; padding: 10px; box-sizing: border-box;">
+    
+    <h5 style="color: #fff; margin: 0 0 10px 0; font-size: 14px; text-align: center;">Product Selection</h5>
+
+    <div id="thumbContainer" style="
+        display: flex; 
+        flex-direction: column;   /* Stack one per row */
+        align-items: center;      /* Center them horizontally */
+        flex-grow: 1;             /* PUSHES THE SUBMIT SECTION TO THE BOTTOM */
+        overflow-y: auto;         /* Scrollbar if too many products */
+        gap: 12px;                /* Space between stacked thumbs */
+        padding: 5px;
+        margin-bottom: 15px;      /* Gap before the inputs start */
+    ">
+        </div>
+
+    <div id="submitSection" style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #444; padding-top: 15px;">
+        <input type="text" id="customerName" placeholder="Your Name" style="padding: 10px; border-radius: 4px; border: none;">
+        <input type="email" id="customerEmail" placeholder="Your Email" style="padding: 10px; border-radius: 4px; border: none;">
+        <button id="submitOrderBtn" onclick="sendOrderToEmail()" style="padding: 12px; cursor: pointer; font-weight: bold; background: #fbbf24; border: none; border-radius: 5px;">
+            Submit Design
+        </button>
+    </div>
+
+</div>
+  <!--SWATCH CONTAINER(NOT DISPLAYED ON SCREEN)-->
+  <div id="swatchContainer"> </div>
+<div id="pwa-welcome" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10001; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
+    <div style="background:white; padding:25px; border-radius:15px; text-align:center; max-width:300px; position:relative;">
+        <h5 style="margin-top:0; color:#024069;">App Version Available</h5>
+        <p id="pwa-instructions" style="font-size:14px; color:#555; line-height:1.5;">
+            Add this studio to your home screen for a full-screen experience and faster access!
+        </p>
+        <div id="ios-instructions" style="display:none; margin-top:15px;">
+            <p style="font-size:13px; font-weight:bold;">Tap the "Share" icon <img src="https://img.icons8.com/ios/50/000000/export.png" style="width:18px; vertical-align:middle;"> then "Add to Home Screen".</p>
+        </div>
+        <button id="pwa-install-btn" style="display:none; width:100%; background:#024069; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; margin-top:10px;">Install Now</button>
+        <button onclick="document.getElementById('pwa-welcome').style.display='none'" style="background:none; border:none; color:#999; margin-top:15px; cursor:pointer; font-size:12px;">Maybe Later</button>
     </div>
 </div>
-
-<div id="promo-banner">
-    🛒 Bundle & Save: 2-4 Items (5%) | 5-9 (10%) | 10-19 (15%) | 20+ (25%)
 </div>
-
-<div class="container" id="catalog-container"></div>
-
 <script>
- 
-    // --- 1. EMBEDDED PRODUCT LIST (Keep this exact list) ---
-   
+    /*Part 3/7 */
+/********************************************* GLOBAL STATE & CONFIG ********************************************/
+const PIXABAY_API_KEY = '54841320-2fc493da46915b0eb0a6f740c';
+const designCanvas = document.getElementById('designCanvas');
+let activeItem = null;
+let selectedItems = [];
+let historyStack = [];
+let historyIndex = -1;
+let isSelecting = false;
+let startX, startY;
+let isMultiSelectMode = false;
 
-    // --- 2. CORE UI FUNCTIONS ---
-    let bundle = JSON.parse(localStorage.getItem('myBundle')) || {};
 
-    // 3. CORE UI FUNCTIONS
-    function showToast(message) {
-        const toast = document.getElementById("toast");
-        if (!toast) return;
-        toast.textContent = message;
-        toast.classList.add("show");
-        setTimeout(() => { toast.classList.remove("show"); }, 3000);
-    }
+// --- ONLY USE THIS VERSION ---
+const multiBtn = document.getElementById('multiSelectToggle');
+if (multiBtn) {
+    multiBtn.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        isMultiSelectMode = !isMultiSelectMode;
+        
+        this.innerText = isMultiSelectMode ? "Multiple: ON" : "Multiple: OFF";
+        this.classList.toggle('active-mode', isMultiSelectMode);
+        
+        console.log("Multi-select mode is:", isMultiSelectMode);
+    };
+}
 
-   window.toggleDrawer = function(event) {
-    if (event) event.stopPropagation();
-    const d = document.getElementById('bundle-drawer');
-    if (!d) return;
+const marquee = document.createElement('div');
+marquee.id = 'selection-marquee';
+document.body.appendChild(marquee);
+designCanvas.addEventListener('mousedown', (e) => {
+    if (e.target === designCanvas) {
+        // Start marquee selection
+        isSelecting = true;
+        startX = e.pageX;
+        startY = e.pageY;
+        
+        marquee.style.left = startX + 'px';
+        marquee.style.top = startY + 'px';
+        marquee.style.width = '0px';
+        marquee.style.height = '0px';
+        marquee.style.display = 'block';
 
-    // Just show or hide. No layout pushing.
-    d.style.display = (d.style.display === "block") ? "none" : "block";
-};
-// 1. Close drawer when scrolling
-window.addEventListener('scroll', function() {
-    const d = document.getElementById('bundle-drawer');
-    if (d && d.style.display === "block") {
-        d.style.display = "none";
-    }
-}, { passive: true });
-
-// 2. Close drawer when clicking anywhere else on the page
-document.addEventListener('click', function(event) {
-    const d = document.getElementById('bundle-drawer');
-    const bundleBar = document.querySelector('.bundle-bar');
-
-    // If the drawer is open AND the click was NOT inside the drawer or the bar
-    if (d && d.style.display === "block") {
-        if (!d.contains(event.target) && !bundleBar.contains(event.target)) {
-            d.style.display = "none";
+        if (!e.shiftKey) {
+            deselectAll();
         }
     }
 });
-   window.clearBundle = function() {
-    // Remove the confirmation check to avoid Google Sites iframe blocks
-    localStorage.removeItem('myBundle');
-    bundle = {}; 
-    
-    // Refresh the UI to show the empty state
-    updateUI();
-    
-    // Optional: Close the drawer automatically after clearing
-    const d = document.getElementById('bundle-drawer');
-    if (d) d.style.display = "none";
-    
-    showToast("Bundle cleared");
-};
-    
+let templateMetadata = {}; // Global storage for tags
+async function fetchTemplatesFromGitHub() {
+    const grid = document.getElementById('templateGrid');
+    const apiUrl = `https://api.github.com/repos/${GH_CONFIG.owner}/${GH_CONFIG.repo}/contents/${GH_CONFIG.path}?ref=${GH_CONFIG.branch}`;
+    const metadataUrl = `https://raw.githubusercontent.com/${GH_CONFIG.owner}/${GH_CONFIG.repo}/${GH_CONFIG.branch}/${GH_CONFIG.path}/metadata.json`;
 
-    // 4. ADD TO BUNDLE LOGIC
-    window.addToBundle = function(btn) {
-    const card = btn.closest('.item-card');
-    const productId = card.getAttribute('data-id'); 
-    
-    // Grab all possible selections
-    const sizeEl = card.querySelector('.size-select');
-    const varEl = card.querySelector('.variation-select');
-    const styleEl = card.querySelector('.style-select');
-    const qtyInput = card.querySelector('.qty-input');
-    
-    const qtyToAdd = qtyInput ? parseInt(qtyInput.value) : 1;
+    try {
+        // 1. Try to fetch the metadata JSON
+        const metaRes = await fetch(metadataUrl);
+        if (metaRes.ok) {
+            templateMetadata = await metaRes.json();
+        }
 
-    // Build a combined label (e.g., "XL - Logo Front")
-    let labels = [];
-    if (sizeEl) labels.push(sizeEl.value);
-    if (varEl) labels.push(varEl.value);
-    if (styleEl) labels.push(styleEl.value);
-    
-    const combinedVariety = labels.length > 0 ? labels.join(' - ') : "Standard";
-
-    // Create a unique key so "XL - Front" and "XL - Back" are separate items
-    const uniqueKey = `${productId}-${combinedVariety}`;
-
-    if (!bundle[uniqueKey]) {
-        bundle[uniqueKey] = {
-            productId: productId, 
-            variety: combinedVariety,
-            quantity: qtyToAdd,
-            // Store individual choices for the customize page
-            size: sizeEl ? sizeEl.value : null,
-            variation: varEl ? varEl.value : null,
-            style: styleEl ? styleEl.value : null
-        };
-    } else {
-        bundle[uniqueKey].quantity += qtyToAdd;
+        // 2. Fetch the actual file list
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error("Repo access error");
+        githubFiles = await response.json();
+        
+        renderTemplateGrid(githubFiles);
+    } catch (error) {
+        console.error("Metadata/File fetch failed:", error);
+        grid.innerHTML = "<p style='color:red;'>Error loading library.</p>";
     }
-
-    localStorage.setItem('myBundle', JSON.stringify(bundle));
-    if (qtyInput) qtyInput.value = 1; 
-    
-    showToast(`Added to bundle!`);
-    updateUI(); 
-};
-
-    window.changeQty = function(key, delta) {
-        if (!bundle[key]) return;
-        bundle[key].quantity += delta;
-        if (bundle[key].quantity <= 0) delete bundle[key];
-        localStorage.setItem('myBundle', JSON.stringify(bundle));
-        updateUI();
-    }
-
-    // 5. THE UI UPDATE ENGINE
-function updateUI() {
-    const drawer = document.getElementById('bundle-drawer');
-    const badge = document.getElementById('count-badge');
-    const btnGo = document.getElementById('go-to-bundle');
-    const banner = document.getElementById('promo-banner');
-
-    if (!drawer) return;
-
-    let subtotal = 0;
-    let itemCount = 0;
-    const keys = Object.keys(bundle);
-
-    // Initial Header
-    let drawerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #ddd; padding-bottom:10px;">
-            <span style="font-weight:bold; color:#2F6B64;">Your Selections</span>
-            <button onclick="clearBundle()" style="background:none; border:1px solid #BE123C; color:#BE123C; padding:2px 8px; border-radius:4px; cursor:pointer; font-size:10px; font-weight:bold; opacity:0.7;">Clear All</button>       
-        </div>
-    `;
-
-    if (keys.length === 0) {
-        drawerHTML += '<div style="text-align:center; padding:20px; color:#666;">Your bundle is empty.</div>';
+}
+function setTextAlignment(align) {
+    if (activeItem && activeItem.querySelector('span')) {
+        const span = activeItem.querySelector('span');
+        
+        // Update the text alignment
+        span.style.textAlign = align;
+        
+        // Important: For multiline text, we must ensure the span fills the width
+        // of its draggable container so the alignment is visible.
+        span.style.width = "100%";
+        
+        saveHistory();
     } else {
-       keys.forEach(key => {
-            const item = bundle[key];
+        console.log("Select a text item first to align it.");
+    }
+}
+function injectProductBackground(imageUrl) {
+    const oldBg = document.getElementById('product-bg');
+    if (oldBg) oldBg.remove();
+
+    const img = document.createElement('img');
+    img.id = 'product-bg';
+    img.crossOrigin = 'anonymous';
+    img.src = imageUrl;
+    
+    Object.assign(img.style, {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 'auto',
+        height: 'auto',
+        maxWidth: '100%',
+        maxHeight: '100%',
+        objectFit: 'contain', 
+        pointerEvents: 'none', 
+        zIndex: '0',           
+        opacity: '1'
+    });
+
+    designCanvas.prepend(img);
+} // <--- THIS WAS MISSING! You must close the function here.
+
+
+function renderTemplateGrid(files) {
+    const grid = document.getElementById('templateGrid');
+    if (!grid) return;
+    grid.innerHTML = "";
+    
+    files.forEach(file => {
+        if (file.name === 'metadata.json') return;
+        
+        if (/\.(jpe?g|png|gif|svg)$/i.test(file.name)) {
+            const imgThumb = document.createElement('img');
+            imgThumb.src = file.download_url; 
+            imgThumb.className = 'gallery-item';
             
-            // FORCE MATCH: Convert both to String to avoid Type errors
-            const productInfo = productList.find(p => String(p.id) === String(item.productId));
+            // This ensures every image HAS a name to search against
+            const tags = templateMetadata[file.name] || "";
+            imgThumb.setAttribute('data-name', (file.name + " " + tags).toLowerCase());
             
-            if (productInfo) {
-                // 1. COMBINE ALL POSSIBLE OPTION LISTS
-                const allOptions = [
-                    ...(productInfo.sizes || []), 
-                    ...(productInfo.variations || []),
-                    ...(productInfo.styles || [])
-                ];
+            imgThumb.onclick = () => loadTemplate(file.download_url);
+            grid.appendChild(imgThumb);
+        }
+    });
+}
+window.addEventListener('mousemove', (e) => {
+    if (!isSelecting) return;
 
-                // 2. CALCULATE EXTRA COSTS
-                // Since item.variety might be "XL - Logo Front", we split it back up
-                const selectedParts = item.variety.split(' - ');
-                let totalExtra = 0;
+    let currentX = e.pageX;
+    let currentY = e.pageY;
 
-                selectedParts.forEach(part => {
-                    const match = allOptions.find(o => o.label === part);
-                    if (match) {
-                        totalExtra += (match.extra || 0);
-                    }
-                });
+    let width = Math.abs(currentX - startX);
+    let height = Math.abs(currentY - startY);
+    let left = (currentX < startX) ? currentX : startX;
+    let top = (currentY < startY) ? currentY : startY;
 
-                const price = productInfo.basePrice + totalExtra;
-                const lineTotal = price * item.quantity;
+    marquee.style.width = width + 'px';
+    marquee.style.height = height + 'px';
+    marquee.style.left = left + 'px';
+    marquee.style.top = top + 'px';
 
-                subtotal += lineTotal;
-                itemCount += item.quantity;
+    // Check collision with draggable items
+    const rect1 = marquee.getBoundingClientRect();
+    document.querySelectorAll('.draggable').forEach(item => {
+        const rect2 = item.getBoundingClientRect();
+        const isOverlapping = !(rect1.right < rect2.left || 
+                               rect1.left > rect2.right || 
+                               rect1.bottom < rect2.top || 
+                               rect1.top > rect2.bottom);
 
-                // 3. GENERATE THE HTML
-                drawerHTML += `
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #eee; box-shadow:0 2px 4px rgba(0,0,0,0.05);">
-                        <div style="flex:1;">
-                            <div style="font-weight:bold; font-size:14px;">${productInfo.name}</div>
-                            <div style="font-size:12px; color:#666;">${item.variety}</div>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <div style="display:flex; align-items:center; border:1px solid #2F6B64; border-radius:20px; padding:2px 8px;">
-                                <button onclick="changeQty('${key}', -1)" style="background:none; border:none; cursor:pointer; font-weight:bold; color:#2F6B64;">-</button>
-                                <span style="margin:0 8px; font-weight:bold; font-size:13px;">${item.quantity}</span>
-                                <button onclick="changeQty('${key}', 1)" style="background:none; border:none; cursor:pointer; font-weight:bold; color:#2F6B64;">+</button>
-                            </div>
-                            <div style="font-weight:bold; min-width:60px; text-align:right;">$${lineTotal.toFixed(2)}</div>
-                        </div>
-                    </div>
-                `;
+        if (isOverlapping) {
+            item.classList.add('active-layer', 'multi-selected');
+            if (!selectedItems.includes(item)) selectedItems.push(item);
+        } else if (!e.shiftKey) {
+            item.classList.remove('active-layer', 'multi-selected');
+            selectedItems = selectedItems.filter(i => i !== item);
+        }
+    });
+});
+window.addEventListener('mouseup', () => {
+    isSelecting = false;
+    marquee.style.display = 'none';
+});
+let selectionTimer; // Global variable for long-press timer
+
+function makeDraggable(el) {
+    const handleStart = (e, clientX, clientY) => {
+        e.stopPropagation();
+        
+        // 1. Handle Resize Handles
+        if (e.target.classList.contains('resize-handle')) {
+            startResize(e, el, e.target.dataset.handle);
+            return;
+        }
+
+        // 2. Selection Logic (The "Brain")
+        if (isMultiSelectMode || e.shiftKey) {
+            if (selectedItems.includes(el)) {
+                el.classList.remove('active-layer', 'multi-selected');
+                selectedItems = selectedItems.filter(i => i !== el);
             } else {
-                console.error("Could not find product for ID:", item.productId);
+                el.classList.add('active-layer', 'multi-selected');
+                selectedItems.push(el);
+            }
+        } else {
+            // Single select mode: only deselect if we aren't already clicking a selected item
+            if (!selectedItems.includes(el)) {
+                deselectAll();
+                el.classList.add('active-layer');
+                selectedItems = [el];
+            }
+        }
+        
+        activeItem = el;
+
+        // 3. Prepare start positions for EVERY item in the selection
+        let startPos = selectedItems.map(item => ({
+            item,
+            x: clientX - item.offsetLeft,
+            y: clientY - item.offsetTop,
+            startW: item.offsetWidth,
+            startH: item.offsetHeight
+        }));
+
+        const moveHandler = (moveEvent) => {
+            const isTouch = moveEvent.type === 'touchmove';
+            
+            // Handle Pinch Zoom/Scale
+            if (isTouch && moveEvent.touches.length === 2) {
+                handleMultiPinch(moveEvent, startPos);
+                return; 
+            }
+
+            const currentX = isTouch ? moveEvent.touches[0].clientX : moveEvent.clientX;
+            const currentY = isTouch ? moveEvent.touches[0].clientY : moveEvent.clientY;
+
+            // 4. Move all selected items together
+            startPos.forEach(p => {
+                p.item.style.left = (currentX - p.x) + "px";
+                p.item.style.top = (currentY - p.y) + "px";
+                
+                // Keep image responsive within the box
+                const img = p.item.querySelector('img');
+                if (img) {
+                    img.style.width = "100%";
+                    img.style.height = "100%";
+                }
+            });
+            
+            if (typeof updatePreview === "function") updatePreview();
+        };
+
+        const upHandler = () => {
+            document.removeEventListener('mousemove', moveHandler);
+            document.removeEventListener('mouseup', upHandler);
+            document.removeEventListener('touchmove', moveHandler);
+            document.removeEventListener('touchend', upHandler);
+            
+            initialPinchDist = null; 
+            saveHistory();
+        };
+
+        document.addEventListener('mousemove', moveHandler);
+        document.addEventListener('mouseup', upHandler);
+        document.addEventListener('touchmove', moveHandler, { passive: false });
+        document.addEventListener('touchend', upHandler);
+    };
+    const span = el.querySelector('span');
+    if (span) {
+        el.addEventListener('dblclick', () => {
+            // 1. Enable editing
+            span.contentEditable = true;
+            span.style.cursor = 'text';
+            span.focus();
+            
+            // 2. Disable dragging so the user can select text/move cursor
+            el.setAttribute('draggable', 'false'); 
+            
+            // 3. Optional: Select all text automatically for quick overwriting
+            document.execCommand('selectAll', false, null);
+        });
+
+        // 4. When the user clicks away (blur), lock it back down
+        span.addEventListener('blur', () => {
+            span.contentEditable = false;
+            span.style.cursor = 'move';
+            saveHistory(); // Save the new text to your undo/redo stack
+        });
+
+        // 5. Allow pressing "Enter" to finish editing (optional)
+        span.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                span.blur();
             }
         });
     }
+    // Attach to element
+    el.onmousedown = (e) => handleStart(e, e.clientX, e.clientY);
+    el.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+            const touch = e.touches[0];
+            handleStart(e, touch.clientX, touch.clientY);
+        } else if (e.touches.length === 2) {
+            // Re-trigger handleStart for pinch with 2 fingers
+            const touch = e.touches[0];
+            handleStart(e, touch.clientX, touch.clientY);
+        }
+    }, { passive: false });
+}
+// Part 4/7
+function handleInteractionStart(e, el, clientX, clientY) {
+    activeItem = el;
+    deselectAll();
+    el.classList.add('active-layer');
 
-    drawer.innerHTML = drawerHTML;
-
-    // Update the UI Elements
-    if (badge) badge.textContent = itemCount;
-    if (btnGo) {
-        btnGo.disabled = itemCount === 0;
-        btnGo.innerHTML = itemCount > 0 ? `Customize Bundle (${itemCount})` : `Customize`;
+    // Handle Resize Handles first
+    if (e.target.classList.contains('resize-handle')) {
+        startResize(e, el, e.target.dataset.handle);
+        return;
     }
 
-    // Update Promo Banner with Real Math
-    if (banner && itemCount > 0) {
-        let disc = 0;
-        if (itemCount >= 2 && itemCount <= 4) disc = 0.05;
-        else if (itemCount >= 5 && itemCount <= 9) disc = 0.10;
-        else if (itemCount >= 10 && itemCount <= 19) disc = 0.15;
-        else if (itemCount >= 20) disc = 0.25;
-        
-        banner.innerHTML = `✅ ${itemCount} Items | Total: $${(subtotal * (1 - disc)).toFixed(2)} (${Math.round(disc*100)}% Discount Applied)`;
-    } else if (banner) {
-        banner.innerHTML = `🛒 Bundle & Save: 2-4 Items (5%) | 5-9 (10%) | 10-19 (15%) | 20+ (25%)`;
+    // Logic for dragging
+    let startPos = [{
+        item: el,
+        x: clientX - el.offsetLeft,
+        y: clientY - el.offsetTop
+    }];
+
+    // --- Desktop Move ---
+    document.onmousemove = (e) => {
+        el.style.left = (e.clientX - startPos[0].x) + "px";
+        el.style.top = (e.clientY - startPos[0].y) + "px";
+    };
+
+    // --- Mobile Move ---
+    const touchMoveHandler = (e) => {
+        if (e.touches.length === 1) { // Single finger move
+            const touch = e.touches[0];
+            el.style.left = (touch.clientX - startPos[0].x) + "px";
+            el.style.top = (touch.clientY - startPos[0].y) + "px";
+        } else if (e.touches.length === 2) { // Two finger pinch
+            handlePinch(e, el);
+        }
+    };
+
+    // Cleanup
+    const endHandler = () => {
+        document.onmousemove = null;
+        document.removeEventListener('touchmove', touchMoveHandler);
+        document.removeEventListener('touchend', endHandler);
+        saveHistory();
+    };
+
+    document.addEventListener('touchmove', touchMoveHandler, { passive: false });
+    document.addEventListener('touchend', endHandler);
+    document.onmouseup = endHandler;
+}
+let initialPinchDist = null;
+
+function handleMultiPinch(e, startPosArray) {
+    const t1 = e.touches[0];
+    const t2 = e.touches[1];
+    const currentDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+
+    if (initialPinchDist === null) {
+        initialPinchDist = currentDist;
+    } else {
+        const scale = currentDist / initialPinchDist;
+
+        startPosArray.forEach(data => {
+            const el = data.item;
+            const newW = data.startW * scale;
+            const newH = data.startH * scale;
+
+            // Apply size to the container
+            el.style.width = newW + "px";
+            el.style.height = newH + "px";
+
+            // Update internal assets (images and text)
+            const img = el.querySelector('img');
+            const span = el.querySelector('span');
+            
+            if (img) {
+                img.style.width = "100%";
+                img.style.height = "100%";
+            }
+            if (span) {
+                // Adjust font size proportionally to height
+                span.style.fontSize = (newH * 0.8) + "px"; 
+            }
+        });
     }
 }
-    // 6. RENDER THE CATALOG
-    function renderCatalog() {
-    const container = document.getElementById('catalog-container');
-    if (!container) return;
 
-    const grouped = {};
-    productList.forEach(p => {
-        const cat = p.category || "General";
-        if (!grouped[cat]) grouped[cat] = [];
-        grouped[cat].push(p);
+let initialPinchSize = { w: 0, h: 0 };
+
+function handlePinch(e, el) {
+    const t1 = e.touches[0];
+    const t2 = e.touches[1];
+    const currentDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+
+    if (initialPinchDist === null) {
+        initialPinchDist = currentDist;
+        initialPinchSize.w = el.offsetWidth;
+        initialPinchSize.h = el.offsetHeight;
+    } else {
+        const scale = currentDist / initialPinchDist;
+        const newW = initialPinchSize.w * scale;
+        const newH = initialPinchSize.h * scale;
+
+        // Apply scaling to container
+        el.style.width = newW + "px";
+        el.style.height = newH + "px";
+
+        // Handle internal assets
+        const img = el.querySelector('img');
+        const span = el.querySelector('span');
+        
+        if (img) {
+            img.style.width = "100%";
+            img.style.height = "100%";
+        }
+        if (span) {
+            // Adjust font size based on height change
+            span.style.fontSize = (newH * 0.8) + "px"; 
+        }
+    }
+}
+function deselectAll() {
+    document.querySelectorAll('.draggable').forEach(d => {
+        d.classList.remove('active-layer', 'multi-selected');
+    });
+    selectedItems = []; // CRITICAL: Reset the array
+    activeItem = null;
+}
+const GH_CONFIG = {
+    owner: 'diminfomacon-beep',
+    repo: 'new-design-studio',
+    branch: 'main',
+    path: 'DesignTemplates' 
+};
+let githubFiles = []; 
+/********************************************* CORE ENGINE (Undo, Redo, History) ********************************************/
+function saveHistory() {
+    const currentState = designCanvas.innerHTML;
+    // Don't save if it's identical to the current index
+    if (historyStack[historyIndex] === currentState) return;
+
+    // Remove any "redo" future if we perform a new action
+    historyIndex++;
+    historyStack = historyStack.slice(0, historyIndex);
+    historyStack.push(currentState);
+
+    // Limit stack size
+    if (historyStack.length > 30) {
+        historyStack.shift();
+        historyIndex--;
+    }
+}
+function undo() {
+    if (historyIndex > 0) {
+        historyIndex--;
+        restoreCanvas();
+    }
+}
+function redo() {
+    if (historyIndex < historyStack.length - 1) {
+        historyIndex++;
+        restoreCanvas();
+    }
+}
+function restoreCanvas() {
+    designCanvas.innerHTML = historyStack[historyIndex];
+    // RE-ATTACH ALL LISTENERS
+    const items = designCanvas.querySelectorAll('.draggable');
+    items.forEach(item => {
+        makeDraggable(item);
+    });
+    deselectAll();
+}
+function changeZIndex(direction) {
+    if (!activeItem) return;
+    const canvas = document.getElementById('designCanvas');
+    if (!canvas) return;
+
+    const children = Array.from(canvas.children).filter(child => child.id !== 'product-bg');
+    const currentIndex = children.indexOf(activeItem);
+
+    switch (direction) {
+        case 'front':
+            canvas.appendChild(activeItem);
+            break;
+
+        case 'back':
+            const bg = document.getElementById('product-bg');
+            if (bg) {
+                bg.after(activeItem);
+            } else {
+                canvas.prepend(activeItem);
+            }
+            break;
+
+        case 'forward':
+            if (currentIndex < children.length - 1) {
+                children[currentIndex + 1].after(activeItem);
+            }
+            break;
+
+        case 'backward':
+            if (currentIndex > 0) {
+                children[currentIndex - 1].before(activeItem);
+            }
+            break;
+    }
+    saveHistory();
+}
+function applyHistoryState() {
+    designCanvas.innerHTML = historyStack[historyIndex];
+    // This is the most important part: re-bind the logic!
+    const items = designCanvas.querySelectorAll('.draggable');
+    items.forEach(item => {
+        makeDraggable(item);
+    });
+    deselectAll();
+}
+function applyRotation(degrees) {
+    if (!activeItem) return;
+    
+    // Get current rotation or default to 0
+    let currentRotation = parseFloat(activeItem.dataset.rotation || 0);
+    currentRotation += degrees;
+    
+    // Apply to the main container
+    activeItem.style.transform = `rotate(${currentRotation}deg)`;
+    activeItem.dataset.rotation = currentRotation;
+    
+    saveHistory();
+}
+
+function flip(direction) {
+    if (!activeItem) return;
+    
+    // We target the internal content so handles don't flip
+    const content = activeItem.querySelector('img') || activeItem.querySelector('.text-wrapper');
+    if (!content) return;
+
+    let scaleX = content.dataset.scaleX || 1;
+    let scaleY = content.dataset.scaleY || 1;
+
+    if (direction === 'h') scaleX *= -1;
+    if (direction === 'v') scaleY *= -1;
+
+    content.style.transform = `scale(${scaleX}, ${scaleY})`;
+    
+    // Store values for the next flip
+    content.dataset.scaleX = scaleX;
+    content.dataset.scaleY = scaleY;
+
+    saveHistory();
+}
+/********************************************* FIXED GROUP / UNGROUP ********************************************/
+function groupSelected() {
+    if (selectedItems.length < 2) return;
+
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+    // 1. Calculate bounding box
+    selectedItems.forEach(item => {
+        const l = parseInt(item.style.left) || 0;
+        const t = parseInt(item.style.top) || 0;
+        const w = item.offsetWidth;
+        const h = item.offsetHeight;
+        minX = Math.min(minX, l);
+        minY = Math.min(minY, t);
+        maxX = Math.max(maxX, l + w);
+        maxY = Math.max(maxY, t + h);
     });
 
-    let html = '';
-    for (const cat in grouped) {
-        html += `
-        <div class="category">
-            <div class="category-header" style="cursor:pointer; background:#f0fdf4; padding:12px; border-radius:8px; display:flex; justify-content:space-between; font-weight:bold; color:#166534;" onclick="const c = this.nextElementSibling; c.style.display = (c.style.display === 'none' ? 'block' : 'none');">
-                <span>${cat}</span><span>▾</span>
-            </div>
-            <div class="category-content">
-                <div class="item-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:20px; padding:15px 0;">
-                    ${grouped[cat].map(p => `
-                        <div class="item-card" data-id="${p.id}" style="background:white; border:1px solid #e5e7eb; padding:15px; border-radius:12px; text-align:center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                            <img src="${p.images[0]}" style="width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px;" onerror="this.src='https://via.placeholder.com/150'">
-                            <div style="font-weight:700; margin:10px 0 5px;">${p.name}</div>
-                            <div style="color:#059669; font-weight:600; margin-bottom:10px;">$${p.basePrice.toFixed(2)}</div>
-                            
-                            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
-                                ${p.sizes ? `
-                                    <select class="size-select" style="width:100%; padding:6px; border-radius:6px; border:1px solid #d1d5db; font-size:13px;">
-                                        <option value="" disabled selected>Select Size</option>
-                                        ${p.sizes.map(s => `<option value="${s.label}">${s.label} (+$${s.extra})</option>`).join('')}
-                                    </select>
-                                ` : ''}
-
-                                ${p.variations ? `
-                                    <select class="variation-select" style="width:100%; padding:6px; border-radius:6px; border:1px solid #d1d5db; font-size:13px;">
-                                        <option value="" disabled selected>Select Option</option>
-                                        ${p.variations.map(v => `<option value="${v.label}">${v.label} (+$${v.extra})</option>`).join('')}
-                                    </select>
-                                ` : ''}
-
-                                ${p.styles ? `
-                                    <select class="style-select" style="width:100%; padding:6px; border-radius:6px; border:1px solid #d1d5db; font-size:13px;">
-                                        <option value="" disabled selected>Select Style</option>
-                                        ${p.styles.map(st => `<option value="${st.label}">${st.label} (+$${st.extra})</option>`).join('')}
-                                    </select>
-                                ` : ''}
-                            </div>
-
-                            <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:12px;">
-                                <span style="font-size:12px; color:#666; font-weight:bold;">QTY:</span>
-                                <input type="number" class="qty-input" value="1" min="1" style="width:50px; padding:5px; border:1px solid #d1d5db; border-radius:6px; text-align:center;">
-                            </div>
-                            <button class="add-btn" style="width:100%; background:#2F6B64; color:white; border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold; transition: background 0.2s;" onclick="addToBundle(this)">Add to Bundle</button>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        </div>`;
-    }
-    container.innerHTML = html;
-}
-// 1. Close when clicking away
-document.addEventListener('click', function(event) {
-    const drawer = document.getElementById('bundle-drawer');
-    const bundleBar = document.querySelector('.bundle-bar');
+    // 2. Create the group container
+    const group = document.createElement('div');
+    group.className = 'draggable group-container';
+    group.style.left = minX + 'px';
+    group.style.top = minY + 'px';
+    group.style.width = (maxX - minX) + 'px';
+    group.style.height = (maxY - minY) + 'px';
+    group.style.position = 'absolute';
     
-    if (drawer && drawer.style.display === "block") {
-        // If the click is NOT in the drawer AND NOT on the bundle bar button
-        if (!drawer.contains(event.target) && !bundleBar.contains(event.target)) {
-            drawer.style.display = "none";
+    group.innerHTML = getHandleHTML();
+
+    // 3. Move items into the group AND CLEAN THEM
+    const itemsToGroup = [...selectedItems];
+    itemsToGroup.forEach(item => {
+        const currentL = parseInt(item.style.left) || 0;
+        const currentT = parseInt(item.style.top) || 0;
+        
+        item.style.left = (currentL - minX) + 'px';
+        item.style.top = (currentT - minY) + 'px';
+        
+        // CRITICAL: Remove all selection/active classes from the children
+        item.classList.remove('active-layer', 'multi-selected');
+        // Prevent the children from being clickable while inside the group
+        item.style.pointerEvents = 'none'; 
+        
+        group.appendChild(item);
+    });
+
+    designCanvas.appendChild(group);
+    
+    // 4. Reset State
+    deselectAll(); // This clears the selectedItems array and all CSS outlines
+    
+    // 5. Select ONLY the new group
+    makeDraggable(group);
+    activeItem = group;
+    group.classList.add('active-layer');
+    selectedItems = [group];
+    
+    saveHistory();
+}
+// Part 5/7
+function ungroupSelected() {
+    const target = activeItem;
+    if (!target || !target.classList.contains('group-container')) return;
+
+    const gLeft = parseInt(target.style.left) || 0;
+    const gTop = parseInt(target.style.top) || 0;
+    
+    const children = Array.from(target.children).filter(child => 
+        child.classList.contains('draggable') || child.tagName === 'IMG' || child.tagName === 'SPAN'
+    );
+
+    children.forEach(child => {
+        if (!child.classList.contains('resize-handle')) {
+            const cLeft = parseInt(child.style.left) || 0;
+            const cTop = parseInt(child.style.top) || 0;
+            
+            child.style.left = (cLeft + gLeft) + 'px';
+            child.style.top = (cTop + gTop) + 'px';
+            
+            // RESTORE pointer events so they are clickable again
+            child.style.pointerEvents = 'auto'; 
+            
+            designCanvas.appendChild(child);
+            makeDraggable(child);
+        }
+    });
+
+    target.remove();
+    deselectAll();
+    saveHistory();
+}
+function reattachListeners() {
+    document.querySelectorAll('.draggable').forEach(el => makeDraggable(el));
+}
+/********************************************* INTERACTIVITY (Drag & Selection) ********************************************/
+// --- UPDATED ADD TEXT FUNCTION ---
+function addTextToCanvas() {
+    const textIn = document.getElementById('textInput'); 
+    const val = textIn.value || "New Text";
+    
+    const div = document.createElement('div');
+    div.className = 'draggable';
+    div.style.left = '50px';
+    div.style.top = '150px';
+    div.style.zIndex = '100';
+
+    // Use the 8-handle system consistently
+    div.innerHTML = `
+        <div class="text-wrapper" style="pointer-events: none;">
+            <span style="font-size:40px; font-family:Arial; color:#000000;">${val}</span>
+        </div>
+        ${getHandleHTML()} 
+    `;
+    
+    designCanvas.appendChild(div);
+    makeDraggable(div);
+    
+    activeItem = div;
+    deselectAll();
+    div.classList.add('active-layer');
+    
+    saveHistory();
+    textIn.value = ""; // Clear input
+}
+
+// --- UPDATED RESIZE LOGIC ---
+function startResize(e, el, type) {
+    e.stopPropagation();
+    if (e.cancelable) e.preventDefault();
+
+    const startW = el.offsetWidth;
+    const startH = el.offsetHeight;
+    const startL = el.offsetLeft;
+    const startT = el.offsetTop;
+    const startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+    const startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+
+    const span = el.querySelector('span');
+    const startFontSize = span ? parseFloat(window.getComputedStyle(span).fontSize) : 0;
+
+    const moveHandler = (mE) => {
+        const curX = mE.type.includes('touch') ? mE.touches[0].clientX : mE.clientX;
+        const curY = mE.type.includes('touch') ? mE.touches[0].clientY : mE.clientY;
+        
+        let dx = curX - startX;
+        let dy = curY - startY;
+
+        let newW = startW, newH = startH, newL = startL, newT = startT;
+
+        if (type.includes('r')) newW = startW + dx;
+        if (type.includes('b')) newH = startH + dy;
+        if (type.includes('l')) { newW = startW - dx; newL = startL + dx; }
+        if (type.includes('t')) { newH = startH - dy; newT = startT + dy; }
+
+        el.style.width = Math.max(30, newW) + "px";
+        el.style.height = Math.max(30, newH) + "px";
+        el.style.left = newL + "px";
+        el.style.top = newT + "px";
+
+        // Proportional Text Scaling
+        if (span) {
+            const scale = Math.max(30, newH) / startH;
+            span.style.fontSize = (startFontSize * scale) + "px";
+        }
+    };
+
+    const stopResize = () => {
+        document.removeEventListener('mousemove', moveHandler);
+        document.removeEventListener('mouseup', stopResize);
+        document.removeEventListener('touchmove', moveHandler);
+        document.removeEventListener('touchend', stopResize);
+        saveHistory();
+    };
+
+    document.addEventListener('mousemove', moveHandler);
+    document.addEventListener('mouseup', stopResize);
+    document.addEventListener('touchmove', moveHandler, { passive: false });
+    document.addEventListener('touchend', stopResize);
+}
+/********************************************* STUDIO TOOLS (Group, Delete) ********************************************/
+function deleteSelected() {
+    selectedItems.forEach(item => item.remove());
+    selectedItems = [];
+    activeItem = null;
+    saveHistory();
+}
+/********************************************* ASSET LOADING (Pixabay & GitHub) ********************************************/
+async function fetchPixabay(query = 'vector') {
+    const res = await fetch(`https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${encodeURIComponent(query)}&image_type=&per_page=100`);
+    const data = await res.json();
+    const grid = document.getElementById('pixabayGrid');
+    grid.innerHTML = "";
+    data.hits.forEach(hit => {
+        const img = document.createElement('img');
+        img.src = hit.previewURL;
+        img.className = 'gallery-item';
+        img.onclick = () => loadTemplate(hit.largeImageURL);
+        grid.appendChild(img);
+    });
+}
+function getHandleHTML() {
+    return `
+        <div class="resize-handle handle-tl" data-handle="tl"></div>
+        <div class="resize-handle handle-tr" data-handle="tr"></div>
+        <div class="resize-handle handle-bl" data-handle="bl"></div>
+        <div class="resize-handle handle-br" data-handle="br"></div>
+        <div class="resize-handle handle-t" data-handle="t"></div>
+        <div class="resize-handle handle-b" data-handle="b"></div>
+        <div class="resize-handle handle-l" data-handle="l"></div>
+        <div class="resize-handle handle-r" data-handle="r"></div>
+    `;
+}
+function loadProductVarieties(productKey) {
+    // 1. Target ONLY the thumbContainer, NOT the whole panel
+    const container = document.getElementById('thumbContainer');
+    const varieties = typeof studioConfig !== 'undefined' ? studioConfig[productKey] : null;
+
+    if (!container) {
+        console.error("Could not find thumbContainer!");
+        return;
+    }
+
+    // 2. This ONLY clears the style list, leaving the Submit Button safe
+    container.innerHTML = ''; 
+
+    if (!varieties) {
+        container.innerHTML = '<p style="color:white; font-size:10px;">No styles found.</p>';
+        return;
+    }
+
+    varieties.forEach((item, index) => {
+        const itemWrapper = document.createElement('div');
+        itemWrapper.className = 'variety-item';
+        Object.assign(itemWrapper.style, {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            marginBottom: '15px',
+            cursor: 'pointer',
+            width: '100%'
+        });
+
+        const thumb = document.createElement('img');
+        thumb.src = item.url;
+        thumb.className = 'variety-thumb';
+        Object.assign(thumb.style, {
+            width: '70px',
+            height: '70px',
+            objectFit: 'contain',
+            border: '2px solid #ddd',
+            borderRadius: '8px',
+            background: '#fff'
+        });
+
+        // FIXED: Force labels to be white so they show on maroon
+        const nameLabel = document.createElement('span');
+        nameLabel.innerText = item.name || 'Style';
+        Object.assign(nameLabel.style, {
+            fontSize: '11px',
+            color: '#ffffff', 
+            marginTop: '5px',
+            textAlign: 'center',
+            fontWeight: '600'
+        });
+
+        itemWrapper.onclick = () => {
+            injectProductBackground(item.url);
+            
+            // UI Highlight logic
+            document.querySelectorAll('.variety-thumb').forEach(t => t.style.borderColor = '#ddd');
+            thumb.style.borderColor = '#fbbf24';
+            
+            // Store selection for the email
+            window.activeProductKey = item.name;
+        };
+
+        itemWrapper.appendChild(thumb);
+        itemWrapper.appendChild(nameLabel);
+        container.appendChild(itemWrapper);
+
+        if (index === 0) itemWrapper.click();
+    });
+}
+
+function loadTemplate(url) {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = url;
+    img.onload = () => {
+        const div = document.createElement('div');
+        div.className = 'draggable';
+        div.style.left = '100px';
+        div.style.top = '100px';
+        div.style.width = '200px';
+        div.innerHTML = `<img src="${url}" style="width:100%; height:100%; pointer-events:none;">${getHandleHTML()}`;
+        designCanvas.appendChild(div);
+        makeDraggable(div);
+        saveHistory();
+    };
+}
+// Part 6/7
+function loadTemplate(src) {
+    if (!src) return;
+    
+    const div = document.createElement('div');
+    div.className = 'draggable';
+    div.style.width = "150px"; 
+    div.style.height = "150px";
+    div.style.left = "50px"; 
+    div.style.top = "50px";
+    
+    // Ensure the image inside is constrained
+    div.innerHTML = `
+        <img src="${src}" style="width:100%; height:100%; object-fit:contain; pointer-events:none;">
+        ${getHandleHTML()}
+    `;
+    
+    designCanvas.appendChild(div);
+    makeDraggable(div);
+    saveHistory();
+}
+/********************************************* UI HANDLERS (Tabs, Search, Text) ********************************************/
+function showTab(tabId, clickedButton) {
+    // Hide all panes
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.style.display = 'none';
+    });
+
+    // Reset button colors
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Show the active pane
+    const target = document.getElementById(tabId);
+    if (target) {
+        target.style.display = 'block';
+        target.scrollTop = 0; // Reset scroll to top
+    }
+
+    // Highlight active button
+    if (clickedButton) {
+        clickedButton.classList.add('active');
+    }
+}
+document.getElementById('searchBtn').onclick = () => {
+    const query = document.getElementById('gallerySearch').value;
+    if (query.trim()) fetchPixabay(query);
+};
+const extendedSwatches = [
+  '#FFFFFF', '#F2F2F2', '#D9D9D9', '#BFBFBF', '#A6A6A6', '#808080', '#595959', '#404040', '#262626', '#000000',
+  '#FFCCCC', '#FF9999', '#FF6666', '#FF3333', '#FF0000', '#CC0000', '#990000', '#660000', '#330000',
+  '#FFE5CC', '#FFCC99', '#FFB266', '#FF9933', '#FF8000', '#CC6600', '#994C00', '#663300', '#331900',
+  '#FFFFCC', '#FFFF99', '#FFFF66', '#FFFF33', '#FFFF00', '#CCCC00', '#999900', '#666600', '#333300',
+  '#CCFFCC', '#99FF99', '#66FF66', '#33FF33', '#00FF00', '#00CC00', '#009900', '#006600', '#003300',
+  '#CCFFFF', '#99FFFF', '#66FFFF', '#33FFFF', '#00FFFF', '#00CCCC', '#009999', '#006666', '#003333',
+  '#CCCCFF', '#9999FF', '#6666FF', '#3333FF', '#0000FF', '#0000CC', '#000099', '#000066', '#000033',
+  '#E5CCFF', '#CC99FF', '#B266FF', '#9933FF', '#8000FF', '#6600CC', '#4C0099', '#330066', '#190033',
+  '#FFCCFF', '#FF99FF', '#FF66FF', '#FF33FF', '#FF00FF', '#CC00CC', '#990099', '#660066', '#330033'
+];
+const swatchGrid = document.getElementById('swatchContainer');
+swatchGrid.innerHTML = ''; // Clear it first
+extendedSwatches.forEach(color => {
+    const s = document.createElement('div');
+    s.className = 'swatch-item'; // Assign class for styling
+    s.style.backgroundColor = color;
+    
+    // Use addEventListener instead of onclick for better reliability
+    // Inside your extendedSwatches.forEach loop
+    s.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation(); 
+        if (activeItem && activeItem.querySelector('span')) {
+            activeItem.querySelector('span').style.color = color;
+            saveHistory();
+        }
+    });
+    
+    swatchGrid.appendChild(s);
+});
+document.getElementById('fontColorPicker').onclick = (e) => {
+    e.stopPropagation(); // Stop the click from immediately triggering the "close" logic above
+    const swatchGrid = document.getElementById('swatchContainer');
+    const isVisible = swatchGrid.style.display === 'grid';
+    swatchGrid.style.display = isVisible ? 'none' : 'grid';
+};
+document.getElementById('imageInput').onchange = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        // Reuse your loadTemplate logic to maintain consistency
+        loadTemplate(event.target.result);
+        
+        // Clear the input so you can upload the same image twice if needed
+        e.target.value = ""; 
+    };
+    reader.readAsDataURL(file);
+};
+document.getElementById('fontSizeInput').oninput = function() {
+    if (activeItem && activeItem.querySelector('span')) {
+        activeItem.querySelector('span').style.fontSize = this.value + 'px';
+        saveHistory();
+    }
+};
+document.getElementById('btnBold').onclick = () => {
+    if (activeItem && activeItem.querySelector('span')) {
+        const span = activeItem.querySelector('span');
+        span.style.fontWeight = (span.style.fontWeight === 'bold') ? 'normal' : 'bold';
+        saveHistory();
+    }
+};
+document.getElementById('btnItalic').onclick = () => {
+    if (activeItem && activeItem.querySelector('span')) {
+        const span = activeItem.querySelector('span');
+        span.style.fontStyle = (span.style.fontStyle === 'italic') ? 'normal' : 'italic';
+        saveHistory();
+    }
+};
+document.getElementById('fontFamily').onchange = function() {
+    this.style.fontFamily = this.value; // Update dropdown look
+    if (activeItem && activeItem.querySelector('span')) {
+        activeItem.querySelector('span').style.fontFamily = this.value;
+        saveHistory();
+    }
+};
+/********************************************* SMART POPUP CLOSING ********************************************/
+document.addEventListener('mousedown', (event) => {
+    const swatchContainer = document.getElementById('swatchContainer');
+    const colorPickerBtn = document.getElementById('fontColorPicker');
+
+    // If the menu is open...
+    if (swatchContainer.style.display === 'grid') {
+        
+        // Check if the click was OUTSIDE the container AND OUTSIDE the 🎨 button
+        if (!swatchContainer.contains(event.target) && !colorPickerBtn.contains(event.target)) {
+            swatchContainer.style.display = 'none';
         }
     }
 });
-
-// 2. Close when scrolling
-window.addEventListener('scroll', function() {
-    const drawer = document.getElementById('bundle-drawer');
-    if (drawer && drawer.style.display === "block") {
-        drawer.style.display = "none";
+function deselectAll() {
+    document.querySelectorAll('.draggable').forEach(d => d.classList.remove('active-layer'));
+    activeItem = null;
+    selectedItems = [];
+}
+document.addEventListener('keydown', (e) => {
+    if ((e.key === 'Delete' || e.key === 'Backspace') && activeItem) {
+        // Don't delete if the user is typing in the text input!
+        if (document.activeElement.tagName === 'INPUT') return;
+        
+        activeItem.remove();
+        activeItem = null;
+        saveHistory();
     }
-}, { passive: true });
-    // 7. INITIALIZE ON LOAD
-    window.onload = () => {
-        renderCatalog();
-        updateUI();
-    };
+});
+function updateTextEffect() {
+    if (!activeItem) return;
+
+    const span = activeItem.querySelector('span');
+    const wrapper = activeItem.querySelector('.text-wrapper');
     
-    document.getElementById('go-to-bundle').onclick = () => window.location.href = 'customize.html';
+    // Get values from your UI sliders/inputs
+    const size = document.getElementById('fontSize').value;
+    const font = document.getElementById('fontFamily').value;
+    const curve = document.getElementById('textCurve').value;
+    const shear = document.getElementById('textShear').value;
+
+    // 1. Apply font styles to the span
+    span.style.fontSize = size + 'px';
+    span.style.fontFamily = font;
+
+    // 2. Apply transformations to the WRAPPER
+    // Note: We use 'display: inline-block' so the wrapper shrinks to the text size
+    wrapper.style.display = 'inline-block';
+    wrapper.style.transform = `perspective(1000px) rotateX(${curve}deg) skewX(${shear}deg)`;
+
+    // 3. FORCE THE HANDLE TO ALIGN
+    // We set the parent div to the exact width/height of the transformed wrapper
+    activeItem.style.width = 'max-content';
+    activeItem.style.height = 'auto';
+
+    console.log("Handle sync completed for:", span.innerText);
+}
+
+function setActive(el) {
+    document.querySelectorAll('.draggable').forEach(d => {
+        d.classList.remove('active-layer');
+    });
+
+    el.classList.add('active-layer');
+}
+
+function rotateActive(degrees) {
+    if (!activeItem) return;
+
+    // 1. Get current rotation
+    let currentRot = parseInt(activeItem.dataset.rotation || 0);
+    currentRot = (currentRot + degrees) % 360;
+
+    // 2. Explicitly set origin just in case
+    activeItem.style.transformOrigin = "center center";
+    
+    // 3. Apply rotation
+    activeItem.style.transform = `rotate(${currentRot}deg)`;
+    activeItem.dataset.rotation = currentRot;
+
+    saveHistory();
+}
+function filterTemplates() {
+    const searchInput = document.getElementById('templateSearch');
+    if (!searchInput) return; // Exit if search box isn't found
+
+    const searchTerm = searchInput.value.toLowerCase();
+    const items = document.querySelectorAll('#templateGrid .gallery-item');
+
+    items.forEach(item => {
+        // Safe check: get the attribute, default to empty string if null
+        const name = item.getAttribute('data-name') || "";
+        
+        if (name.includes(searchTerm)) {
+            item.style.display = "block";
+        } else {
+            item.style.display = "none";
+        }
+    });
+}
+function clearCanvas() {
+    // 1. Check if there's anything to clear besides the mockup
+    // We check if the count of children is more than 1 (the mockup)
+    const hasItems = Array.from(designCanvas.children).some(child => child.id !== 'product-bg');
+    if (!hasItems) return;
+
+    // 2. Confirmation
+    const confirmClear = confirm("Clear your design? (The product mockup will stay).");
+
+    if (confirmClear) {
+        // 3. Loop through children and remove them IF they aren't the mockup
+        const children = Array.from(designCanvas.children);
+        children.forEach(child => {
+            if (child.id !== 'product-bg' && !child.classList.contains('selection-marquee')) {
+                child.remove();
+            }
+        });
+        
+        // 4. Reset state
+        deselectAll();
+        saveHistory();
+        console.log("Design cleared, mockup preserved.");
+    }
+}
+// Part 7/7
+function updateStroke() {
+    if (activeItem && activeItem.querySelector('span')) {
+        const span = activeItem.querySelector('span');
+        const width = document.getElementById('strokeSlider')?.value || 0;
+        const color = document.getElementById('strokeColor')?.value || "#000000";
+        
+        span.style.webkitTextStroke = `${width}px ${color}`;
+        saveHistory();
+    }
+}
+function applyTextTransforms() {
+    // 1. Safety Check: Only run if an item is selected
+    if (!activeItem) return;
+    const span = activeItem.querySelector('span');
+    if (!span) return;
+
+    // 2. Get the Slider Elements
+    const curveSlider = document.getElementById('curveSlider');
+    const shearSlider = document.getElementById('shearSlider');
+
+    // 3. Safety Check: Only run if the sliders actually exist in HTML
+    if (!curveSlider || !shearSlider) {
+        console.error("Sliders not found! Check your HTML IDs.");
+        return;
+    }
+
+    const curveVal = curveSlider.value;
+    const shearVal = shearSlider.value;
+
+    // 4. Apply the styles
+    activeItem.style.perspective = "1000px";
+    activeItem.style.overflow = "visible";
+    
+    span.style.display = "inline-block";
+    span.style.transform = `rotateX(${curveVal}deg) skewX(${-shearVal}deg)`;
+}
+const cSlider = document.getElementById('curveSlider');
+const sSlider = document.getElementById('shearSlider');
+if (cSlider) cSlider.oninput = applyTextTransforms;
+if (sSlider) sSlider.oninput = applyTextTransforms;
+/********************************************* EXPORT & INIT ********************************************/
+document.getElementById('downloadBtn').onclick = () => {
+    const canvas = document.getElementById('designCanvas');
+    
+    // 1. Prepare for capture
+    const previousActive = activeItem;
+    deselectAll(); 
+
+    // 2. Temporarily "Freeze" dimensions to prevent stretching
+    const designItems = canvas.querySelectorAll('.draggable');
+    designItems.forEach(item => {
+        // We get the ACTUAL rendered size
+        const rect = item.getBoundingClientRect();
+        item.dataset.tempW = item.style.width;
+        item.dataset.tempH = item.style.height;
+        
+        // Hard-code the pixels so html2canvas doesn't guess
+        item.style.width = rect.width + 'px';
+        item.style.height = rect.height + 'px';
+    });
+
+    html2canvas(canvas, {
+        useCORS: true,
+        scale: 2, 
+        backgroundColor: null,
+        logging: false,
+        // Ensure the internal render engine matches your canvas exactly
+        width: canvas.offsetWidth,
+        height: canvas.offsetHeight,
+        onclone: (clonedDoc) => {
+            // Ensure the background mockup in the clone is also fixed
+            const bg = clonedDoc.getElementById('product-bg');
+            if (bg) {
+                bg.style.width = 'auto';
+                bg.style.height = 'auto';
+                bg.style.maxWidth = '100%';
+                bg.style.maxHeight = '100%';
+            }
+        }
+    }).then(capturedCanvas => {
+        const link = document.createElement('a');
+        link.download = 'custom-design.png';
+        link.href = capturedCanvas.toDataURL('image/png', 0.6);
+        link.click();
+
+        // 3. Cleanup: Restore original flexible styles
+        designItems.forEach(item => {
+            item.style.width = item.dataset.tempW;
+            item.style.height = item.dataset.tempH;
+        });
+
+        if (previousActive) {
+            activeItem = previousActive;
+            activeItem.classList.add('active-layer');
+        }
+    });
+};
+const productVarieties = [
+        { name: 'Blank',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
+        { name: 'Shirt',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Shirt.png' },
+        { name: 'Skinny',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/20oz%20Skinny.png' },
+        { name: 'Skinny Ombre',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/20oz%20Ombre%20Skinny%20Tumblers.png' },
+        { name: 'Big Tumbler',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/40oz%20and%2030oz%20Tumblers.png' },
+        { name: 'Big Tumbler Ombre',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/40oz%20and%2030oz%20Ombre%20Tumblers.png' },
+        { name: 'Bib',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Bib.png' },
+        { name: 'Onesie',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Onesie.png' },
+        { name: 'Blanket 14-Moon',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%2014%20Panel%20Moon.png' },
+        { name: 'Blanket 15-Paw',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%2015%20Panel%20Paw.png' },
+        { name: 'Blanket 9',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%209%20Panel.png' },
+        { name: 'Blanket 20',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%2020%20Panel.png' },
+        { name: 'Candle',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Candle.png' },
+        { name: 'Cards',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Cards.png' },
+        { name: 'Flask',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Flask.png' },
+        { name: 'Water Bottle',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Hydro%20Handle.png' },
+        { name: 'Hydro Hound',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Hydro%20Hound.png' },
+        { name: 'Kids Water bottle',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Kids%20Water%20Bottle.png' },
+        { name: 'Mug',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Mug.png' },
+        { name: 'Sassy Storage',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Sassy%20Storage.png' },
+        { name: 'Wine',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Stemless%20Wine.png' },
+        { name: 'Tote',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Tote.png' },
+        { name: 'Frames and Puzzles',price: '', url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/photo%20frames%20and%20puzzle.png' },
+    ]
+function initVarietyPanel() {
+    // 1. Target the SPECIFIC container for images, NOT the whole panel
+    const container = document.getElementById('thumbContainer'); 
+    if (!container) return;
+    
+    // 2. Clear ONLY the images, leaving the Submit Button alone
+    container.innerHTML = ''; 
+
+    productVarieties.forEach(product => {
+        const thumb = document.createElement('img');
+        thumb.src = product.url;
+        thumb.className = 'variety-thumb';
+        
+       Object.assign(thumb.style, {
+            width: '90%',          // Fill most of the sidebar width
+            height: 'auto',        // Maintain aspect ratio
+            maxHeight: '100px',    // Don't let them get TOO tall
+            objectFit: 'contain',
+            cursor: 'pointer',
+            border: '2px solid #eee',
+            borderRadius: '8px',
+            padding: '8px',
+            backgroundColor: '#fff',
+            flexShrink: '0'        // Prevents the browser from "squishing" the images
+        });
+
+        thumb.onclick = () => {
+            const mockup = document.getElementById('product-bg');
+            if (mockup) {
+                mockup.src = product.url;
+            }
+            document.querySelectorAll('.variety-thumb').forEach(t => t.style.borderColor = '#eee');
+            thumb.style.borderColor = '#007bff';
+        };
+
+        container.appendChild(thumb);
+    });
+}
+function sendOrderToEmail() {
+    const btn = document.getElementById('submitOrderBtn');
+    const name = document.getElementById('customerName')?.value;
+    const email = document.getElementById('customerEmail')?.value;
+
+    // 1. Validation First
+    if (!name || !email) {
+        alert("Please enter your name and email before submitting!");
+        return;
+    }
+
+    // 2. Preparation: Save active item, then hide handles
+    const lastActive = activeItem; 
+    deselectAll(); 
+
+    btn.innerText = "Processing Design...";
+    btn.disabled = true;
+
+    // 3. Take the Snapshot
+    html2canvas(designCanvas, { 
+        useCORS: true,
+        scale: 1.2, 
+        backgroundColor: "#ffffff"
+    }).then(canvas => {
+        // 4. Restore Handles immediately after photo is taken
+        if (lastActive) {
+            activeItem = lastActive;
+            activeItem.classList.add('active-layer');
+        }
+
+        const base64Image = canvas.toDataURL("image/jpeg", 0.6);
+
+        const templateParams = {
+            from_name: name,
+            from_email: email,
+            design_image: base64Image, 
+            product_type: window.activeProductKey || "Standard Product"
+        };
+
+        // 5. Send to EmailJS
+        emailjs.send('service_ezq1fuc', 'template_ut1r5xk', templateParams)
+            .then(function(response) {
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                }
+
+                btn.innerText = "Order Sent! ✔";
+                btn.style.background = "#cbee4c";
+                btn.style.color = "#000000";
+
+                setTimeout(() => {
+                    btn.innerText = "Submit Design";
+                    btn.style.background = "#fbbf24"; 
+                    btn.style.color = "#000000";
+                    btn.disabled = false;
+                    
+                    document.getElementById('customerName').value = "";
+                    document.getElementById('customerEmail').value = "";
+                }, 4000);
+
+                alert("SUCCESS! Your design has been sent to our production team.");
+
+            }).catch(function(error) {
+                console.error("EmailJS Error:", error);
+                alert("Design too complex for email. Contact support!");
+                btn.innerText = "Try Again";
+                btn.style.background = "#dc3545"; 
+                btn.disabled = false;
+            });
+
+    }).catch(err => {
+        console.error("Canvas Error:", err);
+        btn.disabled = false;
+        btn.innerText = "Try Again";
+    });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    initVarietyPanel(); 
+});
+
+
+const studioConfig = {
+    master: [
+        { name: 'Blank', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png' },
+        { name: 'Shirt', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Shirt.png' },
+        { name: 'Skinny', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/20oz%20Skinny.png' },
+        { name: 'Skinny Ombre', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/20oz%20Ombre%20Skinny%20Tumblers.png' },
+        { name: 'Big Tumbler', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/40oz%20and%2030oz%20Tumblers.png' },
+        // FIXED URL BELOW (Removed the Tote link from the Tumbler name)
+        { name: 'Big Tumbler Ombre', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/40oz%20and%2030oz%20Ombre%20Tumblers.png' }, 
+        { name: 'Bib', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Bib.png' },
+        { name: 'Onesie', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Onesie.png' },
+        { name: 'Blanket 14-Moon', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%2014%20Panel%20Moon.png' },
+        { name: 'Blanket 15-Paw', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%2015%20Panel%20Paw.png' },
+        { name: 'Blanket 9', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%209%20Panel.png' },
+        { name: 'Blanket 20', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Blanket%2020%20Panel.png' },
+        { name: 'Candle', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Candle.png' },
+        { name: 'Cards', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Cards.png' },
+        { name: 'Flask', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Flask.png' },
+        { name: 'Water Bottle', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Hydro%20Handle.png' },
+        { name: 'Hydro Hound', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Hydro%20Hound.png' },
+        { name: 'Kids Water bottle', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Kids%20Water%20Bottle.png' },
+        { name: 'Mug', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Mug.png' },
+        { name: 'Sassy Storage', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Sassy%20Storage.png' },
+        { name: 'Wine', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Stemless%20Wine.png' },
+        { name: 'Tote', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/Tote.png' },
+        { name: 'Frames and Puzzles', price: 0, url: 'https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/photo%20frames%20and%20puzzle.png' }
+    ]
+};
+window.onload = () => {
+    // 1. Inject the mockup first
+    injectProductBackground('https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/main/studio-mockups/blank.png'); 
+
+    // 2. Initialize the side panel thumbs
+    if (typeof initVarietyPanel === "function") initVarietyPanel();
+    
+    // Ensure the variety list is loaded
+    if (typeof loadProductVarieties === "function") {
+        loadProductVarieties('master');
+    }
+
+    // 3. Connect the Submit Button (Safety Check)
+    const subBtn = document.getElementById('submitOrderBtn');
+    if (subBtn) {
+        subBtn.onclick = sendOrderToEmail;
+    }
+
+    // 4. Fetch other assets
+    fetchPixabay();
+    fetchTemplatesFromGitHub();
+    
+    // 5. Save the "Clean Slate"
+    saveHistory(); 
+};
+
+
 </script>
 </body>
 </html>
