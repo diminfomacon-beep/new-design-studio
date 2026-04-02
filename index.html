@@ -115,29 +115,32 @@
 .draggable {
     overflow: visible !important;
 } 
-  @media (max-width: 900px) {
-    /* 1. Stack the columns vertically */
-   .studio-wrapper {
+ @media (max-width: 1024px) {
+    .studio-wrapper {
         display: flex !important;
         flex-direction: column !important;
-        height: auto !important; 
-        min-height: 100vh;
+        height: 100vh !important; 
+        overflow-y: auto !important; /* This allows the tools to scroll */
     }
 
-    /* Force the workspace to be visible */
     #workspace {
-        display: flex !important;
-        flex-shrink: 0;
-        width: 100% !important;
-        height: 400px !important; /* Fixed height for mobile */
-        min-height: 400px !important;
-        padding: 10px 0 !important;
-        order: 1; /* Move to top */
-        position: sticky; 
-        top: 0; 
-        z-index: 10;
+        position: sticky; /* This "locks" the canvas at the top */
+        top: 0;
+        z-index: 100;
+        background: #091119; 
+        height: 45vh !important; /* Reduced height to leave room for tools */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0; /* Prevents canvas from squishing */
     }
 
+    #toolbar, #varietyPanel {
+        order: 2;
+        overflow-y: visible !important; /* Let them expand the scroll area */
+        height: auto !important;
+    }
+}
     /* Make sure the container inside doesn't hide the canvas */
     .canvas-container {
         width: 100% !important;
