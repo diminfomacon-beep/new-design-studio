@@ -44,425 +44,145 @@
 </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
 <style>
-        /* Performance Warning Popup */
-    #mobile-warning-overlay {display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10001; justify-content: center;align-items: center; padding: 20px;box-sizing: border-box;text-align: center;}
-    .warning-card {background: #fff;padding: 30px;border-radius: 15px; max-width: 400px; color: #333;}
-    .warning-card h2 { color: #024069; margin-top: 0; }
-    .warning-card button {margin-top: 20px;background: #3b82f6;padding: 10px 25px;font-size: 16px;}
-  :root {--primary:#111827; --accent:#3b82f6; --bg-light:#f5f5f5; --border-color:#ddd;}
-  body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:2px;display:flex;justify-content:center;user-select:none;}
-  #toolbar, #varietyPanel {flex-shrink: 0;}
-  .canvas-container {flex: 1; width: 100%; background: #091119;border-radius: 12px;display: flex; flex-direction: column; max-height: 700px; padding: 20px;box-sizing: border-box;position: relative;}
-  .canvas-toolbar {display: flex;gap: 5px;flex-wrap: wrap;justify-content: center;margin-bottom: 15px;width: 100%;}
-  .tab-button {flex: 1;background: #e0e0e0;color: #333;border: 1px solid #ccc;padding: 10px;cursor: pointer;font-weight: bold;transition: background 0.2s;}
-  .tab-button.active {background: #024069 !important;color: white !important;}
-  .tab-button:hover:not(.active) {background: #d0d0d0;}
-  .tab-pane::-webkit-scrollbar {width: 6px;}
-  .tab-pane::-webkit-scrollbar-thumb {background-color: #024069;border-radius: 10px;}
-  .tab-pane {  max-height: 480px;overflow-y: auto;overflow-x: hidden;padding-right: 5px;background: #fff;border: 1px solid #eee;}
-  #pixabayGrid, #templateGrid {display: grid !important;grid-template-columns: repeat(4, 1fr) !important;gap: 3px;padding: 10px;height: 300px}
-  .gallery-item {width: 45px;aspect-ratio: 1 / 1; object-fit:contain;border-radius: 4px; display: block;}
-  .gallery-item:hover {z-index: 9999;transform: scale(1.5); transform-origin: center;}
-  #templateGrid .gallery-item:hover, #pixabayGrid .gallery-item:hover {transition-delay: 0.1s;}
-  button {font-size:12px;background:#024069;color:rgb(253, 249, 249);border:none;padding:8px 8px;cursor:pointer;border-radius:6px;}
-  .span-2 {grid-column: span 2;    width: 100% !important;}
-  #swatchContainer {display: none; position: absolute; top: 80px; left: 310px; z-index: 9999 !important; pointer-events: auto !important; width: 220px; grid-template-columns: repeat(10, 1fr); gap: 2px; background: white; padding: 8px; border: 2px solid #3b82f6; border-radius: 8px;max-height: 200px;overflow-y: auto;box-shadow: 0 10px 25px rgba(0,0,0,0.3);}
-  .swatch-item {width: 100%;padding-bottom: 100%;cursor: pointer !important;border: 1px solid #eee;}
-  .active-layer {outline: 2px dashed #007bff; }
-  #selection-marquee {border: 1px dashed #007bff; background-color: rgba(0, 123, 255, 0.1); position: absolute;pointer-events: none; z-index: 10000;display: none;}
-  .multi-selected {outline: 2px dashed #3b82f6 !important; outline-offset: 2px;}
-  .group-container .draggable {outline: none !important;border: none !important;}
-  .group-container.active-layer {outline: 2px solid #024069;}
-  .group-container.active-layer .draggable {pointer-events: none;}
-  .group-container .draggable img {width: 100% !important;height: 100% !important; object-fit: fill !important;}
-  .group-container span { white-space: nowrap;display: block;}
-  .draggable img {width: 100% !important;height: 100% !important;object-fit: contain !important;pointer-events: none;user-select: none; display: block;-webkit-user-drag: none;}
-  .active-layer {outline: 2px dashed #007bff;}
-   /* =========================
-   BASE RESIZE HANDLE
-========================= */
-.resize-handle {position: absolute; width: 12px;height: 12px;background: #3b82f6;border: 2px solid #ffffff;border-radius: 50%; z-index: 9999;display: none; pointer-events: all;touch-action: none;cursor: pointer;}
-
-/* Bigger invisible touch target for mobile */
-.resize-handle::after {content: '';position: absolute;top: -10px;left: -10px;right: -10px;bottom: -10px;}
-
-/* =========================
-   SHOW HANDLES WHEN ACTIVE
-========================= */
-.draggable.active-layer .resize-handle {display: block;}
-
-/* =========================
-   HANDLE POSITIONS
-========================= */
-
-/* Corners */
-.handle-tl { top: -6px; left: -6px; cursor: nwse-resize; }
-.handle-tr { top: -6px; right: -6px; cursor: nesw-resize; }
-.handle-bl { bottom: -6px; left: -6px; cursor: nesw-resize; }
-.handle-br { bottom: -6px; right: -6px; cursor: nwse-resize; }
-
-/* Edges */
-.handle-t  { top: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
-.handle-b  { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
-.handle-l  { left: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
-.handle-r  { right: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
-
-/* =========================
-   CRITICAL: PREVENT CLIPPING
-========================= */
-.draggable {
-    overflow: visible !important;
-} 
- @media (max-width: 1024px) {
-    .studio-wrapper {
-        display: flex !important;
-        flex-direction: column !important;
-        height: 100vh !important; 
-        overflow-y: auto !important; /* This allows the tools to scroll */
+    /* =========================================
+       1. GLOBAL & ROOT SETTINGS
+    ========================================= */
+    :root {
+        --primary: #111827;
+        --accent: #3b82f6;
+        --bg-dark: #091119;
+        --canvas-bg: #021302;
+        --studio-blue: #024069;
+        --success-lime: #cbee4c;
     }
 
-    #workspace {
-        position: sticky; /* This "locks" the canvas at the top */
-        top: 0;
-        z-index: 100;
-        background: #091119; 
-        height: 45vh !important; /* Reduced height to leave room for tools */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0; /* Prevents canvas from squishing */
-    }
-
-    #toolbar, #varietyPanel {
-        order: 2;
-        overflow-y: visible !important; /* Let them expand the scroll area */
-        height: auto !important;
-    }
-}
-    /* Make sure the container inside doesn't hide the canvas */
-    .canvas-container {
-        width: 100% !important;
-        height: 100% !important;
-        background: transparent !important; /* Helps see if it's there */
-    }
-
-    /* The actual Canvas box */
-    #designCanvas {
-        width: 320px !important; /* Standard mobile width */
-        height: 320px !important;
-        margin: 0 auto;
-        display: block !important;
-        position: relative !important;
-        background: white;
-    }
-    /* 2. Make the toolbar full width */
-    #toolbar {
-        width: 100% !important;
-        height: auto !important;
-        order: 2; /* Move tools below the canvas for better UX */
-        flex-shrink: 0;
-    }
-    #varietyPanel {
-        width: 100% !important;
-        height: auto;
-        order: 3; /* Move styles to the bottom */
-        flex-direction: column !important;
-        flex-shrink: 0;
-    }
-
-  
-
-    .variety-thumb {
-        flex-shrink: 0; /* Prevent thumbs from squishing */
-        width: 60px !important;
-        height: 60px !important;
-        gap: 10px;
-    }
-
-    
-    .variety-item {
-        width: 85px !important; /* Fixed width so they don't squish labels */
-        margin-right: 15px !important;
-        margin-bottom: 10px !important; /* Remove bottom margin for horizontal scroll */
-        gap: 10px;
-        flex-shrink: 0;
-    }
-   body {
-        /* Prevents the 'pull-to-refresh' gesture in mobile browsers */
-        overscroll-behavior-y: contain; 
-        } 
-
-   html, body {
-        /* Keep this to prevent the whole page from bouncing */
-        position: fixed; 
-        width: 100%;
+    html, body {
         height: 100%;
         margin: 0;
         padding: 0;
-        overflow: hidden; 
-        background-color: #021302; /* Matches your wrapper color */
+        overflow: hidden;
+        background-color: var(--bg-dark);
+        font-family: sans-serif;
+        user-select: none;
+        overscroll-behavior-y: contain;
     }
-    
+
+    /* =========================================
+       2. LAYOUT FRAMEWORK (Desktop Default)
+    ========================================= */
     .studio-wrapper {
-        /* Change height to 100% of the visible area */
-        height: 100vh; 
+        display: flex;
+        flex-direction: row; /* Desktop: side-by-side */
         width: 100vw;
+        height: 100vh;
+        background: var(--bg-dark);
+        overflow: hidden;
+    }
+
+    #workspace {
+        flex: 1;
         display: flex;
         flex-direction: column;
-        
-        /* This allows the user to scroll through the studio tools */
-        overflow-y: auto !important; 
-        overflow-x: hidden;
-        
-        /* Smooth scrolling for mobile */
-        -webkit-overflow-scrolling: touch; 
-        
-        /* Padding to handle iPhone notches and home bars */
-        padding-bottom: env(safe-area-inset-bottom, 20px); 
-        box-sizing: border-box;
-    } 
-    
-    
-   
-    /* Position handles correctly */
-    .handle-tl { top: -6px; left: -6px; cursor: nwse-resize; }
-    .handle-tr { top: -6px; right: -6px; cursor: nesw-resize; }
-    .handle-bl { bottom: -6px; left: -6px; cursor: nesw-resize; }
-    .handle-br { bottom: -6px; right: -6px; cursor: nwse-resize; }
-    .handle-t  { top: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
-    .handle-b  { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
-    .handle-l  { left: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
-    .handle-r  { right: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
-    }
-
-    .multi-selected {
-        outline: 2px dashed #3b82f6 !important;
-        background: rgba(59, 130, 246, 0.1);
-    }
-
-    /* Optional: Add a small scale effect when long-pressing */
-    .draggable:active {
-        transform: scale(1.02);
-        transition: transform 0.1s;
-    }
-    #multiSelectToggle.active-mode {
-        background-color: #3b82f6;
-        color: white;
-        border-color: #2563eb;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-    }
-
-    .toolbar {
-        display: flex;
-        flex-wrap: wrap; /* This allows buttons to drop to a second line on small screens */
-        gap: 5px;
-        padding: 10px;
-        justify-content: center; /* Centers buttons on mobile */
-        background: #f8f9fa;
-        border-bottom: 1px solid #ddd;
-    }
-    /* Base style for the button */
-    .tool-btn {
-        padding: 8px 12px;
-        border: 1px solid #ccc;
-        color: white;
-        background: #024069;
-        cursor: pointer;
-        border-radius: 4px;
-        transition: all 0.2s ease;
-    }
-
-    /* Style when Multi-Select is ON */
-    .tool-btn.active-mode {
-        background-color: #3b82f6 !important; /* Blue background */
-        color: #024069 !important;
-        border-color: #2563eb !important;
-        font-weight: bold;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-    }
-    
-.text-wrapper {
-    position: relative;
-    pointer-events: none; /* Let the drag events pass through to the parent */
-}
-
-
-/* This forces the text container to ignore all wrap commands */
-
-.text-wrapper {
-    display: inline-block;
-    white-space: pre; /* Keeps the word on one line */
-}
-/* =========================
-   DRAGGABLE TEXT CONTAINER
-========================= */
-.draggable {
-    position: absolute;
-    display: inline-block;
-    
-    /* Size behavior */
-    width: fit-content;
-    max-width: 100%;
-    height: auto;
-
-    /* Spacing + visuals */
-    padding: 8px 12px;
-    border: 2px solid transparent;
-    box-sizing: border-box;
-
-    /* Interaction */
-    cursor: move;
-    touch-action: none;
-
-    /* Prevent weird scaling issues */
-    transform-origin: top left;
-}
-
-:root {--primary:#111827; --accent:#3b82f6; --bg-light:#f5f5f5; --border-color:#ddd;}
-
-/* Global Mobile Fixes */
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden; /* Prevent body bounce */
-    background-color: #091119;
-}
-
-.studio-wrapper {
-    display: flex;
-    flex-direction: row;
-    width: 100vw;
-    height: 100vh;
-    background: #091119;
-    overflow: hidden;
-}
-
-/* Tablet & Mobile Layout Adjustment */
-@media (max-width: 1024px) {
-    .studio-wrapper {
-        flex-direction: column !important;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    #workspace {
-        order: 1;
-        width: 100% !important;
-        height: 50vh !important; /* Half screen for canvas */
-        min-height: 350px;
-        position: sticky;
-        top: 0;
-    }
-    
-    #toolbar {
-        order: 2;
-        width: 100% !important;
-        height: auto !important;
-    }
-    
-    #varietyPanel {
-        order: 3;
-        width: 100% !important;
-        height: auto !important;
-        flex-direction: row !important; /* Horizontal scroll for styles */
-        overflow-x: auto;
+        align-items: center;
+        justify-content: center;
+        background: var(--canvas-bg);
+        padding: 20px;
+        position: relative;
+        min-width: 0;
     }
 
     #designCanvas {
-        width: 90vw !important; /* Scales to screen width */
-        height: 90vw !important; /* Stays square */
-        max-width: 350px;
-        max-height: 350px;
-    }
-}
-
-/* Rest of your existing CSS below... */
-
-/* =========================
-   TEXT CONTENT
-========================= */
-.draggable span {
-    display: block;
-
-    /* TEXT BEHAVIOR */
-    white-space: pre-wrap;       /* ✅ supports multi-line */
-    word-break: break-word;      /* ✅ prevents overflow */
-    overflow-wrap: break-word;
-
-    /* SIZE */
-    width: 100%;
-    min-width: 1px;
-
-    /* TEXT RENDERING */
-    line-height: 1.2;
-
-    /* Prevent text from blocking drag */
-    pointer-events: none;
-}
-
-/* =========================
-   SINGLE LINE MODE (optional toggle)
-========================= */
-.draggable.single-line span {
-    white-space: nowrap;
-    width: auto;
-}
-
-/* =========================
-   ACTIVE STATE (selection)
-========================= */
-.draggable.active-layer {
-    border: 2px dashed #3b82f6;
-}
-
-/* =========================
-   MOBILE IMPROVEMENTS
-========================= */
-@media (max-width: 900px) {
-    .draggable {
-        padding: 10px 14px; /* bigger touch area */
+        width: 600px;
+        height: 600px;
+        background: white;
+        position: relative;
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        overflow: hidden;
+        contain: paint;
     }
 
-    .draggable span {
-        font-size: 16px; /* prevents iOS zoom issues */
+    /* =========================================
+       3. TOOLBARS & PANELS
+    ========================================= */
+    .canvas-toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 15px;
+        width: 100%;
     }
-}
 
-    /* ... (Your existing layout styles) ... */
+    #varietyPanel {
+        width: 200px;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-dark);
+        border-left: 1px solid #333;
+        height: 100%;
+        flex-shrink: 0;
+        z-index: 1000;
+    }
 
-    
+    #thumbContainer {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        padding: 10px;
+    }
 
+    .tab-button {
+        background: #e0e0e0;
+        color: #333;
+        border: 1px solid #ccc;
+        padding: 8px 15px;
+        cursor: pointer;
+        font-weight: bold;
+        border-radius: 4px;
+    }
+
+    .tab-button.active {
+        background: var(--studio-blue) !important;
+        color: white !important;
+    }
+
+    /* =========================================
+       4. DRAGGABLES & RESIZING
+    ========================================= */
     .draggable {
         position: absolute;
         cursor: move;
-        padding: 0;
-        border: 2px solid transparent;
         user-select: none;
         display: inline-block;
-        box-sizing: content-box; /* Important for handle alignment */
+        transform-origin: center center;
+        will-change: transform;
+        border: 2px solid transparent;
     }
 
     .active-layer {
-        border: 2px solid #024069 !important;
+        border: 2px dashed var(--accent) !important;
     }
 
-    /* 8-Point Handle System */
     .resize-handle {
         position: absolute;
         width: 10px;
         height: 10px;
-        background: #024069;
+        background: var(--studio-blue);
         border: 1px solid white;
         border-radius: 50%;
-        display: none; /* Only show when active */
+        display: none;
         z-index: 100;
     }
 
     .active-layer .resize-handle { display: block; }
 
+    /* Handle Positions */
     .handle-tl { top: -6px; left: -6px; cursor: nw-resize; }
     .handle-tr { top: -6px; right: -6px; cursor: ne-resize; }
     .handle-bl { bottom: -6px; left: -6px; cursor: sw-resize; }
@@ -472,221 +192,83 @@ html, body {
     .handle-l { left: -6px; top: 50%; transform: translateY(-50%); cursor: w-resize; }
     .handle-r { right: -6px; top: 50%; transform: translateY(-50%); cursor: e-resize; }
 
-    .text-wrapper span {
-        display: block;
-        line-height: 1.2;
-        white-space: pre-wrap;
-        word-break: break-word;
-    }
-    /* Change 'tomato' to your preferred hex code (e.g., #024069) */
-    input[type="range"] {
-        accent-color: #024069; /* This is the modern, easy way to change slider colors */
-    }
-
-    /* For older browsers or more control */
-    input[type="range"]::-webkit-slider-thumb {
-        background: #024069;
-    }
-    /* While editing, keep the outline clear but don't show resize handles */
-    .draggable span[contenteditable="true"] {
-        outline: none;
-        cursor: text;
-        background: rgba(255, 255, 255, 0.5); /* Slight highlight to show edit mode */
-    }
-
-    .draggable span[contenteditable="true"] ~ .resize-handle {
-        display: none !important; /* Hide handles so they don't get in the way of the cursor */
-    }
-    .draggable {
-        /* ... existing styles ... */
-        transform-origin: center center;
-        display: inline-block; /* Ensures the box wraps tightly around content */
-    }
-    
-
-    .draggable {
-        /* Ensure no weird filters are applied during capture */
-        will-change: transform;
-    }
-    #product-bg {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%); /* Centers the mockup perfectly */
-        width: auto !important;
-        height: auto !important;
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain; /* The magic property */
-        z-index: 0;
-        pointer-events: none;
-    }
-   
-    .draggable img {
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: contain !important; /* Force proportion */
-        display: block;
-    }
-     
-    #thumbContainer::-webkit-scrollbar {
-        width: 5px;
-    }
-    #thumbContainer::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-    }
-    #thumbContainer::-webkit-scrollbar-thumb {
-        background: #fbbf24;
-        border-radius: 10px;
-    }
-    
     /* =========================================
-   1. MAIN LAYOUT (The Framework)
-   ========================================= */
-    .studio-wrapper {
-        display: flex !important;
-        flex-direction: row;
-        width: 100vw;
-        height: 100vh;
-        background: #091119;
-        overflow: hidden;
-        box-sizing: border-box;
-    }
-
-    #workspace {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background: #021302;
-        min-width: 0;
-        padding: 10px;
-    }
-
-    /* =========================================
-    2. VARIETY PANEL (The Sidebar)
-    ========================================= */
-    #varietyPanel {
-        width: 140px; /* Slightly wider to prevent label clipping */
-        display: flex;
-        flex-direction: column;
-        background: #091119;
-        border-left: 1px solid #444;
-        height: 100%;
-        flex-shrink: 0;
-        z-index: 1000;
-    }
-
-    #varietyPanel h5 {
-        color: #fff;
-        text-align: center;
-        margin: 15px 0 10px 0;
-        font-family: 'Montserrat', sans-serif;
-        font-size: 14px;
-        letter-spacing: 1px;
-    }
-
-    #thumbContainer {
-        flex: 1; /* This takes up all available space above the button */
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-        padding: 10px;
-        scrollbar-width: thin; /* Firefox */
-    }
-
-    /* Custom Scrollbar for the Thumbnails */
-    #thumbContainer::-webkit-scrollbar {
-        width: 5px;
-    }
-    #thumbContainer::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-    }
-    #thumbContainer::-webkit-scrollbar-thumb {
-        background: #fbbf24;
-        border-radius: 10px;
-    }
-
-    /* =========================================
-    3. SUBMIT SECTION (The Sticky Bottom)
+       5. SUBMIT SECTION
     ========================================= */
     #submitSection {
-        margin-top: auto; /* Forces it to the bottom */
         padding: 15px 10px;
-        background: rgba(0, 0, 0, 0.4); /* Darker contrast */
+        background: rgba(0, 0, 0, 0.4);
         border-top: 2px solid #7d1236;
-        z-index: 1001;
     }
 
     #submitOrderBtn {
-        width: 100% !important;
-        padding: 12px 5px;
-        background: #cbee4c !important; /* Success Green */
+        width: 100%;
+        padding: 12px;
+        background: var(--success-lime) !important;
         color: #000 !important;
         font-weight: bold;
         border: none;
         border-radius: 8px;
         cursor: pointer;
-        font-size: 13px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        transition: transform 0.2s, background 0.2s;
-        display: block !important; /* Force visibility */
-    }
-
-    #submitOrderBtn:hover {
-        background: #218838 !important;
-        transform: translateY(-1px);
-    }
-
-    #submitOrderBtn:active {
-        transform: translateY(1px);
-    }
-    /* Hide the app download popup on desktops */
-    @media (min-width: 769px) {
-        #app-download-popup {
-            display: none !important;
-        }
     }
 
     /* =========================================
-    4. CANVAS & DRAGGABLES
+       6. MOBILE RESPONSIVENESS (1024px and below)
     ========================================= */
-    .canvas-container {
-        flex: 1;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        padding: 10px;
-        box-sizing: border-box;
+    @media (max-width: 1024px) {
+        .studio-wrapper {
+            flex-direction: column !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #workspace {
+            order: 1;
+            width: 100% !important;
+            height: 50vh !important;
+            min-height: 350px;
+            position: sticky;
+            top: 0;
+            padding: 10px;
+            z-index: 10;
+        }
+
+        #designCanvas {
+            width: 90vw !important;
+            height: 90vw !important;
+            max-width: 350px;
+            max-height: 350px;
+        }
+
+        #varietyPanel {
+            order: 2;
+            width: 100% !important;
+            height: auto !important;
+            border-left: none;
+            border-top: 1px solid #333;
+        }
+
+        #thumbContainer {
+            flex-direction: row !important; /* Items scroll sideways on mobile */
+            overflow-x: auto;
+            overflow-y: hidden;
+            height: 120px;
+            padding: 10px;
+        }
+
+        #submitSection {
+            order: 3;
+            width: 100%;
+            position: relative;
+        }
     }
 
-    #designCanvas {
-        flex: 1;
-        width: 100%;
-        max-height: 1080px;
-        background: white;
-        position: relative;
-        border: 2px dashed #ccc;
-        border-radius: 8px;
-        overflow: hidden;
-        contain: paint; /* Optimization for capture */
+    /* Inputs & Sliders */
+    input[type="range"] {
+        accent-color: var(--studio-blue);
     }
-
-    .draggable {
-        position: absolute;
-        cursor: move;
-        user-select: none;
-        display: inline-block;
-        transform-origin: center center;
-        will-change: transform;
-    }
-    
-    
 </style>
+
 </head>
 <!-- Part 2/7 -->
 <body>
