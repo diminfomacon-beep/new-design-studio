@@ -801,6 +801,27 @@ html, body {
         order: 2;
     }
 }
+    /* =========================================
+   DESKTOP PIN-TO-TOP FIX
+   ========================================= */
+@media (min-width: 1025px) {
+    .studio-wrapper {
+        align-items: flex-start !important; /* Forces top alignment */
+        justify-content: flex-start !important;
+    }
+
+    #workspace {
+        justify-content: flex-start !important; /* Pushes canvas to top of its area */
+        padding-top: 20px !important; /* Consistent gap from the top edge */
+    }
+
+    /* Prevents the canvas from trying to fill the vertical space */
+    #designCanvas {
+        flex: none !important; 
+        height: 600px !important; /* Or your preferred fixed desktop height */
+        width: 600px !important;
+    }
+}
     
 </style>
 </head>
