@@ -16,11 +16,17 @@
     <link rel="manifest" href="manifest.json">    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
     <script type="text/javascript">
-      (function(){
-          emailjs.init("1LZbCPvH49G_r0ypB"); // Get this from EmailJS Account tab
-      })();
+      window.onload = function() {
+          if (typeof emailjs !== 'undefined') {
+              emailjs.init("1LZbCPvH49G_r0ypB");
+              console.log("EmailJS Initialized Successfully");
+          } else {
+              console.error("EmailJS failed to load from CDN");
+          }
+      };
     </script>
    <script>
 window.addEventListener('DOMContentLoaded', () => {
