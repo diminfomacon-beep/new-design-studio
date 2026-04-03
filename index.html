@@ -53,7 +53,6 @@
         --canvas-area: #021302;
         --studio-blue: #024069;
         --accent-lime: #cbee4c;
-        --accent-amber: #fbbf24;
     }
 
     html, body {
@@ -63,7 +62,7 @@
         height: 100%;
         background-color: var(--bg-dark);
         font-family: sans-serif;
-        overflow: hidden;
+        overflow: hidden; /* Prevents body scroll, panels scroll internally */
     }
 
     .studio-wrapper {
@@ -74,9 +73,9 @@
         box-sizing: border-box;
     }
 
-    /* LEFT PANEL - Narrowed for Desktop */
+    /* LEFT PANEL - Graphics & Tools */
     #toolbar {
-        width: 240px; /* Reduced from 280px */
+        width: 240px;
         height: 100%;
         background: var(--bg-dark);
         border-right: 1px solid #333;
@@ -88,17 +87,19 @@
         flex-shrink: 0;
     }
 
-    /* CENTER PANEL - Dynamic Space */
+    /* CENTER PANEL - The Stage */
     #workspace {
         flex: 1;
         display: flex;
         flex-direction: column;
         background: var(--canvas-area);
         position: relative;
-        padding: 15px;
+        padding: 10px;
         min-width: 0;
         align-items: center;
-        justify-content: center;
+        /* PULLS CANVAS TO TOP ON DESKTOP */
+        justify-content: flex-start; 
+        overflow-y: auto;
     }
 
     #designCanvas {
@@ -106,8 +107,9 @@
         height: 500px;
         background: white;
         position: relative;
-        box-shadow: 0 0 40px rgba(0,0,0,0.6);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.6);
         flex-shrink: 0;
+        margin-top: 10px; /* Slight gap from the very top */
     }
 
     /* RIGHT PANEL - Product Selection */
@@ -126,11 +128,10 @@
     ========================================= */
     #pixabayGrid, #templateGrid {
         display: grid !important;
-        grid-template-columns: repeat(4, 1fr) !important; /* Forces 4 items per row */
+        grid-template-columns: repeat(4, 1fr) !important;
         gap: 4px;
         padding: 10px 5px;
         width: 100%;
-        box-sizing: border-box;
     }
 
     .gallery-item {
@@ -139,12 +140,6 @@
         object-fit: cover;
         border-radius: 4px;
         cursor: pointer;
-        transition: transform 0.1s;
-    }
-
-    .gallery-item:hover {
-        transform: scale(1.1);
-        z-index: 5;
     }
 
     .tab-pane {
@@ -152,8 +147,6 @@
         border-radius: 4px;
         padding: 5px;
         margin-top: 5px;
-        max-height: 400px;
-        overflow-y: auto;
     }
 
     /* =========================================
@@ -175,8 +168,7 @@
         gap: 5px;
         justify-content: center;
         width: 100%;
-        max-width: 600px;
-        margin-bottom: 10px;
+        padding: 5px 0 15px 0;
     }
 
     .tab-button {
@@ -184,44 +176,46 @@
         padding: 8px;
         font-weight: bold;
         background: #333;
-        color: #ccc;
         border: 1px solid #444;
     }
 
-    .tab-button.active {
-        background: var(--studio-blue) !important;
-        color: white !important;
-    }
+    .tab-button.active { background: var(--studio-blue) !important; }
 
     /* =========================================
-       4. MOBILE ADAPTATION (REMAINS OK)
+       4. MOBILE ADAPTATION (LOCKED CANVAS)
     ========================================= */
     @media (max-width: 1024px) {
         .studio-wrapper {
-            flex-direction: column;
-            overflow-y: auto;
+            flex-direction: column !important;
+            overflow-y: auto !important; /* Allow the rest of the page to scroll */
         }
 
         #workspace {
-            height: 55vh;
-            min-height: 380px;
+            order: -1; /* FORCES CANVAS TO APPEAR FIRST */
+            height: 50vh !important;
+            min-height: 340px;
+            width: 100%;
             flex: none;
+            /* LOCKS THE CANVAS TO THE TOP OF THE SCREEN */
             position: sticky;
             top: 0;
-            z-index: 10;
-            padding: 5px;
+            z-index: 999;
+            background: var(--canvas-area);
+            border-bottom: 2px solid #333;
+            justify-content: center; /* Center canvas on mobile screen */
         }
 
         #designCanvas {
             width: 300px !important;
             height: 300px !important;
+            margin-top: 0;
         }
 
         #toolbar, #varietyPanel {
             width: 100% !important;
-            height: auto;
+            height: auto !important;
             border: none;
-            border-top: 1px solid #333;
+            overflow: visible; /* Prevents internal scrolling conflicts */
         }
 
         #thumbContainer {
