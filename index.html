@@ -2379,7 +2379,9 @@ function sendOrderToEmail() {
         };
 
         // Use the modern emailjs.send call
-        emailjs.send('service_ezq1fuc', 'template_ut1r5xk', templateParams)
+       // Add your public key as the 4th argument in the send call
+        emailjs.send('service_ezq1fuc', 'template_ut1r5xk', templateParams, '1LZbCPvH49G_r0ypB')
+    
             .then(function(response) {
                 if (typeof confetti === 'function') {
                     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
