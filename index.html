@@ -1119,25 +1119,41 @@ designCanvas.addEventListener('mousedown', (e) => {
 let templateMetadata = {}; // Global storage for tags
 async function fetchTemplatesFromGitHub() {
     const grid = document.getElementById('templateGrid');
+    
+    // 1. USE JSDELIVR FOR THE METADATA (Bypasses Google Sites CORS restrictions)
+    const metadataUrl = `https://cdn.jsdelivr.net/gh/${GH_CONFIG.owner}/${GH_CONFIG.repo}@${GH_CONFIG.branch}/${GH_CONFIG.path}/metadata.json`;
+    
+    // 2. KEEP API URL FOR THE FILE LIST (But add a fail-safe)
     const apiUrl = `https://api.github.com/repos/${GH_CONFIG.owner}/${GH_CONFIG.repo}/contents/${GH_CONFIG.path}?ref=${GH_CONFIG.branch}`;
-    const metadataUrl = `https://raw.githubusercontent.com/${GH_CONFIG.owner}/${GH_CONFIG.repo}/${GH_CONFIG.branch}/${GH_CONFIG.path}/metadata.json`;
 
     try {
-        // 1. Try to fetch the metadata JSON
+        // Fetch the metadata JSON via CDN
         const metaRes = await fetch(metadataUrl);
         if (metaRes.ok) {
             templateMetadata = await metaRes.json();
+            console.log("Metadata loaded via CDN");
         }
 
-        // 2. Fetch the actual file list
+        // Fetch the actual file list from GitHub API
         const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error("Repo access error");
-        githubFiles = await response.json();
+        if (!response.ok) {
+             // If the API fails (common in sandboxes), we can fallback to using just the metadata
+             if (templateMetadata && Object.keys(templateMetadata).length > 0) {
+                 console.warn("API failed, falling back to metadata-only render.");
+                 // Create a fake githubFiles array from your metadata keys if needed
+                 renderTemplateGrid(Object.keys(templateMetadata).map(name => ({ name })));
+                 return;
+             }
+             throw new Error("Repo access error");
+        }
         
+        githubFiles = await response.json();
         renderTemplateGrid(githubFiles);
+        
     } catch (error) {
         console.error("Metadata/File fetch failed:", error);
-        grid.innerHTML = "<p style='color:red;'>Error loading library.</p>";
+        // On Google Sites, we use innerText/HTML because alert() is blocked
+        grid.innerHTML = "<p style='color:white;'>Connection blocked by sandbox. Try refreshing.</p>";
     }
 }
 function setTextAlignment(align) {
@@ -2464,6 +2480,30 @@ window.onload = () => {
 };
 
 
+</script>
+    <script>
+// 1. SILENCE THE GOOGLE LOG ERRORS
+// The play.google.com/log errors are internal Google junk. You can ignore them.
+
+// 2. RE-INITIALIZE EMAILJS LOCALLY
+function safeSend() {
+    if (typeof emailjs === 'undefined') {
+        console.error("EmailJS missing, attempting emergency load...");
+        // If library is missing, we try to load it dynamically
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+        s.onload = () => emailjs.init("1LZbCPvH49G_r0ypB");
+        document.head.appendChild(s);
+        return;
+    }
+}
+
+// 3. FIX FOR GOOGLE SITES SANDBOX (Replace alerts)
+function showStatus(msg, color) {
+    const statusDiv = document.getElementById('submitOrderBtn'); // Use the button as the messenger
+    statusDiv.innerText = msg;
+    statusDiv.style.background = color;
+}
 </script>
 </body>
 </html>
