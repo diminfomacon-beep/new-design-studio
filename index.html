@@ -7,7 +7,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Design Studio">
-    <meta name="theme-color" content="#091119">
+    <meta name="theme-color" content="#2F6B64
+">
     
     <title>Design Studio</title>
     
@@ -22,209 +23,797 @@
       })();
     </script>
     <script>
-  window.addEventListener('DOMContentLoaded', () => {
-    // Check if it's a mobile device (Android/iOS)
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-      // Create the popup element
-      const overlay = document.createElement('div');
-      overlay.id = 'mobile-warning-overlay';
-      overlay.style.display = 'flex';
-      overlay.innerHTML = `
-        <div class="warning-card">
-          <h2>Performance Tip</h2>
-          <p>For the best design experience and full features, we recommend using a <b>computer or laptop</b>.</p>
-          <button onclick="document.getElementById('mobile-warning-overlay').style.display='none'">Continue Anyway</button>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-    }
-  });
-</script>
+    window.addEventListener('DOMContentLoaded', () => {
+        // Check if it's a mobile device (Android/iOS)
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+        // Create the popup element
+        const overlay = document.createElement('div');
+        overlay.id = 'mobile-warning-overlay';
+        overlay.style.display = 'flex';
+        overlay.innerHTML = `
+            <div class="warning-card">
+            <h2>Performance Tip</h2>
+            <p>For the best design experience and full features, we recommend using a <b>computer or laptop</b>.</p>
+            <button onclick="document.getElementById('mobile-warning-overlay').style.display='none'">Continue Anyway</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        }
+    });
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <style>
-    /* =========================================
-       1. CORE LAYOUT (3-COLUMN SYSTEM)
-    ========================================= */
-    :root {
-        --bg-dark: #091119;
-        --canvas-area: #021302;
-        --studio-blue: #024069;
-        --accent-lime: #cbee4c;
+        /* Performance Warning Popup */
+    #mobile-warning-overlay {display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10001; justify-content: center;align-items: center; padding: 20px;box-sizing: border-box;text-align: center;}
+    .warning-card {background: #fff;padding: 30px;border-radius: 15px; max-width: 400px; color: #333;}
+    .warning-card h2 { color: #CAE4DB
+; margin-top: 0; }
+    .warning-card button {margin-top: 20px;background: #3b82f6;padding: 10px 25px;font-size: 16px;}
+  :root {--primary:#111827; --accent:#3b82f6; --bg-light:#f5f5f5; --border-color:#ddd;}
+  body{font-family:sans-serif;background:var(--bg-light);margin:0;padding:2px;display:flex;justify-content:center;user-select:none;}
+  #toolbar, #varietyPanel {flex-shrink: 0;}
+  .canvas-container {flex: 1; width: 100%; background: #2F6B64
+;border-radius: 12px;display: flex; flex-direction: column; max-height: 700px; padding: 20px;box-sizing: border-box;position: relative;}
+  .canvas-toolbar {display: flex;gap: 5px;flex-wrap: wrap;justify-content: center;margin-bottom: 15px;width: 100%;}
+  .tab-button {flex: 1;background: #e0e0e0;color: #333;border: 1px solid #ccc;padding: 10px;cursor: pointer;font-weight: bold;transition: background 0.2s;}
+  .tab-button.active {background: #CAE4DB
+ !important;color: #000 !important;}
+  .tab-button:hover:not(.active) {background: #d0d0d0;}
+  .tab-pane::-webkit-scrollbar {width: 6px;}
+  .tab-pane::-webkit-scrollbar-thumb {background-color: #CAE4DB
+;border-radius: 10px;}
+  .tab-pane {  max-height: 480px;overflow-y: auto;overflow-x: hidden;padding-right: 5px;background: #fff;border: 1px solid #eee;}
+  #pixabayGrid, #templateGrid {display: grid !important;grid-template-columns: repeat(4, 1fr) !important;gap: 3px;padding: 10px;height: 300px}
+  .gallery-item {width: 45px;aspect-ratio: 1 / 1; object-fit:contain;border-radius: 4px; display: block;}
+  .gallery-item:hover {z-index: 9999;transform: scale(1.5); transform-origin: center;}
+  #templateGrid .gallery-item:hover, #pixabayGrid .gallery-item:hover {transition-delay: 0.1s;}
+  button {font-size:12px;background:#CAE4DB
+;color:rgb(253, 249, 249);border:none;padding:8px 8px;cursor:pointer;border-radius:6px;}
+  .span-2 {grid-column: span 2;    width: 100% !important;}
+  #swatchContainer {display: none; position: absolute; top: 80px; left: 310px; z-index: 9999 !important; pointer-events: auto !important; width: 220px; grid-template-columns: repeat(10, 1fr); gap: 2px; background: white; padding: 8px; border: 2px solid #3b82f6; border-radius: 8px;max-height: 200px;overflow-y: auto;box-shadow: 0 10px 25px rgba(0,0,0,0.3);}
+  .swatch-item {width: 100%;padding-bottom: 100%;cursor: pointer !important;border: 1px solid #eee;}
+  .active-layer {outline: 2px dashed #007bff; }
+  #selection-marquee {border: 1px dashed #007bff; background-color: rgba(0, 123, 255, 0.1); position: absolute;pointer-events: none; z-index: 10000;display: none;}
+  .multi-selected {outline: 2px dashed #3b82f6 !important; outline-offset: 2px;}
+  .group-container .draggable {outline: none !important;border: none !important;}
+  .group-container.active-layer {outline: 2px solid #CAE4DB
+;}
+  .group-container.active-layer .draggable {pointer-events: none;}
+  .group-container .draggable img {width: 100% !important;height: 100% !important; object-fit: fill !important;}
+  .group-container span { white-space: nowrap;display: block;}
+  .draggable img {width: 100% !important;height: 100% !important;object-fit: contain !important;pointer-events: none;user-select: none; display: block;-webkit-user-drag: none;}
+  .active-layer {outline: 2px dashed #007bff;}
+   /* =========================
+   BASE RESIZE HANDLE
+========================= */
+.resize-handle {position: absolute; width: 12px;height: 12px;background: #3b82f6;border: 2px solid #ffffff;border-radius: 50%; z-index: 9999;display: none; pointer-events: all;touch-action: none;cursor: pointer;}
+
+/* Bigger invisible touch target for mobile */
+.resize-handle::after {content: '';position: absolute;top: -10px;left: -10px;right: -10px;bottom: -10px;}
+
+/* =========================
+   SHOW HANDLES WHEN ACTIVE
+========================= */
+.draggable.active-layer .resize-handle {display: block;}
+
+/* =========================
+   HANDLE POSITIONS
+========================= */
+
+/* Corners */
+.handle-tl { top: -6px; left: -6px; cursor: nwse-resize; }
+.handle-tr { top: -6px; right: -6px; cursor: nesw-resize; }
+.handle-bl { bottom: -6px; left: -6px; cursor: nesw-resize; }
+.handle-br { bottom: -6px; right: -6px; cursor: nwse-resize; }
+
+/* Edges */
+.handle-t  { top: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.handle-b  { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.handle-l  { left: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+.handle-r  { right: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+
+/* =========================
+   CRITICAL: PREVENT CLIPPING
+========================= */
+.draggable {
+    overflow: visible !important;
+} 
+  @media (max-width: 900px) {
+    /* 1. Stack the columns vertically */
+   .studio-wrapper {
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important; 
+        min-height: 100vh;
     }
 
-    html, body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        background-color: var(--bg-dark);
-        font-family: sans-serif;
-        overflow: hidden; /* Prevents body scroll, panels scroll internally */
+    /* Force the workspace to be visible */
+    #workspace {
+        display: flex !important;
+        flex-shrink: 0;
+        width: 100% !important;
+        height: 400px !important; /* Fixed height for mobile */
+        min-height: 400px !important;
+        padding: 10px 0 !important;
+        order: 1; /* Move to top */
+        position: sticky; 
+        top: 0; 
+        z-index: 10;
     }
 
-    .studio-wrapper {
-        display: flex;
-        flex-direction: row;
-        width: 100vw;
-        height: 100vh;
-        box-sizing: border-box;
+    /* Make sure the container inside doesn't hide the canvas */
+    .canvas-container {
+        width: 100% !important;
+        height: 100% !important;
+        background: transparent !important; /* Helps see if it's there */
     }
 
-    /* LEFT PANEL - Graphics & Tools */
+    /* The actual Canvas box */
+    #designCanvas {
+        width: 320px !important; /* Standard mobile width */
+        height: 320px !important;
+        margin: 0 auto;
+        display: block !important;
+        position: relative !important;
+        background: white;
+    }
+    /* 2. Make the toolbar full width */
     #toolbar {
-        width: 240px;
-        height: 100%;
-        background: var(--bg-dark);
-        border-right: 1px solid #333;
-        display: flex;
-        flex-direction: column;
-        padding: 10px;
-        box-sizing: border-box;
-        overflow-y: auto;
+        width: 100% !important;
+        height: auto !important;
+        order: 2; /* Move tools below the canvas for better UX */
+        flex-shrink: 0;
+    }
+    #varietyPanel {
+        width: 100% !important;
+        height: auto;
+        order: 3; /* Move styles to the bottom */
+        flex-direction: column !important;
         flex-shrink: 0;
     }
 
-    /* CENTER PANEL - The Stage */
+  
+
+    .variety-thumb {
+        flex-shrink: 0; /* Prevent thumbs from squishing */
+        width: 60px !important;
+        height: 60px !important;
+        gap: 10px;
+    }
+
+    
+    .variety-item {
+        width: 85px !important; /* Fixed width so they don't squish labels */
+        margin-right: 15px !important;
+        margin-bottom: 10px !important; /* Remove bottom margin for horizontal scroll */
+        gap: 10px;
+        flex-shrink: 0;
+    }
+   body {
+        /* Prevents the 'pull-to-refresh' gesture in mobile browsers */
+        overscroll-behavior-y: contain; 
+        } 
+
+   html, body {
+        /* Keep this to prevent the whole page from bouncing */
+        position: fixed; 
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden; 
+        background-color: #2F6B64
+; /* Matches your wrapper color */
+    }
+    
+    .studio-wrapper {
+        /* Change height to 100% of the visible area */
+        height: 100vh; 
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+        
+        /* This allows the user to scroll through the studio tools */
+        overflow-y: auto !important; 
+        overflow-x: hidden;
+        
+        /* Smooth scrolling for mobile */
+        -webkit-overflow-scrolling: touch; 
+        
+        /* Padding to handle iPhone notches and home bars */
+        padding-bottom: env(safe-area-inset-bottom, 20px); 
+        box-sizing: border-box;
+    } 
+    
+    
+   
+    /* Position handles correctly */
+    .handle-tl { top: -6px; left: -6px; cursor: nwse-resize; }
+    .handle-tr { top: -6px; right: -6px; cursor: nesw-resize; }
+    .handle-bl { bottom: -6px; left: -6px; cursor: nesw-resize; }
+    .handle-br { bottom: -6px; right: -6px; cursor: nwse-resize; }
+    .handle-t  { top: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+    .handle-b  { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+    .handle-l  { left: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+    .handle-r  { right: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+    }
+
+    .multi-selected {
+        outline: 2px dashed #3b82f6 !important;
+        background: rgba(59, 130, 246, 0.1);
+    }
+
+    /* Optional: Add a small scale effect when long-pressing */
+    .draggable:active {
+        transform: scale(1.02);
+        transition: transform 0.1s;
+    }
+    #multiSelectToggle.active-mode {
+        background-color: #3b82f6;
+        color: white;
+        border-color: #2563eb;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .toolbar {
+        display: flex;
+        flex-wrap: wrap; /* This allows buttons to drop to a second line on small screens */
+        gap: 5px;
+        padding: 10px;
+        justify-content: center; /* Centers buttons on mobile */
+        background: #f8f9fa;
+        border-bottom: 1px solid #ddd;
+    }
+    /* Base style for the button */
+    .tool-btn {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        color: black;
+        background: #CAE4DB
+;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+    }
+
+    /* Style when Multi-Select is ON */
+    .tool-btn.active-mode {
+        background-color: #3b82f6 !important; /* Blue background */
+        color: #CAE4DB
+ !important;
+        border-color: #2563eb !important;
+        font-weight: bold;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+.text-wrapper {
+    position: relative;
+    pointer-events: none; /* Let the drag events pass through to the parent */
+}
+
+
+/* This forces the text container to ignore all wrap commands */
+
+.text-wrapper {
+    display: inline-block;
+    white-space: pre; /* Keeps the word on one line */
+}
+/* =========================
+   DRAGGABLE TEXT CONTAINER
+========================= */
+.draggable {
+    position: absolute;
+    display: inline-block;
+    
+    /* Size behavior */
+    width: fit-content;
+    max-width: 100%;
+    height: auto;
+
+    /* Spacing + visuals */
+    padding: 8px 12px;
+    border: 2px solid transparent;
+    box-sizing: border-box;
+
+    /* Interaction */
+    cursor: move;
+    touch-action: none;
+
+    /* Prevent weird scaling issues */
+    transform-origin: top left;
+}
+
+:root {--primary:#111827; --accent:#3b82f6; --bg-light:#f5f5f5; --border-color:#ddd;}
+
+/* Global Mobile Fixes */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent body bounce */
+    background-color: #2F6B64
+;
+}
+
+.studio-wrapper {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    background: #2F6B64
+;
+    overflow: hidden;
+}
+
+/* Tablet & Mobile Layout Adjustment */
+@media (max-width: 1024px) {
+    .studio-wrapper {
+        flex-direction: column !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    #workspace {
+        order: 1;
+        width: 100% !important;
+        height: 50vh !important; /* Half screen for canvas */
+        min-height: 350px;
+        position: sticky;
+        top: 0;
+    }
+    
+    #toolbar {
+        order: 2;
+        width: 100% !important;
+        height: auto !important;
+    }
+    
+    #varietyPanel {
+        order: 3;
+        width: 100% !important;
+        height: auto !important;
+        flex-direction: row !important; /* Horizontal scroll for styles */
+        overflow-x: auto;
+    }
+
+    #designCanvas {
+        width: 90vw !important; /* Scales to screen width */
+        height: 90vw !important; /* Stays square */
+        max-width: 350px;
+        max-height: 350px;
+    }
+}
+
+/* Rest of your existing CSS below... */
+
+/* =========================
+   TEXT CONTENT
+========================= */
+.draggable span {
+    display: block;
+
+    /* TEXT BEHAVIOR */
+    white-space: pre-wrap;       /* ✅ supports multi-line */
+    word-break: break-word;      /* ✅ prevents overflow */
+    overflow-wrap: break-word;
+
+    /* SIZE */
+    width: 100%;
+    min-width: 1px;
+
+    /* TEXT RENDERING */
+    line-height: 1.2;
+
+    /* Prevent text from blocking drag */
+    pointer-events: none;
+}
+
+/* =========================
+   SINGLE LINE MODE (optional toggle)
+========================= */
+.draggable.single-line span {
+    white-space: nowrap;
+    width: auto;
+}
+
+/* =========================
+   ACTIVE STATE (selection)
+========================= */
+.draggable.active-layer {
+    border: 2px dashed #3b82f6;
+}
+
+/* =========================
+   MOBILE IMPROVEMENTS
+========================= */
+@media (max-width: 900px) {
+    .draggable {
+        padding: 10px 14px; /* bigger touch area */
+    }
+
+    .draggable span {
+        font-size: 16px; /* prevents iOS zoom issues */
+    }
+}
+
+    /* ... (Your existing layout styles) ... */
+
+    
+
+    .draggable {
+        position: absolute;
+        cursor: move;
+        padding: 0;
+        border: 2px solid transparent;
+        user-select: none;
+        display: inline-block;
+        box-sizing: content-box; /* Important for handle alignment */
+    }
+
+    .active-layer {
+        border: 2px solid #CAE4DB
+ !important;
+    }
+
+    /* 8-Point Handle System */
+    .resize-handle {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: #CAE4DB
+;
+        border: 1px solid white;
+        border-radius: 50%;
+        display: none; /* Only show when active */
+        z-index: 100;
+    }
+
+    .active-layer .resize-handle { display: block; }
+
+    .handle-tl { top: -6px; left: -6px; cursor: nw-resize; }
+    .handle-tr { top: -6px; right: -6px; cursor: ne-resize; }
+    .handle-bl { bottom: -6px; left: -6px; cursor: sw-resize; }
+    .handle-br { bottom: -6px; right: -6px; cursor: se-resize; }
+    .handle-t { top: -6px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+    .handle-b { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+    .handle-l { left: -6px; top: 50%; transform: translateY(-50%); cursor: w-resize; }
+    .handle-r { right: -6px; top: 50%; transform: translateY(-50%); cursor: e-resize; }
+
+    .text-wrapper span {
+        display: block;
+        line-height: 1.2;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+    /* Change 'tomato' to your preferred hex code (e.g., #CAE4DB
+) */
+    input[type="range"] {
+        accent-color: #CAE4DB
+; /* This is the modern, easy way to change slider colors */
+    }
+
+    /* For older browsers or more control */
+    input[type="range"]::-webkit-slider-thumb {
+        background: #CAE4DB
+;
+    }
+    /* While editing, keep the outline clear but don't show resize handles */
+    .draggable span[contenteditable="true"] {
+        outline: none;
+        cursor: text;
+        background: rgba(255, 255, 255, 0.5); /* Slight highlight to show edit mode */
+    }
+
+    .draggable span[contenteditable="true"] ~ .resize-handle {
+        display: none !important; /* Hide handles so they don't get in the way of the cursor */
+    }
+    .draggable {
+        /* ... existing styles ... */
+        transform-origin: center center;
+        display: inline-block; /* Ensures the box wraps tightly around content */
+    }
+    
+
+    .draggable {
+        /* Ensure no weird filters are applied during capture */
+        will-change: transform;
+    }
+    #product-bg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Centers the mockup perfectly */
+        width: auto !important;
+        height: auto !important;
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain; /* The magic property */
+        z-index: 0;
+        pointer-events: none;
+    }
+   
+    .draggable img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important; /* Force proportion */
+        display: block;
+    }
+     
+    #thumbContainer::-webkit-scrollbar {
+        width: 5px;
+    }
+    #thumbContainer::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    #thumbContainer::-webkit-scrollbar-thumb {
+        background: #fbbf24;
+        border-radius: 10px;
+    }
+    
+    /* =========================================
+   1. MAIN LAYOUT (The Framework)
+   ========================================= */
+    .studio-wrapper {
+        display: flex !important;
+        flex-direction: row;
+        width: 100vw;
+        height: 100vh;
+        background: #2F6B64
+;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
     #workspace {
         flex: 1;
         display: flex;
         flex-direction: column;
-        background: var(--canvas-area);
+        align-items: center;
+        justify-content: center;
+        background: #2F6B64
+;
+        min-width: 0;
+        padding: 10px;
+    }
+
+    /* =========================================
+    2. VARIETY PANEL (The Sidebar)
+    ========================================= */
+    #varietyPanel {
+        width: 140px; /* Slightly wider to prevent label clipping */
+        display: flex;
+        flex-direction: column;
+        background: #2F6B64
+;
+        border-left: 1px solid #444;
+        height: 100%;
+        flex-shrink: 0;
+        z-index: 1000;
+    }
+
+    #varietyPanel h5 {
+        color: #000;
+        text-align: center;
+        margin: 15px 0 10px 0;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        letter-spacing: 1px;
+    }
+
+    #thumbContainer {
+        flex: 1; /* This takes up all available space above the button */
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        padding: 10px;
+        scrollbar-width: thin; /* Firefox */
+    }
+
+    /* Custom Scrollbar for the Thumbnails */
+    #thumbContainer::-webkit-scrollbar {
+        width: 5px;
+    }
+    #thumbContainer::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    #thumbContainer::-webkit-scrollbar-thumb {
+        background: #fbbf24;
+        border-radius: 10px;
+    }
+
+    /* =========================================
+    3. SUBMIT SECTION (The Sticky Bottom)
+    ========================================= */
+    #submitSection {
+        margin-top: auto; /* Forces it to the bottom */
+        padding: 15px 10px;
+        background: rgba(0, 0, 0, 0.4); /* Darker contrast */
+        border-top: 2px solid #7d1236;
+        z-index: 1001;
+    }
+
+    #submitOrderBtn {
+        width: 100% !important;
+        padding: 12px 5px;
+        background: #cbee4c !important; /* Success Green */
+        color: #000 !important;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        transition: transform 0.2s, background 0.2s;
+        display: block !important; /* Force visibility */
+    }
+
+    #submitOrderBtn:hover {
+        background: #218838 !important;
+        transform: translateY(-1px);
+    }
+
+    #submitOrderBtn:active {
+        transform: translateY(1px);
+    }
+    /* Hide the app download popup on desktops */
+    @media (min-width: 769px) {
+        #app-download-popup {
+            display: none !important;
+        }
+    }
+
+    /* =========================================
+    4. CANVAS & DRAGGABLES
+    ========================================= */
+    .canvas-container {
+        flex: 1;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
         position: relative;
         padding: 10px;
-        min-width: 0;
-        align-items: center;
-        /* PULLS CANVAS TO TOP ON DESKTOP */
-        justify-content: flex-start; 
-        overflow-y: auto;
+        box-sizing: border-box;
     }
 
     #designCanvas {
-        width: 500px;
-        height: 500px;
+        flex: 1;
+        width: 100%;
+        max-height: 1080px;
         background: white;
         position: relative;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-        flex-shrink: 0;
-        margin-top: 10px; /* Slight gap from the very top */
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        overflow: hidden;
+        contain: paint; /* Optimization for capture */
     }
 
-    /* RIGHT PANEL - Product Selection */
+    .draggable {
+        position: absolute;
+        cursor: move;
+        user-select: none;
+        display: inline-block;
+        transform-origin: center center;
+        will-change: transform;
+    }
+    .icon-btn {
+  flex: 1;
+  background: #CAE4DB
+;
+  color: #000;
+  height: 28px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-flex;
+}
+
+.tooltip-text {
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  
+  background: #111827;
+  color: #fff;
+  font-size: 11px;
+  padding: 5px 8px;
+  border-radius: 5px;
+
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.2s ease;
+}
+
+/* SHOW TOOLTIP */
+.tooltip:hover .tooltip-text {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* LITTLE ARROW */
+.tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #111827 transparent transparent transparent;
+}
+/* =========================================
+   MOBILE-ONLY: BLANK CANVAS MODE
+   ========================================= */
+/* =========================================
+   MOBILE-ONLY: BLANK CANVAS + SUBMIT FORM
+   ========================================= */
+@media only screen and (max-width: 767px) {
+    /* 1. Hide ONLY the Product Title and Thumbnail Container */
+    #varietyPanel h5, 
+    #thumbContainer {
+        display: none !important;
+    }
+
+    /* 2. Remove any product mockup background from the canvas */
+    #product-bg {
+        display: none !important;
+    }
+
+    /* 3. Adjust the Variety Panel to be a simple "Footer" for the form */
     #varietyPanel {
-        width: 220px;
-        background: var(--bg-dark);
-        border-left: 1px solid #333;
-        display: flex;
-        flex-direction: column;
-        padding: 10px;
-        flex-shrink: 0;
+        width: 100% !important;
+        height: auto !important;
+        order: 3; /* Places it at the very bottom */
+        background: #2F6B64 !important;
+        border-left: none !important;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding: 20px !important;
     }
 
-    /* =========================================
-       2. PIXABAY GRID (FIXED 4-COLUMN)
-    ========================================= */
-    #pixabayGrid, #templateGrid {
-        display: grid !important;
-        grid-template-columns: repeat(4, 1fr) !important;
-        gap: 4px;
-        padding: 10px 5px;
+    /* 4. Style the Submit Section for mobile fingers */
+    #submitSection {
+        border-top: none !important;
+        padding-top: 0 !important;
         width: 100%;
+        max-width: 400px; /* Keeps it from stretching too wide on tablets */
+        margin: 0 auto;
     }
 
-    .gallery-item {
-        width: 100%;
-        aspect-ratio: 1 / 1;
-        object-fit: cover;
-        border-radius: 4px;
-        cursor: pointer;
+    #submitSection input {
+        font-size: 16px !important; /* Prevents iOS from zooming in on focus */
+        height: 45px;
     }
 
-    .tab-pane {
-        background: #fff;
-        border-radius: 4px;
-        padding: 5px;
-        margin-top: 5px;
+    /* 5. Clean up the Workspace/Canvas */
+    #workspace {
+        order: 1;
+        width: 100% !important;
+        padding: 10px !important;
     }
 
-    /* =========================================
-       3. BUTTONS & UI
-    ========================================= */
-    button {
-        font-size: 11px;
-        background: var(--studio-blue);
-        color: #fff;
-        border: none;
-        padding: 8px 10px;
-        cursor: pointer;
-        border-radius: 5px;
+    #designCanvas {
+        background: #ffffff !important;
+        border: 1px solid #ddd !important;
+        margin-bottom: 10px;
     }
 
-    .canvas-toolbar {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 5px;
-        justify-content: center;
-        width: 100%;
-        padding: 5px 0 15px 0;
+    #toolbar {
+        order: 2;
     }
-
-    .tab-button {
-        flex: 1;
-        padding: 8px;
-        font-weight: bold;
-        background: #333;
-        border: 1px solid #444;
-    }
-
-    .tab-button.active { background: var(--studio-blue) !important; }
-
-    /* =========================================
-       4. MOBILE ADAPTATION (LOCKED CANVAS)
-    ========================================= */
-    @media (max-width: 1024px) {
-        .studio-wrapper {
-            flex-direction: column !important;
-            overflow-y: auto !important; /* Allow the rest of the page to scroll */
-        }
-
-        #workspace {
-            order: -1; /* FORCES CANVAS TO APPEAR FIRST */
-            height: 50vh !important;
-            min-height: 340px;
-            width: 100%;
-            flex: none;
-            /* LOCKS THE CANVAS TO THE TOP OF THE SCREEN */
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            background: var(--canvas-area);
-            border-bottom: 2px solid #333;
-            justify-content: center; /* Center canvas on mobile screen */
-        }
-
-        #designCanvas {
-            width: 300px !important;
-            height: 300px !important;
-            margin-top: 0;
-        }
-
-        #toolbar, #varietyPanel {
-            width: 100% !important;
-            height: auto !important;
-            border: none;
-            overflow: visible; /* Prevents internal scrolling conflicts */
-        }
-
-        #thumbContainer {
-            flex-direction: row !important;
-            overflow-x: auto;
-            padding: 10px;
-            gap: 15px;
-        }
-    }
+}
+    
 </style>
 </head>
 <!-- Part 2/7 -->
@@ -237,7 +826,7 @@
                 <textarea id="textInput" placeholder="Enter text...&#10;Line 2..." style="width:95%; height: 60px; padding: 8px; margin-bottom: 5px; border-radius: 4px; border: 1px solid #ddd; font-family: inherit; resize: vertical;"></textarea>      
                 
                 <div style="display: flex; justify-content: center; margin-bottom: 8px;">
-                    <button id="addTextBtn" onclick="addTextToCanvas()">Add to Canvas</button>
+                    <button id="addTextBtn" onclick="addTextToCanvas()" style="color: #000;">Add to Canvas</button>
                 </div>
                         <!-- FONT -->
                 <div class="tool-row" style="display: flex; align-items: center; gap: 5px; margin-bottom: 10px;">
@@ -284,12 +873,33 @@
                 </div>
                         <!-- FONT EDIT BUTTONS -->
                 <div style="display: flex; gap: 3px; margin-bottom: 10px;">
-                    <button id="btnBold" style="flex: 1; background: #024069; color: #fff; height: 28px; border-radius: 4px;">B</button>
-                    <button id="btnItalic" style="flex: 1; background: #024069; color: #fff; height: 28px; border-radius: 4px;">I</button>
-                    <button onclick="setTextAlignment('left')" style="flex: 1; padding: 5px; cursor: pointer; font-size: 10px;">Left</button>
-                    <button onclick="setTextAlignment('center')" style="flex: 1; padding: 5px; cursor: pointer; font-size: 10px;">Center</button>
-                    <button onclick="setTextAlignment('right')" style="flex: 1; padding: 5px; cursor: pointer; font-size: 10px;">Right</button>
-                </div>
+
+                    <div class="tooltip">
+                        <button id="btnBold" class="icon-btn">B</button>
+                        <span class="tooltip-text">Bold</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button id="btnItalic" class="icon-btn">I</button>
+                        <span class="tooltip-text">Italic</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="setTextAlignment('left')" class="icon-btn">T⇽</button>
+                        <span class="tooltip-text">Align Left</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="setTextAlignment('center')" class="icon-btn">⇾T⇽</button>
+                        <span class="tooltip-text">Align Center</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="setTextAlignment('right')" class="icon-btn">⇾T</button>
+                        <span class="tooltip-text">Align Right</span>
+                    </div>
+
+                    </div>
                         <!-- TEXT EFFECTS -->
                 <div class="effects-control" style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div>
@@ -302,109 +912,171 @@
                     </div>
                 </div>
                   
-    <hr style="border:0;border-top:1px solid #eee;margin:3px 0;">
-    <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px;">
-        <h5 style="color: #fff; margin: 5px 0;">Upload</h5>
-        <input type="file" id="imageInput" accept="image/*" style="color: #fff; font-size: 11px;">
-    </div>
-    <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px;">
-        <h5 style="color: #fff; margin: 5px 0;">Save</h5>
-        <button id="downloadBtn" style="width: 60%; padding: 8px; background: #cbee4c; color: #000; border: none; border-radius: 4px; cursor: pointer;">Download PNG</button>
-    </div>
-    <hr style="border:0;border-top:1px solid #eee;margin:3px 0;">
-   
-  
-
-    <div style="display: flex; gap: 2px; margin-bottom: 10px;">
-        <button class="tab-button active" onclick="showTab('pixabay-tab', this)">Pixabay Images</button>
-        <button class="tab-button" onclick="showTab('template-tab', this)">Design Templates</button>
-    </div>
-
-    <div id="pixabay-tab" class="tab-pane">
-        <div style="display: flex; gap: 5px;">
-            <input type="text" id="gallerySearch" placeholder="Search graphics..." style="flex: 1; padding: 5px;">
-            <button id="searchBtn">Go</button>
-        </div>
-        <div id="pixabayGrid"></div>
-    </div>
-
-    <div id="template-tab" class="tab-pane" style="display: none;">
-        <input type="text" id="templateSearch" placeholder="Filter templates..." 
-              style="width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;" 
-              onkeyup="filterTemplates()">
-        
-        <div id="templateGrid">
+            <hr style="border:0;border-top:1px solid #eee;margin:3px 0;">
+            <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px;">
+                <h5 style="color: #fff; margin: 5px 0;">Upload</h5>
+                <input type="file" id="imageInput" accept="image/*" style="color: #fff; font-size: 11px;">
             </div>
-    </div>
-    </div>
+            <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px;">
+                <h5 style="color: #fff; margin: 5px 0;">Save</h5>
+                <button id="downloadBtn" style="width: 60%; padding: 8px; background: #cbee4c; color: #000; border: none; border-radius: 4px; cursor: pointer;">Download PNG</button>
+            </div>
+            <hr style="border:0;border-top:1px solid #eee;margin:3px 0;">
+        
+        
 
-  </div>
-  <!--CENTER PANEL - CANVAS & TOOLBAR-->
-  <div id="workspace">
-      <div class="canvas-container">
-          <div class="canvas-toolbar">
-                <button onclick="changeZIndex('front')">To Front</button>
-                <button onclick="changeZIndex('back')">To Back</button>
-                <button onclick="changeZIndex('forward')">Forward</button>
-                <button onclick="changeZIndex('backward')">Backward</button>
-                <button onclick="undo()">Undo</button>
-                <button onclick="redo()">Redo</button>
-                <button id="multiSelectToggle" class="tool-btn" title="Toggle Multi-Select">Multiple: OFF</button>
-                <button onclick="groupSelected()">Group</button>
-                <button onclick="ungroupSelected()">Ungroup</button>
-                <button onclick="applyRotation(-15)">Rotate ↺</button>
-                <button onclick="applyRotation(15)">Rotate ↻</button>
-                <button onclick="flip('h')">↔️ Flip Horizontal</button>
-                <button onclick="flip('v')">↕️ Flip Vertical</button>
-                <button onclick="deleteSelected()">Delete</button>
-                <button onclick="clearCanvas()" style="background: #cbee4c; color: #000;">Clear All</button>
-          </div>
+            <div style="display: flex; gap: 2px; margin-bottom: 10px;">
+                <button class="tab-button active" onclick="showTab('pixabay-tab', this)">Pixabay Images</button>
+                <button class="tab-button" onclick="showTab('template-tab', this)">Design Templates</button>
+            </div>
 
-          <div id="designCanvas"></div>
-      </div>
-  </div>   
-    
-<!--RIGHT PANEL - VARIETY-->
-  <div id="varietyPanel" style="display: flex; flex-direction: column; height: 100%; padding: 10px; box-sizing: border-box;">
-    
-    <h5 style="color: #fff; margin: 0 0 10px 0; font-size: 14px; text-align: center;">Product Selection</h5>
+            <div id="pixabay-tab" class="tab-pane">
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" id="gallerySearch" placeholder="Search graphics..." style="flex: 1; padding: 5px;">
+                    <button id="searchBtn" style="color: #000;">Go</button>
+                </div>
+                <div id="pixabayGrid"></div>
+            </div>
 
-    <div id="thumbContainer" style="
-        display: flex; 
-        flex-direction: column;   /* Stack one per row */
-        align-items: center;      /* Center them horizontally */
-        flex-grow: 1;             /* PUSHES THE SUBMIT SECTION TO THE BOTTOM */
-        overflow-y: auto;         /* Scrollbar if too many products */
-        gap: 12px;                /* Space between stacked thumbs */
-        padding: 5px;
-        margin-bottom: 15px;      /* Gap before the inputs start */
-    ">
+            <div id="template-tab" class="tab-pane" style="display: none;">
+                <input type="text" id="templateSearch" placeholder="Filter templates..." 
+                    style="width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;" 
+                    onkeyup="filterTemplates()">
+                
+                <div id="templateGrid">
+                    </div>
+            </div>
+            </div>
+
         </div>
+        <!--CENTER PANEL - CANVAS & TOOLBAR-->
+        <div id="workspace">
+            <div class="canvas-container">
+                <div id="designCanvas"></div>
 
-    <div id="submitSection" style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #444; padding-top: 15px;">
-        <input type="text" id="customerName" placeholder="Your Name" style="padding: 10px; border-radius: 4px; border: none;">
-        <input type="email" id="customerEmail" placeholder="Your Email" style="padding: 10px; border-radius: 4px; border: none;">
-        <button id="submitOrderBtn" onclick="sendOrderToEmail()" style="padding: 12px; cursor: pointer; font-weight: bold; background: #fbbf24; border: none; border-radius: 5px;">
-            Submit Design
-        </button>
-    </div>
+                <div class="canvas-toolbar">
 
-</div>
-  <!--SWATCH CONTAINER(NOT DISPLAYED ON SCREEN)-->
-  <div id="swatchContainer"> </div>
-<div id="pwa-welcome" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10001; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
-    <div style="background:white; padding:25px; border-radius:15px; text-align:center; max-width:300px; position:relative;">
-        <h5 style="margin-top:0; color:#024069;">App Version Available</h5>
-        <p id="pwa-instructions" style="font-size:14px; color:#555; line-height:1.5;">
-            Add this studio to your home screen for a full-screen experience and faster access!
-        </p>
-        <div id="ios-instructions" style="display:none; margin-top:15px;">
-            <p style="font-size:13px; font-weight:bold;">Tap the "Share" icon <img src="https://img.icons8.com/ios/50/000000/export.png" style="width:18px; vertical-align:middle;"> then "Add to Home Screen".</p>
+                    <div class="tooltip">
+                        <button onclick="changeZIndex('front')">⏭️</button>
+                        <span class="tooltip-text">Bring to Front</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="changeZIndex('back')">⏮️</button>
+                        <span class="tooltip-text">Send to Back</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="changeZIndex('forward')">⏩</button>
+                        <span class="tooltip-text">Bring Forward</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="changeZIndex('backward')">⏪</button>
+                        <span class="tooltip-text">Send Backward</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button id="multiSelectToggle" class="tool-btn">Multiselect: OFF</button>
+                        <span class="tooltip-text">Select Multiple</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="groupSelected()">🔗</button>
+                        <span class="tooltip-text">Group</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="ungroupSelected()">⛓️‍💥</button>
+                        <span class="tooltip-text">Ungroup</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="applyRotation(-15)" style="color: #000;">↺</button>
+                        <span class="tooltip-text">Rotate Left</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="applyRotation(15)" style="color: #000;">↻</button>
+                        <span class="tooltip-text">Rotate Right</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="flip('h')">↔️</button>
+                        <span class="tooltip-text">Flip Horizontal</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="flip('v')">↕️</button>
+                        <span class="tooltip-text">Flip Vertical</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="undo()">↩️</button>
+                        <span class="tooltip-text">Undo</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="redo()">↪️</button>
+                        <span class="tooltip-text">Redo</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="deleteSelected()">🗑️</button>
+                        <span class="tooltip-text">Delete</span>
+                    </div>
+
+                    <div class="tooltip">
+                        <button onclick="clearCanvas()" style="background: #e07979; color: #000;">✖️</button>
+                        <span class="tooltip-text">Clear Canvas</span>
+                    </div>
+
+                </div>
+            </div>
         </div>
-        <button id="pwa-install-btn" style="display:none; width:100%; background:#024069; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; margin-top:10px;">Install Now</button>
-        <button onclick="document.getElementById('pwa-welcome').style.display='none'" style="background:none; border:none; color:#999; margin-top:15px; cursor:pointer; font-size:12px;">Maybe Later</button>
-    </div>
-</div>
+            
+        <!--RIGHT PANEL - VARIETY-->
+        <div id="varietyPanel" style="display: flex; flex-direction: column; height: 100%; padding: 10px; box-sizing: border-box;">
+            
+            <h5 style="color: #fff; margin: 0 0 10px 0; font-size: 14px; text-align: center;">Product Selection</h5>
+
+            <div id="thumbContainer" style="
+                display: flex; 
+                flex-direction: column;   /* Stack one per row */
+                align-items: center;      /* Center them horizontally */
+                flex-grow: 1;             /* PUSHES THE SUBMIT SECTION TO THE BOTTOM */
+                overflow-y: auto;         /* Scrollbar if too many products */
+                gap: 12px;                /* Space between stacked thumbs */
+                padding: 5px;
+                margin-bottom: 15px;      /* Gap before the inputs start */
+                ">
+            </div>
+
+            <div id="submitSection" style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #444; padding-top: 15px;">
+                <input type="text" id="customerName" placeholder="Your Name" style="padding: 10px; border-radius: 4px; border: none;">
+                <input type="email" id="customerEmail" placeholder="Your Email" style="padding: 10px; border-radius: 4px; border: none;">
+                <button id="submitOrderBtn" onclick="sendOrderToEmail()" style="padding: 12px; cursor: pointer; font-weight: bold; background: #fbbf24; border: none; border-radius: 5px;">
+                    Submit Design
+                </button>
+            </div>
+
+        </div>
+        <!--SWATCH CONTAINER(NOT DISPLAYED ON SCREEN)-->
+        <div id="swatchContainer"> </div>
+        <div id="pwa-welcome" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10001; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
+            <div style="background:white; padding:25px; border-radius:15px; text-align:center; max-width:300px; position:relative;">
+                <h5 style="margin-top:0; color:#CAE4DB
+;">App Version Available</h5>
+                <p id="pwa-instructions" style="font-size:14px; color:#555; line-height:1.5;">
+                    Add this studio to your home screen for a full-screen experience and faster access!
+                </p>
+                <div id="ios-instructions" style="display:none; margin-top:15px;">
+                    <p style="font-size:13px; font-weight:bold;">Tap the "Share" icon <img src="https://img.icons8.com/ios/50/000000/export.png" style="width:18px; vertical-align:middle;"> then "Add to Home Screen".</p>
+                </div>
+                <button id="pwa-install-btn" style="display:none; width:100%; background:#CAE4DB; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; margin-top:10px;">Install Now</button>
+                <button onclick="document.getElementById('pwa-welcome').style.display='none'" style="background:none; border:none; color:#999; margin-top:15px; cursor:pointer; font-size:12px;">Maybe Later</button>
+            </div>
+        </div>
 </div>
 <script>
     /*Part 3/7 */
