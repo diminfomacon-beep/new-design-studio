@@ -96,6 +96,34 @@
     margin: 4px 0; 
     width: calc(100% - 8px); /* Adjusts width to account for margins */
 }
+/* Updated Toolbar for Desktop */
+#toolbar {
+    width: 280px !important; /* Fixed width to prevent squishing content */
+    background: #2F6B64;
+    padding: 15px !important; /* Creates a gap between the screen edge and the tabs */
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+/* Fix the white content area inside the tabs */
+.tab-pane {
+    max-height: 480px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 15px !important; /* Pushes buttons/grids away from the white edges */
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 0 0 8px 8px; /* Rounds the bottom corners */
+    box-sizing: border-box;
+}
+
+/* Ensure buttons don't hit the sidebar walls */
+.tab-pane button, .tool-btn {
+    width: 100% !important;
+    margin-bottom: 8px; /* Space between buttons */
+}
    /* =========================
    BASE RESIZE HANDLE
 ========================= */
