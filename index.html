@@ -2345,29 +2345,34 @@ function initVarietyPanel() {
 }
 function sendOrderToEmail() {
     const btn = document.getElementById('submitOrderBtn');
+    
+    // Check if the library is actually loaded
+    if (typeof emailjs === 'undefined') {
+        console.error("EmailJS not found. Check if the CDN script is in the <head>.");
+        alert("The email service is still loading. Please wait 2 seconds and try again.");
+        return;
+    }
+
     const name = document.getElementById('customerName')?.value;
     const email = document.getElementById('customerEmail')?.value;
 
-    // 1. Validation First
     if (!name || !email) {
         alert("Please enter your name and email before submitting!");
         return;
     }
 
-    // 2. Preparation: Save active item, then hide handles
+    // Preparation
     const lastActive = activeItem; 
     deselectAll(); 
 
     btn.innerText = "Processing Design...";
     btn.disabled = true;
 
-    // 3. Take the Snapshot
     html2canvas(designCanvas, { 
         useCORS: true,
         scale: 1.2, 
         backgroundColor: "#ffffff"
     }).then(canvas => {
-        // 4. Restore Handles immediately after photo is taken
         if (lastActive) {
             activeItem = lastActive;
             activeItem.classList.add('active-layer');
@@ -2379,44 +2384,30 @@ function sendOrderToEmail() {
             from_name: name,
             from_email: email,
             design_image: base64Image, 
-            product_type: window.activeProductKey || "Standard Product"
+            product_type: (window.innerWidth < 768) ? "Mobile Blank Canvas" : (window.activeProductKey || "Standard Product")
         };
 
-        // 5. Send to EmailJS
+        // Use the modern emailjs.send call
         emailjs.send('service_ezq1fuc', 'template_ut1r5xk', templateParams)
             .then(function(response) {
                 if (typeof confetti === 'function') {
                     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                 }
-
                 btn.innerText = "Order Sent! ✔";
                 btn.style.background = "#cbee4c";
-                btn.style.color = "#000000";
-
+                
                 setTimeout(() => {
                     btn.innerText = "Submit Design";
-                    btn.style.background = "#fbbf24"; 
-                    btn.style.color = "#000000";
                     btn.disabled = false;
-                    
-                    document.getElementById('customerName').value = "";
-                    document.getElementById('customerEmail').value = "";
                 }, 4000);
-
-                alert("SUCCESS! Your design has been sent to our production team.");
-
+                
+                alert("SUCCESS! Your design has been sent.");
             }).catch(function(error) {
                 console.error("EmailJS Error:", error);
-                alert("Design too complex for email. Contact support!");
-                btn.innerText = "Try Again";
-                btn.style.background = "#dc3545"; 
+                alert("Submission failed. Check your EmailJS console or attachment size.");
                 btn.disabled = false;
+                btn.innerText = "Try Again";
             });
-
-    }).catch(err => {
-        console.error("Canvas Error:", err);
-        btn.disabled = false;
-        btn.innerText = "Try Again";
     });
 }
 
