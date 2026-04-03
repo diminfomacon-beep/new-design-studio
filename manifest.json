@@ -15,8 +15,8 @@
       "purpose": "maskable"
     }
   ],
-  "start_url": "/new-design-studio/",
-  "scope": "/new-design-studio/",
+ "start_url": "./index.html",
+  "scope": "./",
   "background_color": "#CAE4DB",
   "display": "standalone",
   "theme_color": "#125850",
