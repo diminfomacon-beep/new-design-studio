@@ -7,16 +7,6 @@ body {
     background-color: #f4f4f9;
 }
 
-/* Sidebar Styling */
-.sidebar {
-    width: 300px;
-    background-color: #ffffff;
-    border-right: 1px solid #ddd;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
-}
 
 #searchBar {
     padding: 10px;
@@ -209,6 +199,8 @@ main {
 .studio-container {
     border: 1px solid #ddd;
     border-radius: 8px;
+    display: flex;
+    height: 100vh;
     overflow: hidden; /* Keeps the sidebar/canvas neat */
 }
 .palette-container {
@@ -290,4 +282,42 @@ main {
     border: 1px solid #ccc;
     border-radius: 4px;
     text-align: center; /* Centers the number */
+}
+/* The main wrapper for your studio */
+.studio-wrapper {
+    display: flex;
+    align-items: flex-start; /* Aligns everything to the top */
+    gap: 20px;
+    padding: 10px;
+    height: 100vh; /* Takes up the full height of the iframe */
+    overflow: hidden; /* Prevents the whole page from scrolling */
+}
+
+/* The Canvas Area */
+.canvas-container-wrapper {
+    position: sticky;
+    top: 10px; /* Distance from the top of the iframe */
+    flex: 2;   /* Takes up more space than the sidebar */
+    display: flex;
+    justify-content: center;
+}
+
+/* The Sidebar */
+/* Sidebar Styling */
+.sidebar {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+    height: 100%;
+    overflow-y: auto; /* Sidebar scrolls independently */
+    background: #f8f9fa;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    box-sizing: border-box;
+}
+.canvas-container {
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    background-color: white;
+    border: 1px solid #ddd;
 }
