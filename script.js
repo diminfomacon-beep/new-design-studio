@@ -356,41 +356,6 @@ function updateLiveText() {
         canvas.renderAll();
     }
 }
-function resizeCanvasForMobile() {
-    const screenWidth = window.innerWidth;
-    const container = document.querySelector('.canvas-container');
-    const mainArea = document.querySelector('main');
-
-    if (container) {
-        if (screenWidth < 900) {
-            // Calculate scale based on 800px width
-            const padding = 20; 
-            const scale = (screenWidth - padding) / 800;
-
-            // Apply the scale
-            container.style.transform = `scale(${scale})`;
-            container.style.transformOrigin = 'top center';
-            
-            // CRITICAL: Adjust the height of the main area 
-            // This prevents the form from jumping up and hiding the canvas
-            if (mainArea) {
-                // 600 is your canvas height. We multiply by scale to see
-                // how many pixels it actually takes up on the phone screen.
-                mainArea.style.height = (600 * scale + 60) + "px"; 
-                mainArea.style.overflow = "visible";
-            }
-        } else {
-            // Reset for Desktop
-            container.style.transform = 'none';
-            if (mainArea) {
-                mainArea.style.height = 'auto';
-            }
-        }
-    }
-}
-
-// Call it on load and when the window is resized
-
 
 // 7. INIT ON LOAD
 window.onload = () => {
@@ -402,11 +367,4 @@ window.onload = () => {
     }
     
     initSwatches();
-    
-    // Give Fabric.js and the iFrame 100ms to settle before scaling
-    setTimeout(() => {
-        resizeCanvasForMobile();
-    }, 100);
-
-    window.addEventListener('resize', resizeCanvasForMobile);
 };
