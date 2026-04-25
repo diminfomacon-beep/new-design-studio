@@ -90,12 +90,7 @@
     background: #fff;
     border: 1px solid #eee;
 }
-@media (max-width: 768px) {
-  .swatch-item {
-    width: 120%;
-    padding-bottom: 120%;
-  }
-}
+
 /* Add a margin to the buttons so they don't touch the side walls */
 #toolbar button, .tool-btn {
     margin: 4px 0; 
@@ -2064,7 +2059,7 @@ document.getElementById('searchBtn').onclick = () => {
     const query = document.getElementById('gallerySearch').value;
     if (query.trim()) fetchPixabay(query);
 };
-const extended = [
+const extendedSwatches = [
   '#FFFFFF', '#F2F2F2', '#D9D9D9', '#BFBFBF', '#A6A6A6', '#808080', '#595959', '#404040', '#262626', '#000000',
   '#FFCCCC', '#FF9999', '#FF6666', '#FF3333', '#FF0000', '#CC0000', '#990000', '#660000', '#330000',
   '#FFE5CC', '#FFCC99', '#FFB266', '#FF9933', '#FF8000', '#CC6600', '#994C00', '#663300', '#331900',
