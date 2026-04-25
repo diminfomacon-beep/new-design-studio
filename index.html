@@ -1,92 +1,77 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Design Studio Pro</title>
-    
-    <link rel="stylesheet" href="style.css">
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-</head>
 <body>
-<div class="studio-container">
-    <div class="sidebar">
-        <h3>Search Pixabay</h3>
-        <div style="display: flex; gap: 5px; margin-bottom: 10px;">
-            <input type="text" id="pixabaySearch" placeholder="Search images (e.g. 'Ocean')..." style="flex: 1; padding: 8px;">
-            <button onclick="searchPixabay()" style="padding: 8px;">Search</button>
-        </div>
-        
-        <div id="gallery" style="overflow-y: auto; height: 400px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+    <div class="studio-container">
+        <aside class="sidebar">
+            <h3>Search Pixabay</h3>
+            <div class="search-box">
+                <input type="text" id="pixabaySearch" placeholder="Search graphics...">
+                <button onclick="searchPixabay()">Search</button>
+            </div>
+            
+            <div id="gallery"></div>
+
+            <hr>
+
+            <label>Type Text Below:</label>
+            <textarea id="textInput" rows="3" placeholder="Enter your text here..."></textarea>
+            <button onclick="placeTextOnCanvas()">➕ Place Text on Canvas</button>
+            <input type="file" id="imageUploader" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+
+            <div id="textControls">
+                <select id="fontFamily" onchange="updateLiveText()">
+                    <option value="Arial">Arial</option>
+                    <option value="Courier New">Courier New</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Impact">Impact</option>
+                </select>
+                
+                <div class="control-group">
+                    <label for="fontSize" class="input-label">Text Size</label>
+                    <input type="number" id="fontSize" value="30" min="1" max="200" oninput="updateLiveText()" class="short-input">
+                </div>
             </div>
 
-    <label>Type Text Below:</label>
-    <textarea id="textInput" rows="3" placeholder="Enter your text here..."></textarea>
-    <button onclick="placeTextOnCanvas()">➕ Place Text on Canvas</button>
-    <input type="file" id="imageUploader" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-
-    
-    <div id="textControls">
-        <select id="fontFamily" onchange="updateLiveText()">
-            <option value="Arial">Arial</option>
-            <option value="Courier New">Courier New</option>
-            <option value="Times New Roman">Times New Roman</option>
-            <option value="Impact">Impact</option>
-        </select>
-        
-        <div class="control-group">
-            <label for="fontSize" class="input-label">Text Size</label>
-            <input type="number" id="fontSize" value="30" min="1" max="200" onchange="updateLiveText()" class="short-input">
-        </div>
-    </div>
-
-    <div class="controls">
-    <div class="color-section">
-        <label>Text Color</label>
-        <div class="palette-container">
-            <button type="button" id="paletteToggle" onclick="togglePalette(event)">🎨</button>
-            
-            <div id="swatchPalette" class="swatch-popup">
+            <div class="controls">
+                <div class="color-section">
+                    <label>Text Color</label>
+                    <div class="palette-container">
+                        <button type="button" id="paletteToggle" onclick="togglePalette(event)">🎨</button>
+                        <div id="swatchPalette" class="swatch-popup"></div>
+                    </div>
                 </div>
-        </div>
-    </div>
-    
-    <input type="hidden" id="activeColor" value="#000000">
-</div>
-    
- 
-        <button onclick="document.getElementById('imageUploader').click()" style="background-color: #6c757d; color: white;">
-        📤 Upload Your Own Image
-    </button>
-    
-    <div class="layer-buttons">
-        <button onclick="bringForward()">🔼 Bring Forward</button>
-        <button onclick="sendBackward()">🔽 Send Backward</button>
-    </div>
-    <button onclick="deleteObject()" style="color: #ff4d4d; border-color: #ff4d4d;">🗑️ Delete Item</button>
-</div>
-    </div>
+                <input type="hidden" id="activeColor" value="#000000">
+            </div>
 
-    <main>
-        <div class="canvas-wrapper">
-            <canvas id="designCanvas" width="800" height="600"></canvas>
-        </div>
+            <button onclick="document.getElementById('imageUploader').click()" style="background-color: #6c757d; color: white;">
+                📤 Upload Your Own Image
+            </button>
+            
+            <div class="layer-buttons">
+                <button onclick="bringForward()">🔼 Forward</button>
+                <button onclick="sendBackward()">🔽 Backward</button>
+            </div>
+            <button onclick="deleteObject()" style="color: #ff4d4d; border-color: #ff4d4d; margin-top: 10px;">🗑️ Delete Item</button>
+        </aside>
 
-        <form id="submitForm">
-            <input type="text" id="custName" placeholder="Customer Name" required>
-            <input type="email" id="custEmail" placeholder="Customer Email" required>
-            
-            <button type="submit">Submit to Email</button>
-            <button type="button" onclick="downloadDesign()" style="background:#007bff; color: white;">Download PNG</button>
-            
-            <div id="statusMessage" style="margin-top: 10px; font-weight: bold; min-height: 20px;"></div>
-        </form>
-        
-    </main>
-</div>
+        <main class="main-content">
+            <div class="canvas-sticky-wrapper">
+                <div class="canvas-container-box">
+                    <canvas id="designCanvas" width="800" height="600"></canvas>
+                </div>
+
+                <form id="submitForm">
+                    <div class="form-row">
+                        <input type="text" id="custName" placeholder="Customer Name" required>
+                        <input type="email" id="custEmail" placeholder="Customer Email" required>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit">Submit to Email</button>
+                        <button type="button" onclick="downloadDesign()" style="background:#007bff; color: white;">Download PNG</button>
+                    </div>
+                    <div id="statusMessage"></div>
+                </form>
+            </div>
+        </main>
+    </div>
 
     <script src="script.js"></script>
 </body>
-</html>
