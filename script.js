@@ -358,24 +358,33 @@ function updateLiveText() {
 }
 function resizeCanvasForMobile() {
     const screenWidth = window.innerWidth;
-    // Fabric.js always creates a div with the class 'canvas-container'
     const container = document.querySelector('.canvas-container');
     const mainArea = document.querySelector('main');
 
-    if (screenWidth < 900 && container) {
-        // Calculate scale based on screen width vs your 800px canvas
-        const padding = 20; 
-        const scale = (screenWidth - padding) / 800;
+    if (container) {
+        if (screenWidth < 900) {
+            // Calculate scale based on 800px width
+            const padding = 20; 
+            const scale = (screenWidth - padding) / 800;
 
-        container.style.transform = `scale(${scale})`;
-        container.style.transformOrigin = 'top center';
-        
-        // This pushes the form down so it doesn't cover the scaled canvas
-        if (mainArea) {
-            mainArea.style.paddingTop = "20px";
-            // 600 is your canvas height. We need to tell the browser
-            // exactly how much space the scaled canvas is taking up.
-            mainArea.style.height = (600 * scale + 50) + "px"; 
+            // Apply the scale
+            container.style.transform = `scale(${scale})`;
+            container.style.transformOrigin = 'top center';
+            
+            // CRITICAL: Adjust the height of the main area 
+            // This prevents the form from jumping up and hiding the canvas
+            if (mainArea) {
+                // 600 is your canvas height. We multiply by scale to see
+                // how many pixels it actually takes up on the phone screen.
+                mainArea.style.height = (600 * scale + 60) + "px"; 
+                mainArea.style.overflow = "visible";
+            }
+        } else {
+            // Reset for Desktop
+            container.style.transform = 'none';
+            if (mainArea) {
+                mainArea.style.height = 'auto';
+            }
         }
     }
 }
