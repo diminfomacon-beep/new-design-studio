@@ -356,12 +356,43 @@ function updateLiveText() {
         canvas.renderAll();
     }
 }
+function resizeCanvasForMobile() {
+    const screenWidth = window.innerWidth;
+    if (screenWidth < 900) {
+        // Calculate the scale ratio
+        const scale = (screenWidth - 40) / 800; // 40px for padding
+        
+        // Target the wrapper element
+        const wrapper = document.querySelector('.canvas-container');
+        if (wrapper) {
+            wrapper.style.transform = `scale(${scale})`;
+            wrapper.style.transformOrigin = 'top center';
+        }
+        
+        // Adjust the main container height so the form doesn't overlap
+        const main = document.querySelector('main');
+        main.style.height = (600 * scale + 40) + "px"; 
+    }
+}
+
+// Call it on load and when the window is resized
+
 
 // 7. INIT ON LOAD
 window.onload = () => {
-    // Optional: Load some default images (like 'Nature') so it's not empty
-    document.getElementById('pixabaySearch').value = 'Background';
-    searchPixabay(); 
+    // 1. Initial Pixabay Search
+    const searchInput = document.getElementById('pixabaySearch');
+    if (searchInput) {
+        searchInput.value = 'Background';
+        searchPixabay(); 
+    }
     
+    // 2. Setup UI Components
     initSwatches();
+
+    // 3. Handle Mobile Scaling Immediately
+    resizeCanvasForMobile(); 
+
+    // 4. Listen for Screen Rotation or Resize
+    window.addEventListener('resize', resizeCanvasForMobile);
 };
