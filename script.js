@@ -358,20 +358,25 @@ function updateLiveText() {
 }
 function resizeCanvasForMobile() {
     const screenWidth = window.innerWidth;
-    if (screenWidth < 900) {
-        // Calculate the scale ratio
-        const scale = (screenWidth - 40) / 800; // 40px for padding
+    // Fabric.js always creates a div with the class 'canvas-container'
+    const container = document.querySelector('.canvas-container');
+    const mainArea = document.querySelector('main');
+
+    if (screenWidth < 900 && container) {
+        // Calculate scale based on screen width vs your 800px canvas
+        const padding = 20; 
+        const scale = (screenWidth - padding) / 800;
+
+        container.style.transform = `scale(${scale})`;
+        container.style.transformOrigin = 'top center';
         
-        // Target the wrapper element
-        const wrapper = document.querySelector('.canvas-container');
-        if (wrapper) {
-            wrapper.style.transform = `scale(${scale})`;
-            wrapper.style.transformOrigin = 'top center';
+        // This pushes the form down so it doesn't cover the scaled canvas
+        if (mainArea) {
+            mainArea.style.paddingTop = "20px";
+            // 600 is your canvas height. We need to tell the browser
+            // exactly how much space the scaled canvas is taking up.
+            mainArea.style.height = (600 * scale + 50) + "px"; 
         }
-        
-        // Adjust the main container height so the form doesn't overlap
-        const main = document.querySelector('main');
-        main.style.height = (600 * scale + 40) + "px"; 
     }
 }
 
@@ -387,12 +392,12 @@ window.onload = () => {
         searchPixabay(); 
     }
     
-    // 2. Setup UI Components
     initSwatches();
+    
+    // Give Fabric.js and the iFrame 100ms to settle before scaling
+    setTimeout(() => {
+        resizeCanvasForMobile();
+    }, 100);
 
-    // 3. Handle Mobile Scaling Immediately
-    resizeCanvasForMobile(); 
-
-    // 4. Listen for Screen Rotation or Resize
     window.addEventListener('resize', resizeCanvasForMobile);
 };
