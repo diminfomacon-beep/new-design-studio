@@ -328,16 +328,18 @@ main {
     }
 
     main {
-        width: 100%;
-        padding: 10px;
-        order: 1; /* Move canvas to the TOP */
+            overflow: visible !important;
+            display: block !important;
+            width: 100% !important;
+            padding: 0 !important;
+            order: 1; /* Move canvas to the TOP */
+            height: auto !important;
+            max-width: 100vw;
     }
-
-    /* Make the canvas container responsive */
     .canvas-container {
-        width: 100% !important;
-        height: auto !important;
-        max-width: 100vw;
+        margin: 0 auto !important;
+        display: block !important;
+        position: relative !important;
     }
 
     /* Adjust the submission form for narrow screens */
@@ -356,5 +358,12 @@ main {
     /* Make Pixabay gallery 3 columns on mobile to save vertical space */
     #gallery {
         grid-template-columns: repeat(3, 1fr);
+    }
+    .canvas-wrapper {
+        width: 100%;
+        min-height: 300px; /* Gives it initial space before JS scales it */
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
     }
 }
