@@ -1,10 +1,24 @@
 /* General Layout */
+/* Update the body to align content to the top left */
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     height: 100vh;
     background-color: #f4f4f9;
+    align-items: flex-start; /* FIX: Aligns sidebar and main to top */
+}
+
+/* Update the main area to stay at the top */
+main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Keeps canvas centered horizontally */
+    justify-content: flex-start; /* FIX: Forces canvas to the top */
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto; /* Allows the form to scroll if needed */
 }
 
 
@@ -53,46 +67,22 @@ body {
     background: #f0f0f0;
 }
 
-/* Main Canvas Area */
-main {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.canvas-container {
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    background: white;
-}
-
 /* Submission Form Footer */
 #submitForm {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
+    margin-top: 30px;
+    margin-bottom: 50px; /* Extra space at the bottom */
     background: #fff;
-    padding: 15px;
+    padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    flex-wrap: wrap; /* Allows inputs to wrap on small screens */
+    justify-content: center;
+    gap: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 800px; /* Matches canvas width */
 }
 
-#submitForm input {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-#submitForm button {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-}
 #textInput {
     width: 100%;
     padding: 10px;
@@ -160,20 +150,6 @@ main {
 .swatch.active {
     border-color: #000;
     box-shadow: 0 0 5px rgba(0,0,0,0.3);
-}
-#submitForm {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    left: 300px; /* Offset for sidebar */
-    background: #fff;
-    padding: 15px 30px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 15px;
-    border-top: 1px solid #ddd;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
 }
 
 #submitForm input {
@@ -306,18 +282,30 @@ main {
 /* Sidebar Styling */
 .sidebar {
     width: 300px;
+    min-width: 300px; /* Prevents squishing */
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
-    height: 100%;
-    overflow-y: auto; /* Sidebar scrolls independently */
     background: #f8f9fa;
     padding: 20px;
     border-right: 1px solid #ddd;
     box-sizing: border-box;
+    overflow-y: auto; /* Individual scrollbar for tools/gallery */
 }
+.canvas-wrapper {
+    position: sticky;
+    top: 0; /* Pins it to the top of the main area */
+    z-index: 10;
+    background-color: #f4f4f9; /* Matches body bg to hide items scrolling under it */
+    padding-bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* Your existing canvas shadow box */
 .canvas-container {
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    background-color: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    background: white;
     border: 1px solid #ddd;
 }
