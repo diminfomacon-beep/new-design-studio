@@ -309,3 +309,52 @@ main {
     background: white;
     border: 1px solid #ddd;
 }
+
+
+/* MOBILE RESPONSIVE OVERRIDES */
+@media (max-width: 900px) {
+    body {
+        flex-direction: column; /* Stack sidebar and main vertically */
+        overflow-y: auto;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-width: 100%;
+        height: auto; /* Let it grow with content */
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+        order: 2; /* Move tools BELOW the canvas */
+    }
+
+    main {
+        width: 100%;
+        padding: 10px;
+        order: 1; /* Move canvas to the TOP */
+    }
+
+    /* Make the canvas container responsive */
+    .canvas-container {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100vw;
+    }
+
+    /* Adjust the submission form for narrow screens */
+    #submitForm {
+        flex-direction: column;
+        left: 0;
+        width: 100%;
+        padding: 15px;
+        position: relative; /* Remove any fixed positioning */
+    }
+
+    #submitForm input {
+        width: 100%; /* Full width inputs on mobile */
+    }
+
+    /* Make Pixabay gallery 3 columns on mobile to save vertical space */
+    #gallery {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
