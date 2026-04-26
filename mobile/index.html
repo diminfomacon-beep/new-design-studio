@@ -7,15 +7,23 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat&family=Pacifico&family=Playfair+Display&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Aladin&family=Chango&family=Chewy&family=Chicle&family=Coiny&family=DynaPuff:wght@400..700&family=Honk&family=Irish+Grover&family=Macondo&family=Matemasie&family=Miltonian+Tattoo&family=Monofett&family=Nabla&family=Noto+Color+Emoji&family=Oleo+Script+Swash+Caps:wght@400;700&family=Ranchers&family=Ribeye&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
 
 <div class="app-container">
         <header class="canvas-viewport">
+            <a href="https://www.dimbrightideas.com" class="exit-btn">
+                ❎ Back to Store
+            </a>
+
             <div class="canvas-toolbar">
-                <button onclick="bringForward()" title="Bring Forward">🔼 Forward</button>
-                <button onclick="sendBackward()" title="Send Backward">🔽 Backward</button>
-                <button onclick="deleteObject()" class="danger-btn">🗑️ Delete</button>
+                <button onclick="bringForward()">🔼</button>
+                <button onclick="sendBackward()">🔽</button>
+                <button onclick="deleteObject()" class="danger-btn">🗑️</button>
             </div>
 
             <div id="canvasScaler">
@@ -41,8 +49,36 @@
                 <textarea id="textInput" placeholder="Enter text..."></textarea>
                 <div class="input-row">
                     <select id="fontFamily" onchange="updateLiveText()">
-                        <option value="Arial">Arial</option>
-                        <option value="Impact">Impact</option>
+                        <option value="'Montserrat', sans-serif" style="font-family: 'Montserrat';">Montserrat</option>
+                        <option value="'Playfair Display', serif" style="font-family: 'Playfair Display';">Playfair Display</option>
+                        <option value="'Pacifico', cursive" style="font-family: 'Pacifico';">Pacifico</option>
+                        <option value="'Lobster', cursive" style="font-family: 'Lobster';">Lobster</option>
+                        <option value="'Bungee', cursive" style="font-family: 'Bungee';">Bungee</option>
+                        <option value="'Anton', sans-serif" style="font-family: 'Anton';">Anton</option>
+                        <option value="'Bangers', cursive" style="font-family: 'Bangers';">Bangers</option>
+                        <option value="'Rock Salt', cursive" style="font-family: 'Rock Salt';">Rock Salt</option>
+                        <option value="'Monoton', cursive" style="font-family: 'Monoton';">Monoton</option>
+                        <option value="'Special Elite', cursive" style="font-family: 'Special Elite';">Special Elite</option>
+                        <option value="'Creepster', cursive" style="font-family: 'Creepster';">Creepster</option>
+                        <option value="'Press Start 2P', cursive" style="font-family: 'Press Start 2P';">Pixel</option>
+                        <option value="Arial">Standard Arial</option>
+                        <option value="Aladin" style="font-family: 'Aladin';">Aladin</option>
+                        <option value="Chango" style="font-family: 'Chango';">Chango</option>
+                        <option value="Chewy" style="font-family: 'Chewy';">Chewy</option>
+                        <option value="Chicle" style="font-family: 'Chicle';">Chicle</option>
+                        <option value="Coiny" style="font-family: 'Coiny';">Coiny</option>
+                        <option value="DynaPuff" style="font-family: 'DynaPuff';">DynaPuff</option>
+                        <option value="Honk" style="font-family: 'Honk';">Honk (Color Font)</option>
+                        <option value="Irish Grover" style="font-family: 'Irish Grover';">Irish Grover</option>
+                        <option value="Macondo" style="font-family: 'Macondo';">Macondo</option>
+                        <option value="Matemasie" style="font-family: 'Matemasie';">Matemasie</option>
+                        <option value="Miltonian Tattoo" style="font-family: 'Miltonian Tattoo';">Miltonian Tattoo</option>
+                        <option value="Monofett" style="font-family: 'Monofett';">Monofett</option>
+                        <option value="Nabla" style="font-family: 'Nabla';">Nabla (3D Color)</option>
+                        <option value="Noto Color Emoji" style="font-family: 'Noto Color Emoji';">Emoji Font</option>
+                        <option value="Oleo Script Swash Caps" style="font-family: 'Oleo Script Swash Caps';">Oleo Script</option>
+                        <option value="Ranchers" style="font-family: 'Ranchers';">Ranchers</option>
+                        <option value="Ribeye" style="font-family: 'Ribeye';">Ribeye</option>
                     </select>
                     <input type="number" id="fontSize" value="40" onchange="updateLiveText()">
                 </div>
