@@ -89,7 +89,10 @@ function downloadDesign() {
 
 function initSwatches() {
     const p = document.getElementById('swatchPalette');
-    const colors = ['#000000', '#ffffff', '#ff0000', '#0000ff', '#ffff00', '#00ff00', '#ff00ff', '#00ffff'];
+    const colors = [ '#FFFFFF', '#BFBFBF', '#808080', '#000000',
+        '#FF0000', '#FF8000', '#FFFF00', '#994C00',
+        '#00FF00', '#009900', '#00FFFF', '#0000FF',
+        '#000099', '#8000FF', '#FF00FF', '#FF99FF' ];
     colors.forEach(c => {
         const s = document.createElement('div');
         s.className = 'swatch';
