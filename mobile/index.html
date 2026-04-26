@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Design Studio Mobile</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body>
+
+<div class="app-container">
+        <header class="canvas-viewport">
+            <div class="canvas-toolbar">
+                <button onclick="bringForward()" title="Bring Forward">🔼 Forward</button>
+                <button onclick="sendBackward()" title="Send Backward">🔽 Backward</button>
+                <button onclick="deleteObject()" class="danger-btn">🗑️ Delete</button>
+            </div>
+
+            <div id="canvasScaler">
+                <canvas id="designCanvas" width="800" height="600"></canvas>
+            </div>
+        </header>
+       
+
+    <main class="tool-tray">
+        <div class="tray-content">
+            
+            <div id="tab-image" class="tab-panel active">
+                <label>Search Graphics</label>
+                <div class="input-row">
+                    <input type="text" id="pixabaySearch" placeholder="Search...">
+                    <button onclick="searchPixabay()">Go</button>
+                </div>
+                <div id="gallery" class="graphics-grid"></div>
+            </div>
+
+            <div id="tab-text" class="tab-panel">
+                <label>Text Tools</label>
+                <textarea id="textInput" placeholder="Enter text..."></textarea>
+                <div class="input-row">
+                    <select id="fontFamily" onchange="updateLiveText()">
+                        <option value="Arial">Arial</option>
+                        <option value="Impact">Impact</option>
+                    </select>
+                    <input type="number" id="fontSize" value="40" onchange="updateLiveText()">
+                </div>
+                <button onclick="placeTextOnCanvas()" class="primary-btn">➕ Add Text</button>
+                <button onclick="togglePalette(event)">🎨 Color</button>
+                <div id="swatchPalette" class="palette-popup"></div>
+            </div>
+
+            <div id="tab-upload" class="tab-panel">
+                <label>Your Photos</label>
+                <div class="upload-area" onclick="document.getElementById('imageUploader').click()">
+                    <p>Click to Upload Image</p>
+                </div>
+                <input type="file" id="imageUploader" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                <button onclick="deleteObject()" style="margin-top: 20px; color: red;">🗑️ Delete Item</button>
+            </div>
+
+            <div id="tab-submit" class="tab-panel">
+                <label>Submit Design</label>
+                <input type="text" id="custName" placeholder="Your Name">
+                <input type="email" id="custEmail" placeholder="Your Email">
+                <button onclick="submitToEmail()" id="submitBtn">🚀 Send to Team</button>
+                <div id="statusMessage"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+    <button onclick="switchTab('image')" class="active">
+        <span>🖼️</span><br>Image
+    </button>
+    <button onclick="switchTab('text')">
+        <span>A</span><br>Text
+    </button>
+    <button onclick="switchTab('upload')">
+        <span>📤</span><br>Upload
+    </button>
+    <button onclick="downloadDesign()">
+        <span>💾</span><br>Download
+    </button>
+    <button onclick="switchTab('submit')">
+        <span>✅</span><br>Submit
+    </button>
+</nav>
+</div>
+
+<input type="hidden" id="activeColor" value="#000000">
+
+<script src="script.js"></script>
+</body>
+</html>
