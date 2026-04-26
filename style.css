@@ -1,314 +1,134 @@
-/* General Layout */
-/* Update the body to align content to the top left */
-body {
+/* 1. BASE STYLES */
+html, body {
     margin: 0;
+    padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    height: 100vh;
     background-color: #f4f4f9;
-    align-items: flex-start; /* FIX: Aligns sidebar and main to top */
-}
-
-/* Update the main area to stay at the top */
-main {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Keeps canvas centered horizontally */
-    justify-content: flex-start; /* FIX: Forces canvas to the top */
-    padding: 20px;
     height: 100%;
-    overflow-y: auto; /* Allows the form to scroll if needed */
 }
 
-
-#searchBar {
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-/* Gallery Grid */
-.gallery-grid {
-    flex-grow: 1;
-    overflow-y: auto;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.gallery-grid img {
-    width: 100%;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: transform 0.2s, border 0.2s;
-    border: 2px solid transparent;
-}
-
-.gallery-grid img:hover {
-    transform: scale(1.05);
-    border-color: #007bff;
-}
-
-/* Controls & Buttons */
-.controls button, .controls input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-    background: #fff;
-}
-
-.controls button:hover {
-    background: #f0f0f0;
-}
-
-/* Submission Form Footer */
-#submitForm {
-    margin-top: 30px;
-    margin-bottom: 50px; /* Extra space at the bottom */
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
+body {
     display: flex;
-    flex-wrap: wrap; /* Allows inputs to wrap on small screens */
-    justify-content: center;
-    gap: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 800px; /* Matches canvas width */
+    flex-direction: row; /* Sidebar left, Main right */
 }
 
-#textInput {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    resize: vertical; /* Allows user to resize the input box height */
-    box-sizing: border-box;
-    font-family: inherit;
-}
-
-.layer-buttons {
-    display: flex;
-    gap: 5px;
-}
-
-.layer-buttons button {
-    flex: 1;
-}
-.gallery-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Two images per row */
-    gap: 10px;
-    max-height: 400px; /* Limits height so sidebar doesn't grow forever */
-    overflow-y: auto;  /* Adds a scrollbar to the gallery */
-    padding: 5px;
-}
-
-.gallery-grid img {
-    width: 100%;
-    height: 100px;
-    object-fit: cover; /* Keeps the images neat and uniform */
-    border-radius: 5px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: 0.2s;
-}
-
-.gallery-grid img:hover {
-    border-color: #007bff;
-    transform: translateY(-2px);
-}
-.swatch-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr); /* 5 colors per row */
-    gap: 8px;
-    margin-top: 10px;
-    margin-bottom: 20px;
-}
-
-.swatch {
-    width: 30px;
-    height: 30px;
-    border-radius: 4px;
-    cursor: pointer;
-    border: 2px solid #ddd;
-    transition: transform 0.1s, border-color 0.2s;
-}
-
-.swatch:hover {
-    transform: scale(1.1);
-    border-color: #007bff;
-}
-
-.swatch.active {
-    border-color: #000;
-    box-shadow: 0 0 5px rgba(0,0,0,0.3);
-}
-
-#submitForm input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 200px;
-}
-
-#submitForm button[type="submit"] {
-    background-color: #28a745;
-    color: white;
-    font-weight: bold;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-#submitForm button[type="submit"]:disabled {
-    background-color: #ccc;
-}
-.studio-container {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    display: flex;
-    height: 100vh;
-    overflow: hidden; /* Keeps the sidebar/canvas neat */
-}
-.palette-container {
-    position: relative;
-    display: inline-block;
-}
-
-/* The actual swatch menu */
-.swatch-popup {
-    display: none; /* Hidden by default */
-    position: absolute;
-    bottom: 45px; /* Appears above the button */
-    left: 0;
-    background: white;
-    border: 1px solid #ccc;
-    padding: 10px;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-    z-index: 1000;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    border-radius: 8px;
-    width: 200px;
-}
-
-.swatch-popup.show {
-    display: grid; /* Becomes visible when 'show' class is added */
-}
-
-#paletteToggle {
-    width: 100%;
-    padding: 10px;
-    cursor: pointer;
-    background: #f8f9fa;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-#gallery {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    padding: 10px;
-    background: #fdfdfd; /* Light contrast to see transparent edges */
-}
-
-.gallery-item {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: contain; /* Shows the full graphic without cropping */
-    border: 1px solid #eee;
-    background: white;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.gallery-item:hover {
-    transform: scale(1.05);
-    border-color: #007bff;
-}
-/* Container for the label and input */
-.control-group {
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column; /* Stack label over input */
-    gap: 5px;
-}
-
-/* Style for the label */
-.input-label {
-    font-size: 14px;
-    font-weight: bold;
-    color: #444;
-    font-family: sans-serif;
-}
-
-/* The actual short input box */
-.short-input {
-    width: 60px; /* This makes the box significantly shorter */
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    text-align: center; /* Centers the number */
-}
-/* The main wrapper for your studio */
-.studio-wrapper {
-    display: flex;
-    align-items: flex-start; /* Aligns everything to the top */
-    gap: 20px;
-    padding: 10px;
-    height: 100vh; /* Takes up the full height of the iframe */
-    overflow: hidden; /* Prevents the whole page from scrolling */
-}
-
-/* The Canvas Area */
-.canvas-container-wrapper {
-    position: sticky;
-    top: 10px; /* Distance from the top of the iframe */
-    flex: 2;   /* Takes up more space than the sidebar */
-    display: flex;
-    justify-content: center;
-}
-
-/* The Sidebar */
-/* Sidebar Styling */
+/* 2. SIDEBAR (Left) */
 .sidebar {
     width: 300px;
-    min-width: 300px; /* Prevents squishing */
+    min-width: 300px;
     height: 100vh;
-    display: flex;
-    flex-direction: column;
+    overflow-y: auto;
     background: #f8f9fa;
     padding: 20px;
     border-right: 1px solid #ddd;
     box-sizing: border-box;
-    overflow-y: auto; /* Individual scrollbar for tools/gallery */
+    display: flex;
+    flex-direction: column;
 }
+
+/* 3. MAIN AREA (Right) */
+main {
+    flex-grow: 1;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* 4. CANVAS WRAPPER (Top Pinned) */
 .canvas-wrapper {
-    position: sticky;
-    top: 0; /* Pins it to the top of the main area */
-    z-index: 10;
-    background-color: #f4f4f9; /* Matches body bg to hide items scrolling under it */
-    padding-bottom: 20px;
     width: 100%;
     display: flex;
     justify-content: center;
+    margin-bottom: 20px;
+    /* This ensures it stays at the top of the 'main' scroll area */
+    position: relative; 
 }
 
-/* Your existing canvas shadow box */
+/* Fabric.js Container Shadow */
 .canvas-container {
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    background: white;
+    background: white !important;
     border: 1px solid #ddd;
 }
 
+/* 5. COMPONENTS (Pixabay, Forms, etc) */
+#gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
 
+.gallery-item {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: contain;
+    border: 1px solid #eee;
+    background: white;
+    cursor: pointer;
+}
 
+#submitForm {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 50px;
+}
+
+.short-input {
+    width: 60px;
+    padding: 8px;
+    text-align: center;
+}
+
+/* 6. MOBILE RESPONSIVE (The Big Fix) */
+@media (max-width: 900px) {
+    body {
+        flex-direction: column; /* Stack vertically */
+        height: auto;
+        overflow-y: auto;
+    }
+
+    main {
+        order: 1; /* Canvas on TOP */
+        width: 100%;
+        height: auto;
+        padding: 10px;
+        overflow: visible;
+    }
+
+    .sidebar {
+        order: 2; /* Tools on BOTTOM */
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-top: 1px solid #ddd;
+        overflow: visible;
+    }
+
+    .canvas-wrapper {
+        min-height: 250px; /* Space for scaled canvas */
+        margin-top: 10px;
+    }
+
+    /* Force visibility for Fabric.js generated div */
+    .canvas-container {
+        margin: 0 auto !important;
+        transform-origin: top center;
+    }
+
+    #gallery {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
