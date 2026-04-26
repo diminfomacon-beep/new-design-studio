@@ -133,9 +133,10 @@ function updateLiveText() {
 
 // 4. COLOR SWATCH SYSTEM
 const colors = [
-    '#000000', '#ffffff', '#ff0000', '#00ff00', '#0000ff', 
-    '#ffff00', '#ff00ff', '#00ffff', '#f39c12', '#8e44ad',
-    '#2c3e50', '#e74c3c', '#27ae60', '#d35400', '#7f8c8d'
+      '#FFFFFF', '#BFBFBF', '#808080', '#000000',
+        '#FF0000', '#FF8000', '#FFFF00', '#994C00',
+        '#00FF00', '#009900', '#00FFFF', '#0000FF',
+        '#000099', '#8000FF', '#FF00FF', '#FF99FF'
 ];
 
 function initSwatches() {
@@ -356,7 +357,52 @@ function updateLiveText() {
         canvas.renderAll();
     }
 }
+function openTab(tabName) {
+    // Hide all panels
+    const panels = document.querySelectorAll('.tab-panel');
+    panels.forEach(p => p.classList.remove('active'));
 
+    // Show selected panel
+    const activePanel = document.getElementById('tab-' + tabName);
+    if (activePanel) {
+        activePanel.classList.add('active');
+    }
+    
+    // Slight vibration for feedback
+    if (navigator.vibrate) navigator.vibrate(10);
+}
+function resizeCanvasForMobile() {
+    const screenWidth = window.innerWidth;
+    // Fabric.js creates this div automatically
+    const container = document.querySelector('.canvas-container'); 
+    const wrapper = document.querySelector('.canvas-wrapper');
+
+    if (container && screenWidth < 900) {
+        const padding = 20; 
+        const scale = (screenWidth - padding) / 800; 
+
+        // 1. Apply the scale
+        container.style.transform = `scale(${scale})`;
+        
+        // 2. VERY IMPORTANT: Lock the origin to the top so it doesn't float away
+        container.style.transformOrigin = 'top center';
+        
+        // 3. Fix the Height & Width of the wrapper
+        // This stops the 'empty space' bug and the 'sidebar overlap' bug
+        if (wrapper) {
+            wrapper.style.height = (600 * scale) + "px"; 
+            wrapper.style.width = "100%";
+            wrapper.style.overflow = "visible";
+        }
+    } else if (container) {
+        // Reset everything for Desktop
+        container.style.transform = 'none';
+        if (wrapper) {
+            wrapper.style.height = '620px'; // Your canvas height + shadow
+            wrapper.style.width = 'auto';
+        }
+    }
+}
 // 7. INIT ON LOAD
 window.onload = () => {
     // 1. Initial Pixabay Search
@@ -367,4 +413,11 @@ window.onload = () => {
     }
     
     initSwatches();
+    
+    // Give Fabric.js and the iFrame 100ms to settle before scaling
+    setTimeout(() => {
+        resizeCanvasForMobile();
+    }, 100);
+
+    window.addEventListener('resize', resizeCanvasForMobile);
 };
