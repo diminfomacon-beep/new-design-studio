@@ -3,43 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Design Studio Pro</title>
+    <title>Design Studio Pro | Desktop</title>
     
     <link rel="stylesheet" href="style.css">
-        <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat&family=Pacifico&family=Playfair+Display&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bungee&family=Creepster&family=Lobster&family=Monoton&family=Montserrat&family=Pacifico&family=Playfair+Display&family=Press+Start+2P&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Aladin&family=Chango&family=Chewy&family=Chicle&family=Coiny&family=DynaPuff:wght@400..700&family=Honk&family=Irish+Grover&family=Macondo&family=Matemasie&family=Miltonian+Tattoo&family=Monofett&family=Nabla&family=Noto+Color+Emoji&family=Oleo+Script+Swash+Caps:wght@400;700&family=Ranchers&family=Ribeye&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
 <body>
     <div class="studio-container">
-        <main>
-            <div class="canvas-wrapper">
-                <canvas id="designCanvas" width="800" height="600"></canvas>
+        
+        <aside class="sidebar" id="controlsSidebar">
+            <div class="sidebar-header">
+                <h2>Design Tools</h2>
             </div>
-        </main>
 
-        <div class="mobile-shelf" id="mobileShelf">
-            
-            <div id="tab-graphics" class="tab-panel active">
+            <section id="tab-graphics" class="control-panel">
                 <h3>Search Graphics</h3>
-                <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                <div class="search-group">
                     <input type="text" id="pixabaySearch" placeholder="Search graphics...">
                     <button onclick="searchPixabay()">Search</button>
                 </div>
                 <div id="gallery"></div>
-            </div>
+            </section>
 
-            <div id="tab-text" class="tab-panel">
-                <h3>Add Text</h3>
-                <textarea id="textInput" rows="3" placeholder="Enter your text here..."></textarea>
-                <button onclick="placeTextOnCanvas()" class="primary-btn">➕ Place Text</button>
-                
-                <div id="textControls">
-                    <select id="fontFamily" onchange="updateLiveText()">
+            <section id="tab-text" class="control-panel">
+            <h3>Add Text</h3>
+            <textarea id="textInput" rows="3" placeholder="Enter your text here..."></textarea>
+            <button onclick="placeTextOnCanvas()" class="primary-btn">Add to Canvas</button>
+            
+            <div id="textControls">
+                <h4>Font Style</h4>
+                <select id="fontFamily" onchange="updateLiveText()">
                         <option value="'Montserrat', sans-serif" style="font-family: 'Montserrat';">Montserrat</option>
                         <option value="'Playfair Display', serif" style="font-family: 'Playfair Display';">Playfair Display</option>
                         <option value="'Pacifico', cursive" style="font-family: 'Pacifico';">Pacifico</option>
@@ -71,43 +68,58 @@
                         <option value="Ranchers" style="font-family: 'Ranchers';">Ranchers</option>
                         <option value="Ribeye" style="font-family: 'Ribeye';">Ribeye</option>
                     </select>
+                    <h4>Text Size</h4>
                     <input type="number" id="fontSize" value="30" onchange="updateLiveText()" class="short-input">
+
+                    <h4>Text Align</h4>
+                    <div class="alignment-group">
+                        <button type="button" class="btn-align" onclick="setTextAlignment('left')" title="Align Left">
+                            <svg viewBox="0 0 24 24"><path d="M4 18h16v2H4zm0-4h12v2H4zm0-4h16v2H4zm0-4h12v2H4z"/></svg>
+                        </button>
+                        <button type="button" class="btn-align" onclick="setTextAlignment('center')" title="Align Center">
+                            <svg viewBox="0 0 24 24"><path d="M4 18h16v2H4zm4-4h8v2H8zm-4-4h16v2H4zm4-4h8v2H8z"/></svg>
+                        </button>
+                        <button type="button" class="btn-align" onclick="setTextAlignment('right')" title="Align Right">
+                            <svg viewBox="0 0 24 24"><path d="M4 18h16v2H4zm8-4h8v2h-8zm-8-4h16v2H4zm8-4h8v2h-8z"/></svg>
+                        </button>
+                    </div>
+
                     <div class="palette-container">
-                        <button type="button" id="paletteToggle" onclick="togglePalette(event)">🎨 Color</button>
+                        <h4>Text Color</h4>
+                        <button type="button" id="paletteToggle" onclick="togglePalette(event)">🎨</button>
                         <div id="swatchPalette" class="swatch-popup"></div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div id="tab-edit" class="tab-panel">
+            <section id="tab-edit" class="control-panel">
                 <h3>Manage Layers</h3>
                 <div class="layer-buttons">
-                    <button onclick="bringForward()">🔼 Forward</button>
-                    <button onclick="sendBackward()">🔽 Backward</button>
+                    <button onclick="bringForward()">🔻 Forward</button>
+                    <button onclick="sendBackward()">🔺Backward</button>
                 </div>
                 <button onclick="document.getElementById('imageUploader').click()">📤 Upload Image</button>
                 <input type="file" id="imageUploader" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-                <button onclick="deleteObject()" style="color: #ff4d4d; border-color: #ff4d4d; margin-top: 20px;">🗑️ Delete Selected</button>
-            </div>
+                <button onclick="deleteObject()" class="delete-btn">🗑️ Delete Selected</button>
+            </section>
 
-            <div id="tab-save" class="tab-panel">
+            <section id="tab-save" class="control-panel">
                 <h3>Save & Send</h3>
                 <form id="submitForm">
                     <input type="text" id="custName" placeholder="Customer Name" required>
                     <input type="email" id="custEmail" placeholder="Customer Email" required>
-                    <button type="submit">Submit to Email</button>
-                    <button type="button" onclick="downloadDesign()" style="background:#007bff; color: white;">Download PNG</button>
+                    <button type="submit" class="submit-btn">Submit to Email</button>
+                    <button type="button" onclick="downloadDesign()" class="download-btn">Download PNG</button>
                     <div id="statusMessage"></div>
                 </form>
-            </div>
-        </div>
+            </section>
+        </aside>
 
-        <nav class="mobile-nav">
-            <button onclick="openTab('graphics')">🎨 Graphics</button>
-            <button onclick="openTab('text')">Text</button>
-            <button onclick="openTab('edit')">Layers</button>
-            <button onclick="openTab('save')">Finish</button>
-        </nav>
+        <main class="canvas-area">
+            <div class="canvas-wrapper">
+                <canvas id="designCanvas" width="800" height="600"></canvas>
+            </div>
+        </main>
 
         <input type="hidden" id="activeColor" value="#000000">
     </div>
