@@ -41,29 +41,38 @@ html, body {
 }
 
 /* 3. MAIN AREA (Canvas Area) */
+/* 3. MAIN AREA (Right) */
 .canvas-area {
     flex-grow: 1;
-    height: 100%;
-    background-color: #cbd5e1; /* Contrast background to see canvas edges */
+    height: 100vh;
+    overflow-y: auto;
+    background-color: #cbd5e1; /* Workspace background */
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
+    flex-direction: column;
+    /* CHANGE THIS: 'center' to 'flex-start' pins it to the top */
+    align-items: center; 
+    justify-content: flex-start; 
+    padding: 20px; /* Space between canvas and top edge */
     box-sizing: border-box;
-    overflow: auto; /* Allows panning if canvas is huge */
 }
 
-/* 4. CANVAS STYLING */
+/* 4. CANVAS WRAPPER */
 .canvas-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    /* Ensure it doesn't float away */
+    margin-top: 0; 
+    margin-bottom: 40px; 
     position: relative;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-    line-height: 0; /* Removes weird baseline gaps */
+    flex-shrink: 0; /* Prevents the canvas from squishing */
 }
 
-/* Fabric.js specific override */
+/* Fabric.js Container Styling */
 .canvas-container {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     background: white !important;
-    border-radius: 4px;
+    border: 1px solid #ddd;
 }
 
 /* 5. CONTROL PANELS (In Sidebar) */
