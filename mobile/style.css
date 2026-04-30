@@ -125,6 +125,8 @@ button {
     font-weight: bold; cursor: pointer; background: #eee;
 }
 
+.primary-color { width: 45px; background: #fff; color: #000; margin-bottom: 5px;}
+
 .primary-btn { background: #fff; color: #000; margin-bottom: 5px;}
 #submitBtn { width: 100%; background: #28a745; color: white; margin-top: 10px; }
 
