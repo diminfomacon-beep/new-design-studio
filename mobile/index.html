@@ -45,10 +45,11 @@
             </div>
 
             <div id="tab-text" class="tab-panel">
-                <label>Text Tools</label>
-                <textarea id="textInput" placeholder="Enter text..."></textarea>
-                <div class="input-row">
-                    <select id="fontFamily" onchange="updateLiveText()">
+            <label>Text Tools</label>
+            <textarea id="textInput" placeholder="Enter text..."></textarea>
+            
+            <div class="input-row">
+                <select id="fontFamily" onchange="updateLiveText()">
                         <option value="'Montserrat', sans-serif" style="font-family: 'Montserrat';">Montserrat</option>
                         <option value="'Playfair Display', serif" style="font-family: 'Playfair Display';">Playfair Display</option>
                         <option value="'Pacifico', cursive" style="font-family: 'Pacifico';">Pacifico</option>
@@ -81,12 +82,24 @@
                         <option value="Ribeye" style="font-family: 'Ribeye';">Ribeye</option>
                     </select>
                     <input type="number" id="fontSize" value="40" onchange="updateLiveText()">
-                </div>
-                <button onclick="placeTextOnCanvas()" class="primary-btn">➕ Add Text</button>
-                <button onclick="togglePalette(event)">🎨 Color</button>
-                <div id="swatchPalette" class="palette-popup"></div>
-            </div>
+                    </div>
 
+                    <div class="alignment-row">
+                        <button type="button" class="btn-align" onclick="setTextAlignment('left')">
+                            <svg viewBox="0 0 24 24"><path d="M4 18h16v2H4zm0-4h12v2H4zm0-4h16v2H4zm0-4h12v2H4z"/></svg>
+                        </button>
+                        <button type="button" class="btn-align" onclick="setTextAlignment('center')">
+                            <svg viewBox="0 0 24 24"><path d="M4 18h16v2H4zm4-4h8v2H8zm-4-4h16v2H4zm4-4h8v2H8z"/></svg>
+                        </button>
+                        <button type="button" class="btn-align" onclick="setTextAlignment('right')">
+                            <svg viewBox="0 0 24 24"><path d="M4 18h16v2H4zm8-4h8v2h-8zm-8-4h16v2H4zm8-4h8v2h-8z"/></svg>
+                        </button>
+                    </div>
+
+                    <button onclick="placeTextOnCanvas()" class="primary-btn">➕ Add Text</button>
+                    <button onclick="togglePalette(event)">🎨 Color</button>
+                    <div id="swatchPalette" class="palette-popup"></div>
+                </div>
             <div id="tab-upload" class="tab-panel">
                 <label>Your Photos</label>
                 <div class="upload-area" onclick="document.getElementById('imageUploader').click()">
