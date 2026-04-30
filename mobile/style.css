@@ -17,7 +17,7 @@ body, html {
 
 .tool-tray {
     flex: 1;
-    background: white;
+    background: #395763;
     overflow-y: auto;
     padding-bottom: 80px; /* Leave space for Nav Bar */
 }
@@ -26,6 +26,7 @@ body, html {
 .tab-panel {
     display: none;
     padding: 20px;
+    color: #fff;
 }
 
 .tab-panel.active {
@@ -58,7 +59,7 @@ body, html {
 }
 
 .bottom-nav button:hover, .bottom-nav button.active {
-    color: #007bff;
+    color: #395763;
     background: #f8f9fa;
 }
 
@@ -89,7 +90,7 @@ body, html {
 /* TOOL TRAY (Bottom 55%) */
 .tool-tray {
     flex: 1;
-    background: #ffffff;
+    background: #395763;
     border-radius: 25px 25px 0 0;
     display: flex;
     flex-direction: column;
@@ -99,7 +100,7 @@ body, html {
 
 .tray-handle {
     width: 40px; height: 5px;
-    background: #ddd; border-radius: 10px;
+    background: #395763; border-radius: 10px;
     margin: 12px auto;
 }
 
@@ -111,7 +112,7 @@ body, html {
 
 /* SECTION STYLING */
 .tray-section { margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
-.tray-section label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; }
+.tray-section label { display: block; font-weight: bold; margin-bottom: 8px; color: #fff; }
 
 .input-row { display: flex; gap: 8px; margin-bottom: 10px; }
 input[type="text"], input[type="email"], textarea {
@@ -119,11 +120,11 @@ input[type="text"], input[type="email"], textarea {
 }
 
 button {
-    padding: 12px 18px; border: none; border-radius: 8px; 
+    padding: 7px 9px; border: none; border-radius: 8px; 
     font-weight: bold; cursor: pointer; background: #eee;
 }
 
-.primary-btn { background: #007bff; color: white; }
+.primary-btn { background: #fff; color: #000; margin-bottom: 5px;}
 #submitBtn { width: 100%; background: #28a745; color: white; margin-top: 10px; }
 
 /* GRAPHICS GRID */
@@ -139,7 +140,7 @@ button {
 }
 .fab {
     width: 45px; height: 45px; border-radius: 50%;
-    background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    background: #395763; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     font-size: 20px; display: flex; align-items: center; justify-content: center;
 }
 
@@ -152,7 +153,7 @@ button {
 .swatch { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #ccc; }
 .canvas-viewport {
     flex: 0 0 45%;
-    background: #222;
+    background: #cbd5e1;
     display: flex;
     flex-direction: column; /* Stack toolbar above canvas */
     align-items: center;
@@ -175,7 +176,7 @@ button {
 .canvas-toolbar button {
     padding: 8px 12px;
     font-size: 13px;
-    background: white;
+    background: #395763;
     border-radius: 6px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
@@ -191,7 +192,7 @@ button {
 /* 1. SQUARED TOOL TRAY */
 .tool-tray {
     flex: 1;
-    background: #ffffff;
+    background: #395763;
     border-radius: 0; /* Removed rounding */
     display: flex;
     flex-direction: column;
@@ -218,12 +219,81 @@ button {
 
 /* THE "OBVIOUS" ACTIVE STATE */
 .bottom-nav button.active {
-    color: #007bff; /* Bright Blue */
+    color: #395763; /* Bright Blue */
     background: #f0f7ff; /* Very light blue background tint */
-    border-top: 4px solid #007bff; /* Bold blue line at the top */
+    border-top: 4px solid #395763; /* Bold blue line at the top */
 }
 
 /* Ensure icons/emojis in active tabs pop */
 .bottom-nav button.active span {
     filter: drop-shadow(0 0 2px rgba(0,123,255,0.3));
+}
+/* --- TEXT ALIGNMENT ROW --- */
+.alignment-row {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+    width: 100%;
+}
+
+.btn-align {
+    flex: 1;
+    height: 48px; /* Taller for mobile thumbs */
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Hover and Active states for the alignment buttons */
+.btn-align:active {
+    background-color: #f0f7ff;
+    border-color: #395763;
+    transform: scale(0.95); /* Slight "press" effect */
+}
+
+.btn-align svg {
+    width: 24px;  /* Larger icons for mobile visibility */
+    height: 24px;
+    fill: #444;   /* Matches your tray labels */
+}
+
+/* Specific styling for the primary-btn to ensure spacing */
+.primary-btn {
+    margin-top: 10px;
+    width: 100%;
+    height: 50px;
+    background: #fff;
+    color: #000;
+    font-size: 16px;
+}
+/* The container for the whole gallery */
+.graphics-grid {
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); /* 3 items per row */
+    gap: 10px; 
+    padding: 10px 0;
+}
+
+/* The individual image wrapper (if you use one) or the image itself */
+.graphics-grid img {
+    width: 100%;
+    aspect-ratio: 1 / 1;    /* FORCES a perfect square */
+    object-fit: contain;     /* Fits the whole graphic inside without cropping */
+    background: #f8f9fa;    /* Light grey background for transparency visibility */
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 5px;           /* Padding so the graphic doesn't touch the edges */
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.graphics-grid img:active {
+    transform: scale(0.95);
+    background: #e9ecef;
 }
