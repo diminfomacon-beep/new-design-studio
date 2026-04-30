@@ -32,7 +32,7 @@ async function searchPixabay(query) {
     const q = query || document.getElementById('pixabaySearch').value;
     if (!q) return;
 
-    const url = `https://pixabay.com/api/?key=${PIXABAY_KEY}&q=${encodeURIComponent(q)}&image_type=vector&safesearch=true&per_page=12`;
+    const url = `https://pixabay.com/api/?key=${PIXABAY_KEY}&q=${encodeURIComponent(q)}&image_type=vector&safesearch=true&per_page=42`;
     
     try {
         const response = await fetch(url);
@@ -40,36 +40,18 @@ async function searchPixabay(query) {
         const gallery = document.getElementById('gallery');
         gallery.innerHTML = '';
 
-        data.hits.forEach(img => {
-            const el = document.createElement('img');
-            el.src = img.previewURL;
-            el.onclick = () => {
-                fabric.Image.fromURL(img.largeImageURL, (oImg) => {
-                    oImg.scaleToWidth(200);
-                    canvas.add(oImg);
-                    canvas.centerObject(oImg);
-                    canvas.setActiveObject(oImg);
-                }, { crossOrigin: 'anonymous' });
-            };
-            gallery.appendChild(el);
-        });
+        // Ensure your JS keeps it simple so the CSS can do the heavy lifting
+data.hits.forEach(img => {
+    const el = document.createElement('img');
+    el.src = img.previewURL; // Use the small preview for the gallery
+    el.loading = "lazy";    // Good for mobile performance
+    el.onclick = () => { /* ... your canvas logic ... */ };
+    gallery.appendChild(el);
+});
+        
     } catch (e) { console.error("Pixabay Error", e); }
 }
 
-// 4. TEXT TOOLS
-function placeTextOnCanvas() {
-    const val = document.getElementById('textInput').value;
-    if (!val) return;
-
-    const text = new fabric.Textbox(val, {
-        left: 100, top: 100, width: 250,
-        fontSize: 40, fill: document.getElementById('activeColor').value,
-        fontFamily: 'Arial'
-    });
-    canvas.add(text);
-    canvas.setActiveObject(text);
-    document.getElementById('textInput').value = '';
-}
 
 // 5. UTILS
 function deleteObject() {
@@ -109,9 +91,18 @@ function initSwatches() {
 
 function togglePalette(e) {
     const p = document.getElementById('swatchPalette');
-    p.style.display = p.style.display === 'grid' ? 'none' : 'grid';
-    p.style.left = e.pageX + 'px';
-    p.style.top = (e.pageY - 50) + 'px';
+    const isVisible = p.style.display === 'grid';
+    
+    // Toggle visibility
+    p.style.display = isVisible ? 'none' : 'grid';
+    
+    // Position it centrally above the button for mobile
+    if (!isVisible) {
+        p.style.left = '50%';
+        p.style.transform = 'translateX(-50%)';
+        p.style.bottom = '80px'; // Sits above the tray content
+        p.style.top = 'auto';    // Clear the desktop top setting
+    }
 }
 // --- 1. INITIALIZE EMAILJS ---
 (function() {
@@ -130,16 +121,16 @@ function placeTextOnCanvas() {
         left: 100,
         top: 100,
         width: 250,
-        fontSize: parseInt(document.getElementById('fontSize').value),
+        fontSize: parseInt(document.getElementById('fontSize').value) || 40,
         fontFamily: document.getElementById('fontFamily').value,
-        fill: document.getElementById('activeColor').value
+        fill: document.getElementById('activeColor').value,
+        textAlign: 'left' // Sets initial alignment to left
     });
 
     canvas.add(text);
     canvas.setActiveObject(text);
     document.getElementById('textInput').value = '';
 }
-
 function updateLiveText() {
     const active = canvas.getActiveObject();
     if (active && active.type === 'textbox') {
@@ -151,7 +142,6 @@ function updateLiveText() {
         canvas.renderAll();
     }
 }
-
 // --- 3. FULL SUBMISSION LOGIC ---
 async function submitToEmail() {
     const name = document.getElementById('custName').value;
@@ -284,7 +274,21 @@ function switchTab(tabId) {
     const palette = document.getElementById('swatchPalette');
     if (palette) palette.style.display = 'none';
 }
-
+function setTextAlignment(alignValue) {
+    const activeObject = canvas.getActiveObject();
+    // We check for 'textbox' because that's what you are using in placeTextOnCanvas
+    if (activeObject && activeObject.type === 'textbox') {
+        activeObject.set('textAlign', alignValue);
+        canvas.renderAll();
+        
+        // Optional: vibration feedback for mobile feel
+        if (navigator.vibrate) {
+            navigator.vibrate(20);
+        }
+    } else {
+        showStatus("⚠️ Select text first", "orange");
+    }
+}
 // Ensure the first search runs inside its tab
 window.onload = () => {
     canvas = new fabric.Canvas('designCanvas');
