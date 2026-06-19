@@ -126,31 +126,57 @@ function filterTemplates() {
 /**
  * Applies a dynamic image template file from GitHub to the canvas background (Preserved)
  */
+/**
+ * Applies a dynamic image template file from GitHub as a draggable, resizable canvas object
+ */
 function applyGitHubTemplate(fileName) {
     if (!canvas) {
         console.error("Studio Error: Canvas instance missing.");
         return;
     }
 
+    // Safety check to ensure user doesn't lose current layers unexpectedly
     if (canvas.getObjects().length > 0) {
-        const confirmClear = confirm("Loading a template will replace your current design canvas. Continue?");
+        const confirmClear = confirm("Loading a template will clear your current layers. Do you want to proceed?");
         if (!confirmClear) return;
     }
 
     const targetUrl = `${RAW_BASE_URL}${fileName}`;
+    
+    // Clear canvas objects and reset any background colors to default blank
     canvas.clear();
+    canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
 
+    // Load the template as an interactive image layer
     fabric.Image.fromURL(targetUrl, function(img) {
+        // Calculate scale to fit nicely within the canvas boundaries initially
+        const scaleX = canvas.width / img.width;
+        const scaleY = canvas.height / img.height;
+        const scaleFactor = Math.min(scaleX, scaleY, 1); // Fit to screen scale
+
         img.set({
-            scaleX: canvas.width / img.width,
-            scaleY: canvas.height / img.height,
-            originX: 'left',
-            originY: 'top'
+            left: (canvas.width - (img.width * scaleFactor)) / 2, // Centered horizontally
+            top: (canvas.height - (img.height * scaleFactor)) / 2, // Centered vertically
+            scaleX: scaleFactor,
+            scaleY: scaleFactor,
+            cornerColor: '#00adb5', // Styling anchor points to match common presets
+            cornerStyle: 'circle',
+            transparentCorners: false
         });
-        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+
+        // Add to canvas layout layers
+        canvas.add(img);
+        
+        // Push the template to the absolute bottom layer so text/graphics sit on top of it
+        canvas.sendToBack(img);
+        
+        // Make it the active selected item right away so the user can see it can be moved
+        canvas.setActiveObject(img);
+        
+        canvas.renderAll();
+        showStatus("✨ Template added as layer!", "green");
     }, { crossOrigin: 'anonymous' });
 }
-
 /**
  * Safely loads a structural JSON object template onto the FabricJS canvas (Preserved)
  */
