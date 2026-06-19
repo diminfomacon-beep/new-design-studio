@@ -1,4 +1,6 @@
+// ==========================================================================
 // 1. INITIALIZE CANVAS & EMAILJS
+// ==========================================================================
 const canvas = new fabric.Canvas('designCanvas', {
     preserveObjectStacking: true,
     selection: true,
@@ -19,43 +21,13 @@ canvas.on('mouse:down', function() {
     emailjs.init("1LZbCPvH49G_r0ypB"); 
 })();
 
-// 2. PIXABAY SEARCH LOGIC
-const PIXABAY_KEY = '54841320-2fc493da46915b0eb0a6f740c'; 
+// ==========================================================================
+// 2. TEMPLATE CONFIGURATIONS & API (GITHUB DYNAMIC BACKENDS)
+// ==========================================================================
+const RAW_BASE_URL = "https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/1d7347945ed4cdca65a3629a35948af74ad54222/DesignTemplates/";
+const API_URL = "https://api.github.com/repos/diminfomacon-beep/new-design-studio/contents/DesignTemplates?ref=1d7347945ed4cdca65a3629a35948af74ad54222";
 
-async function searchPixabay() {
-    const query = document.getElementById('pixabaySearch').value;
-    if (!query) return;
-
-    showStatus("🔍 Searching Graphics...", "#555");
-    const url = `https://pixabay.com/api/?key=${PIXABAY_KEY}&q=${encodeURIComponent(query)}&image_type=vector&safesearch=true&per_page=60`;
-
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        const gallery = document.getElementById('gallery');
-        gallery.innerHTML = ''; 
-
-        data.hits.forEach(img => {
-            const imgElement = document.createElement('img');
-            imgElement.src = img.previewURL; 
-            imgElement.alt = img.tags;
-            imgElement.className = "gallery-item";
-
-            imgElement.onclick = function() {
-                fabric.Image.fromURL(img.largeImageURL, function(oImg) {
-                    oImg.scaleToWidth(250);
-                    canvas.add(oImg);
-                    canvas.setActiveObject(oImg);
-                    showStatus("✨ Graphic added!", "green");
-                }, { crossOrigin: 'anonymous' });
-            };
-            gallery.appendChild(imgElement);
-        });
-    } catch (error) {
-        showStatus("❌ Search failed", "red");
-    }
-}
-// Define your custom templates data
+// Static JSON Layout Templates Dataset
 const templates = {
     blank: {
         background: '#ffffff',
@@ -63,7 +35,6 @@ const templates = {
     },
     instagram: {
         background: '#f0f2f5',
-        // Example text and shapes pre-configured for the canvas
         objects: [
             {
                 type: 'rect',
@@ -72,7 +43,6 @@ const templates = {
                 width: 600,
                 height: 400,
                 fill: '#ffffff',
-                selectable: false,
                 selectable: false,
                 hoverCursor: 'default'
             },
@@ -126,50 +96,149 @@ const templates = {
 };
 
 /**
- * Safely loads a template onto the FabricJS canvas
- * @param {string} templateKey 
+ * Automatically reads the GitHub folder and builds the UI grid dynamically
+ */
+async function initializeTemplates() {
+    const grid = document.querySelector('.template-grid');
+    if (!grid) return;
+
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error("Failed to scan GitHub directory");
+        
+        const files = await response.json();
+        const imageExtensions = ['png', 'jpg', 'jpeg', 'webp'];
+        
+        const imageFiles = files.filter(file => {
+            const ext = file.name.split('.').pop().toLowerCase();
+            return file.type === "file" && imageExtensions.includes(ext);
+        });
+
+        grid.innerHTML = imageFiles.map(file => {
+            const fullImageUrl = `${RAW_BASE_URL}${file.name}`;
+            const cleanName = file.name
+                .split('.')[0]
+                .replace(/[-_]/g, ' ')
+                .replace(/\b\w/g, c => c.toUpperCase());
+
+            return `
+                <div class="template-card" onclick="applyGitHubTemplate('${file.name}')">
+                    <img src="${fullImageUrl}" alt="${cleanName}" onerror="this.src='https://placehold.co/150x110?text=Error'">
+                    <span>${cleanName}</span>
+                </div>
+            `;
+        }).join('');
+
+    } catch (error) {
+        console.error("Error reading templates dynamically:", error);
+        grid.innerHTML = `<p style="color: red; font-size: 12px; grid-column: 1/-1;">Could not load dynamic templates.</p>`;
+    }
+}
+
+/**
+ * Applies a dynamic image template file from GitHub to the canvas background
+ */
+function applyGitHubTemplate(fileName) {
+    if (!canvas) {
+        console.error("Studio Error: Canvas instance missing.");
+        return;
+    }
+
+    if (canvas.getObjects().length > 0) {
+        const confirmClear = confirm("Loading a template will replace your current design canvas. Continue?");
+        if (!confirmClear) return;
+    }
+
+    const targetUrl = `${RAW_BASE_URL}${fileName}`;
+    canvas.clear();
+
+    fabric.Image.fromURL(targetUrl, function(img) {
+        img.set({
+            scaleX: canvas.width / img.width,
+            scaleY: canvas.height / img.height,
+            originX: 'left',
+            originY: 'top'
+        });
+        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+    }, { crossOrigin: 'anonymous' });
+}
+
+/**
+ * Safely loads a structural JSON object template onto the FabricJS canvas
  */
 function loadTemplate(templateKey) {
-    // Assuming your fabric canvas instance is named 'canvas'
     if (!canvas) return;
 
     const template = templates[templateKey];
     if (!template) return;
 
-    // Safety check so users don't accidentally wipe their current work
     if (canvas.getObjects().length > 0) {
         const confirmClear = confirm("Loading a template will clear your current design. Do you want to proceed?");
         if (!confirmClear) return;
     }
 
-    // 1. Clear current canvas items
     canvas.clear();
-
-    // 2. Set background color
     canvas.setBackgroundColor(template.background, canvas.renderAll.bind(canvas));
 
-    // 3. Parse and add layout objects safely
     if (template.objects && template.objects.length > 0) {
         template.objects.forEach(objData => {
             let fabricObj;
-            
             if (objData.type === 'rect') {
                 fabricObj = new fabric.Rect(objData);
             } else if (objData.type === 'textbox') {
                 fabricObj = new fabric.Textbox(objData.text, objData);
             }
-            // Add more types (circles, triangles) here if needed
 
             if (fabricObj) {
                 canvas.add(fabricObj);
             }
         });
     }
-
-    // 4. Refresh canvas view
     canvas.renderAll();
 }
-// 3. TEXT HANDLING
+
+// ==========================================================================
+// 3. PIXABAY SEARCH LOGIC
+// ==========================================================================
+const PIXABAY_KEY = '54841320-2fc493da46915b0eb0a6f740c'; 
+
+async function searchPixabay() {
+    const query = document.getElementById('pixabaySearch').value;
+    if (!query) return;
+
+    showStatus("🔍 Searching Graphics...", "#555");
+    const url = `https://pixabay.com/api/?key=${PIXABAY_KEY}&q=${encodeURIComponent(query)}&image_type=vector&safesearch=true&per_page=60`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const gallery = document.getElementById('gallery');
+        gallery.innerHTML = ''; 
+
+        data.hits.forEach(img => {
+            const imgElement = document.createElement('img');
+            imgElement.src = img.previewURL; 
+            imgElement.alt = img.tags;
+            imgElement.className = "gallery-item";
+
+            imgElement.onclick = function() {
+                fabric.Image.fromURL(img.largeImageURL, function(oImg) {
+                    oImg.scaleToWidth(250);
+                    canvas.add(oImg);
+                    canvas.setActiveObject(oImg);
+                    showStatus("✨ Graphic added!", "green");
+                }, { crossOrigin: 'anonymous' });
+            };
+            gallery.appendChild(imgElement);
+        });
+    } catch (error) {
+        showStatus("❌ Search failed", "red");
+    }
+}
+
+// ==========================================================================
+// 4. TEXT HANDLING
+// ==========================================================================
 function placeTextOnCanvas() {
     const userInput = document.getElementById('textInput').value;
     if (userInput.trim() === "") {
@@ -188,7 +257,7 @@ function placeTextOnCanvas() {
         fontSize: parseInt(fontSize),
         fill: color,
         fontFamily: fontFamily,
-        textAlign: 'left' // Default alignment
+        textAlign: 'left'
     });
 
     canvas.add(text);
@@ -208,7 +277,19 @@ function updateLiveText() {
     }
 }
 
-// 4. COLOR SWATCH SYSTEM
+function setTextAlignment(alignValue) {
+    const activeObject = canvas.getActiveObject();
+    if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'i-text')) {
+        activeObject.set('textAlign', alignValue);
+        canvas.renderAll();
+    } else {
+        showStatus("⚠️ Select a text box first!", "orange");
+    }
+}
+
+// ==========================================================================
+// 5. COLOR SWATCH SYSTEM
+// ==========================================================================
 const colors = [
     '#FFFFFF', '#BFBFBF', '#808080', '#000000',
     '#FF0000', '#FF8000', '#FFFF00', '#994C00',
@@ -244,7 +325,9 @@ function togglePalette(event) {
     palette.classList.toggle('show');
 }
 
-// 5. UPLOAD & LAYER UTILITIES
+// ==========================================================================
+// 6. UPLOAD & LAYER UTILITIES
+// ==========================================================================
 function handleImageUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -277,19 +360,10 @@ function sendBackward() {
     const active = canvas.getActiveObject();
     if (active) { canvas.sendBackwards(active); canvas.renderAll(); }
 }
-function setTextAlignment(alignValue) {
-    const activeObject = canvas.getActiveObject();
-    
-    // Check if there is an active object and if it's a type of text
-    if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'i-text')) {
-        activeObject.set('textAlign', alignValue);
-        canvas.renderAll();
-    } else {
-        showStatus("⚠️ Select a text box first!", "orange");
-    }
-}
 
-// 6. FORM SUBMISSION & DOWNLOAD
+// ==========================================================================
+// 7. FORM SUBMISSION & DOWNLOAD
+// ==========================================================================
 document.getElementById('submitForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const submitBtn = event.target.querySelector('button[type="submit"]');
@@ -359,10 +433,13 @@ window.addEventListener('keydown', function(e) {
     }
 });
 
-// 7. INIT ON LOAD
+// ==========================================================================
+// 8. INIT ON LOAD
+// ==========================================================================
 window.onload = () => {
     initSwatches();
-    searchPixabay(); // Initial load
+    searchPixabay();        // Initial load for images
+    initializeTemplates();  // Dynamic initial scan of your GitHub repo folder
     
     // Close palette on click-off
     window.addEventListener('click', function(e) {
