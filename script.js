@@ -81,6 +81,9 @@ async function initializeTemplates() {
 /**
  * Helper function to physically paint the cards onto the UI grid
  */
+/**
+ * Helper function to physically paint the cards onto the UI grid (File Names Hidden)
+ */
 function renderTemplateGrid(filesList) {
     const grid = document.querySelector('.template-grid');
     if (!grid) return;
@@ -92,15 +95,17 @@ function renderTemplateGrid(filesList) {
 
     grid.innerHTML = filesList.map(file => {
         const fullImageUrl = `${RAW_BASE_URL}${file.name}`;
+        
+        // Formats a clean name for fallback alt text and hover tooltips
         const cleanName = file.name
             .split('.')[0]
             .replace(/[-_]/g, ' ')
             .replace(/\b\w/g, c => c.toUpperCase());
 
+        // Removed the <span> line entirely so only the image card shows up
         return `
-            <div class="template-card" onclick="applyGitHubTemplate('${file.name}')">
+            <div class="template-card" onclick="applyGitHubTemplate('${file.name}')" title="${cleanName}">
                 <img src="${fullImageUrl}" alt="${cleanName}" onerror="this.src='https://placehold.co/150x110?text=Error'">
-                <span>${cleanName}</span>
             </div>
         `;
     }).join('');
