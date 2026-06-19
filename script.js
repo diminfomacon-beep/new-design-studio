@@ -135,49 +135,32 @@ function filterTemplates() {
  * Applies a dynamic image template file from GitHub as a draggable, resizable canvas object
  */
 function applyGitHubTemplate(fileName) {
-    if (!canvas) {
-        console.error("Studio Error: Canvas instance missing.");
-        return;
-    }
+    if (!canvas) return;
 
-    // Safety check to ensure user doesn't lose current layers unexpectedly
-    if (canvas.getObjects().length > 0) {
-        const confirmClear = confirm("Loading a template will clear your current layers. Do you want to proceed?");
-        if (!confirmClear) return;
-    }
+    // REMOVED: canvas.clear(); <- This was wiping the canvas every time!
 
     const targetUrl = `${RAW_BASE_URL}${fileName}`;
-    
-    // Clear canvas objects and reset any background colors to default blank
-    canvas.clear();
-    canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
 
-    // Load the template as an interactive image layer
     fabric.Image.fromURL(targetUrl, function(img) {
-        // Calculate scale to fit nicely within the canvas boundaries initially
         const scaleX = canvas.width / img.width;
         const scaleY = canvas.height / img.height;
-        const scaleFactor = Math.min(scaleX, scaleY, 1); // Fit to screen scale
+        const scaleFactor = Math.min(scaleX, scaleY, 1);
 
         img.set({
-            left: (canvas.width - (img.width * scaleFactor)) / 2, // Centered horizontally
-            top: (canvas.height - (img.height * scaleFactor)) / 2, // Centered vertically
+            left: (canvas.width - (img.width * scaleFactor)) / 2,
+            top: (canvas.height - (img.height * scaleFactor)) / 2,
             scaleX: scaleFactor,
             scaleY: scaleFactor,
-            cornerColor: '#00adb5', // Styling anchor points to match common presets
+            cornerColor: '#00adb5',
             cornerStyle: 'circle',
             transparentCorners: false
         });
 
-        // Add to canvas layout layers
         canvas.add(img);
         
-        // Push the template to the absolute bottom layer so text/graphics sit on top of it
-        canvas.sendToBack(img);
-        
-        // Make it the active selected item right away so the user can see it can be moved
+        // CHANGED: Instead of sending it completely to the back layer, 
+        // we just set it as the active object so you can resize and move it immediately.
         canvas.setActiveObject(img);
-        
         canvas.renderAll();
         showStatus("✨ Template added as layer!", "green");
     }, { crossOrigin: 'anonymous' });
