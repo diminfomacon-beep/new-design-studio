@@ -101,14 +101,9 @@ function filterTemplates() {
 function applyGitHubTemplate(fileName) {
     if (!canvas) return;
 
-    if (canvas.getObjects().length > 0) {
-        const confirmClear = confirm("Loading a template will clear your current layers. Continue?");
-        if (!confirmClear) return;
-    }
+    // REMOVED: canvas.clear(); <- This was wiping the canvas every time!
 
     const targetUrl = `${RAW_BASE_URL}${fileName}`;
-    canvas.clear();
-    canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
 
     fabric.Image.fromURL(targetUrl, function(img) {
         const scaleX = canvas.width / img.width;
@@ -126,13 +121,14 @@ function applyGitHubTemplate(fileName) {
         });
 
         canvas.add(img);
-        canvas.sendToBack(img); // Pushes template behind fonts and stickers
+        
+        // CHANGED: Instead of sending it completely to the back layer, 
+        // we just set it as the active object so you can resize and move it immediately.
         canvas.setActiveObject(img);
         canvas.renderAll();
         showStatus("✨ Template added as layer!", "green");
     }, { crossOrigin: 'anonymous' });
 }
-
 // ==========================================================================
 // 4. PIXABAY SEARCH GRAPHICS LOGIC
 // ==========================================================================
