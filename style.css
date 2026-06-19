@@ -272,12 +272,12 @@ button:hover {
 
 .template-card img {
     width: 100%;
-    height: 90px;
+    height: 95px; /* Boosted slightly since text is gone */
     object-fit: cover;
     border-radius: 4px;
     background-color: #f4f4f5;
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 0px; /* Reset from 4px/6px since there is no text below it */
 }
 
 .template-card span {
