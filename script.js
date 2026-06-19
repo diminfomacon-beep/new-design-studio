@@ -55,7 +55,120 @@ async function searchPixabay() {
         showStatus("❌ Search failed", "red");
     }
 }
+// Define your custom templates data
+const templates = {
+    blank: {
+        background: '#ffffff',
+        objects: []
+    },
+    instagram: {
+        background: '#f0f2f5',
+        // Example text and shapes pre-configured for the canvas
+        objects: [
+            {
+                type: 'rect',
+                left: 100,
+                top: 100,
+                width: 600,
+                height: 400,
+                fill: '#ffffff',
+                selectable: false,
+                selectable: false,
+                hoverCursor: 'default'
+            },
+            {
+                type: 'textbox',
+                text: 'YOUR HEADING HERE',
+                left: 150,
+                top: 150,
+                width: 500,
+                fontSize: 40,
+                fontFamily: 'Montserrat',
+                fontWeight: 'bold',
+                fill: '#333333'
+            },
+            {
+                type: 'textbox',
+                text: 'Share your story with the world.',
+                left: 150,
+                top: 230,
+                width: 500,
+                fontSize: 20,
+                fontFamily: 'Montserrat',
+                fill: '#666666'
+            }
+        ]
+    },
+    businessCard: {
+        background: '#1a1a1a',
+        objects: [
+            {
+                type: 'textbox',
+                text: 'JOHN DOE',
+                left: 80,
+                top: 200,
+                fontSize: 36,
+                fontFamily: 'Montserrat',
+                fill: '#ffffff',
+                fontWeight: 'bold'
+            },
+            {
+                type: 'textbox',
+                text: 'Creative Director',
+                left: 80,
+                top: 250,
+                fontSize: 18,
+                fontFamily: 'Montserrat',
+                fill: '#00adb5'
+            }
+        ]
+    }
+};
 
+/**
+ * Safely loads a template onto the FabricJS canvas
+ * @param {string} templateKey 
+ */
+function loadTemplate(templateKey) {
+    // Assuming your fabric canvas instance is named 'canvas'
+    if (!canvas) return;
+
+    const template = templates[templateKey];
+    if (!template) return;
+
+    // Safety check so users don't accidentally wipe their current work
+    if (canvas.getObjects().length > 0) {
+        const confirmClear = confirm("Loading a template will clear your current design. Do you want to proceed?");
+        if (!confirmClear) return;
+    }
+
+    // 1. Clear current canvas items
+    canvas.clear();
+
+    // 2. Set background color
+    canvas.setBackgroundColor(template.background, canvas.renderAll.bind(canvas));
+
+    // 3. Parse and add layout objects safely
+    if (template.objects && template.objects.length > 0) {
+        template.objects.forEach(objData => {
+            let fabricObj;
+            
+            if (objData.type === 'rect') {
+                fabricObj = new fabric.Rect(objData);
+            } else if (objData.type === 'textbox') {
+                fabricObj = new fabric.Textbox(objData.text, objData);
+            }
+            // Add more types (circles, triangles) here if needed
+
+            if (fabricObj) {
+                canvas.add(fabricObj);
+            }
+        });
+    }
+
+    // 4. Refresh canvas view
+    canvas.renderAll();
+}
 // 3. TEXT HANDLING
 function placeTextOnCanvas() {
     const userInput = document.getElementById('textInput').value;
