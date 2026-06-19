@@ -34,7 +34,14 @@
 
     <main class="tool-tray">
         <div class="tray-content">
-            
+            <div id="tab-templates" class="tab-panel">
+                <label>Choose a Layout Template</label>
+                <div class="input-row" style="margin-bottom: 12px;">
+                    <input type="text" id="templateSearch" placeholder="Search templates..." oninput="filterTemplates()">
+                </div>
+                <div class="template-grid">
+                    </div>
+            </div>
             <div id="tab-image" class="tab-panel active">
                 <label>Search Graphics</label>
                 <div class="input-row">
@@ -125,22 +132,25 @@
     </main>
 
     <nav class="bottom-nav">
-    <button onclick="switchTab('image')" class="active">
-        <span>🖼️</span><br>Image
-    </button>
-    <button onclick="switchTab('text')">
-        <span>A</span><br>Text
-    </button>
-    <button onclick="switchTab('upload')">
-        <span>📤</span><br>Upload
-    </button>
-    <button onclick="downloadDesign()">
-        <span>💾</span><br>Download
-    </button>
-    <button onclick="switchTab('submit')">
-        <span>✅</span><br>Submit
-    </button>
-</nav>
+        <button onclick="switchTab('templates')">
+            <span>🎨</span><br>Templates
+        </button>
+        <button onclick="switchTab('image')" class="active">
+            <span>🖼️</span><br>Graphics
+        </button>
+        <button onclick="switchTab('text')">
+            <span>A</span><br>Text
+        </button>
+        <button onclick="switchTab('upload')">
+            <span>📤</span><br>Upload
+        </button>
+        <button onclick="downloadDesign()">
+            <span>💾</span><br>Download
+        </button>
+        <button onclick="switchTab('submit')">
+            <span>✅</span><br>Submit
+        </button>
+    </nav>
 </div>
 
 <input type="hidden" id="activeColor" value="#000000">
