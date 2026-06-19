@@ -300,3 +300,38 @@ button {
     transform: scale(0.95);
     background: #e9ecef;
 }
+/* Mobile Optimized Templates Grid Layer */
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three tidy items across on mobile viewports */
+    gap: 8px;
+    margin-top: 8px;
+    max-height: 200px; /* Restricts heights safely to leave room for the canvas wrapper above */
+    overflow-y: auto;
+    padding-bottom: 15px;
+    -webkit-overflow-scrolling: touch; /* Butter smooth scrolling on iOS Safari wrappers */
+}
+
+.template-card {
+    background: #ffffff;
+    border: 1px solid #e4e4e7;
+    border-radius: 6px;
+    padding: 4px;
+    cursor: pointer;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.template-card img {
+    width: 100%;
+    height: 65px; /* Scaled down perfectly to match smaller phone display view screens */
+    object-fit: cover;
+    border-radius: 4px;
+    background-color: #f4f4f5;
+    display: block;
+}
+
+.template-card:active {
+    transform: scale(0.96); /* Responsive physical action click-feedback visual indicator */
+    border-color: #00adb5;
+}
