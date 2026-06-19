@@ -22,86 +22,39 @@ canvas.on('mouse:down', function() {
 })();
 
 // ==========================================================================
+// ==========================================================================
 // 2. TEMPLATE CONFIGURATIONS & API (GITHUB DYNAMIC BACKENDS)
 // ==========================================================================
 const RAW_BASE_URL = "https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/1d7347945ed4cdca65a3629a35948af74ad54222/DesignTemplates/";
 const API_URL = "https://api.github.com/repos/diminfomacon-beep/new-design-studio/contents/DesignTemplates?ref=1d7347945ed4cdca65a3629a35948af74ad54222";
 
-// Static JSON Layout Templates Dataset
+// Global cache to keep track of GitHub files for instant searching
+let cachedTemplateFiles = [];
+
+// Static JSON Layout Templates Dataset (Preserved)
 const templates = {
-    blank: {
-        background: '#ffffff',
-        objects: []
-    },
+    blank: { background: '#ffffff', objects: [] },
     instagram: {
         background: '#f0f2f5',
         objects: [
-            {
-                type: 'rect',
-                left: 100,
-                top: 100,
-                width: 600,
-                height: 400,
-                fill: '#ffffff',
-                selectable: false,
-                hoverCursor: 'default'
-            },
-            {
-                type: 'textbox',
-                text: 'YOUR HEADING HERE',
-                left: 150,
-                top: 150,
-                width: 500,
-                fontSize: 40,
-                fontFamily: 'Montserrat',
-                fontWeight: 'bold',
-                fill: '#333333'
-            },
-            {
-                type: 'textbox',
-                text: 'Share your story with the world.',
-                left: 150,
-                top: 230,
-                width: 500,
-                fontSize: 20,
-                fontFamily: 'Montserrat',
-                fill: '#666666'
-            }
+            { type: 'rect', left: 100, top: 100, width: 600, height: 400, fill: '#ffffff', selectable: false, hoverCursor: 'default' },
+            { type: 'textbox', text: 'YOUR HEADING HERE', left: 150, top: 150, width: 500, fontSize: 40, fontFamily: 'Montserrat', fontWeight: 'bold', fill: '#333333' },
+            { type: 'textbox', text: 'Share your story with the world.', left: 150, top: 230, width: 500, fontSize: 20, fontFamily: 'Montserrat', fill: '#666666' }
         ]
     },
     businessCard: {
         background: '#1a1a1a',
         objects: [
-            {
-                type: 'textbox',
-                text: 'JOHN DOE',
-                left: 80,
-                top: 200,
-                fontSize: 36,
-                fontFamily: 'Montserrat',
-                fill: '#ffffff',
-                fontWeight: 'bold'
-            },
-            {
-                type: 'textbox',
-                text: 'Creative Director',
-                left: 80,
-                top: 250,
-                fontSize: 18,
-                fontFamily: 'Montserrat',
-                fill: '#00adb5'
-            }
+            { type: 'textbox', text: 'JOHN DOE', left: 80, top: 200, fontSize: 36, fontFamily: 'Montserrat', fill: '#ffffff', fontWeight: 'bold' },
+            { type: 'textbox', text: 'Creative Director', left: 80, top: 250, fontSize: 18, fontFamily: 'Montserrat', fill: '#00adb5' }
         ]
     }
 };
 
 /**
- * Automatically reads the GitHub folder and builds the UI grid dynamically
+ * Automatically reads the GitHub folder and caches the list for searching
  */
 async function initializeTemplates() {
-    const grid = document.querySelector('.template-grid');
-    if (!grid) return;
-
     try {
         const response = await fetch(API_URL);
         if (!response.ok) throw new Error("Failed to scan GitHub directory");
@@ -109,34 +62,69 @@ async function initializeTemplates() {
         const files = await response.json();
         const imageExtensions = ['png', 'jpg', 'jpeg', 'webp'];
         
-        const imageFiles = files.filter(file => {
+        // Save matching images to our global cache variable
+        cachedTemplateFiles = files.filter(file => {
             const ext = file.name.split('.').pop().toLowerCase();
             return file.type === "file" && imageExtensions.includes(ext);
         });
 
-        grid.innerHTML = imageFiles.map(file => {
-            const fullImageUrl = `${RAW_BASE_URL}${file.name}`;
-            const cleanName = file.name
-                .split('.')[0]
-                .replace(/[-_]/g, ' ')
-                .replace(/\b\w/g, c => c.toUpperCase());
-
-            return `
-                <div class="template-card" onclick="applyGitHubTemplate('${file.name}')">
-                    <img src="${fullImageUrl}" alt="${cleanName}" onerror="this.src='https://placehold.co/150x110?text=Error'">
-                    <span>${cleanName}</span>
-                </div>
-            `;
-        }).join('');
+        // Initially render all templates
+        renderTemplateGrid(cachedTemplateFiles);
 
     } catch (error) {
         console.error("Error reading templates dynamically:", error);
-        grid.innerHTML = `<p style="color: red; font-size: 12px; grid-column: 1/-1;">Could not load dynamic templates.</p>`;
+        const grid = document.querySelector('.template-grid');
+        if (grid) grid.innerHTML = `<p style="color: red; font-size: 12px; grid-column: 1/-1;">Could not load dynamic templates.</p>`;
     }
 }
 
 /**
- * Applies a dynamic image template file from GitHub to the canvas background
+ * Helper function to physically paint the cards onto the UI grid
+ */
+function renderTemplateGrid(filesList) {
+    const grid = document.querySelector('.template-grid');
+    if (!grid) return;
+
+    if (filesList.length === 0) {
+        grid.innerHTML = `<p style="color: #71717a; font-size: 12px; grid-column: 1/-1; text-align: center;">No matching templates found.</p>`;
+        return;
+    }
+
+    grid.innerHTML = filesList.map(file => {
+        const fullImageUrl = `${RAW_BASE_URL}${file.name}`;
+        const cleanName = file.name
+            .split('.')[0]
+            .replace(/[-_]/g, ' ')
+            .replace(/\b\w/g, c => c.toUpperCase());
+
+        return `
+            <div class="template-card" onclick="applyGitHubTemplate('${file.name}')">
+                <img src="${fullImageUrl}" alt="${cleanName}" onerror="this.src='https://placehold.co/150x110?text=Error'">
+                <span>${cleanName}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+/**
+ * Filters the cached templates instantly as the user types
+ */
+function filterTemplates() {
+    const searchInput = document.getElementById('templateSearch');
+    if (!searchInput) return;
+
+    const query = searchInput.value.toLowerCase().trim();
+
+    // Filter list based on whether file name contains search string
+    const filteredFiles = cachedTemplateFiles.filter(file => {
+        return file.name.toLowerCase().includes(query);
+    });
+
+    renderTemplateGrid(filteredFiles);
+}
+
+/**
+ * Applies a dynamic image template file from GitHub to the canvas background (Preserved)
  */
 function applyGitHubTemplate(fileName) {
     if (!canvas) {
@@ -164,7 +152,7 @@ function applyGitHubTemplate(fileName) {
 }
 
 /**
- * Safely loads a structural JSON object template onto the FabricJS canvas
+ * Safely loads a structural JSON object template onto the FabricJS canvas (Preserved)
  */
 function loadTemplate(templateKey) {
     if (!canvas) return;
