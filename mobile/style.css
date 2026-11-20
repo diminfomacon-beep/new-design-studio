@@ -391,3 +391,7 @@ button {
     line-height: 1.5;
 }
 .product-info strong { color: #0e4d42; }
+
+/* --- Save note --- */
+.save-note { font-size: 12px; line-height: 1.5; color: #e2e8f0; margin: 10px 0 0 0; }
+.save-note a { color: #fff; }

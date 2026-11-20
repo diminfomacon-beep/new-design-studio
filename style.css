@@ -359,3 +359,7 @@ button:hover {
 .product-info strong {
     color: #0f3d3e;
 }
+
+/* --- Save & Send note --- */
+.save-note { font-size: 12px; line-height: 1.5; color: #54665e; margin: 8px 0 0 0; }
+.save-note a { color: #0e4d42; }

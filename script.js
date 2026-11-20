@@ -505,7 +505,14 @@ document.getElementById('submitForm').addEventListener('submit', function(event)
     submitBtn.disabled = true;
     showStatus("📤 Preparing design...", "#555");
 
-    const fullDataURL = canvas.toDataURL({ format: 'png', quality: 1.0 });
+    let fullDataURL;
+    try {
+        fullDataURL = exportDesignDataURL();
+    } catch (err) {
+        showStatus("❌ Error: " + err.message, "red");
+        submitBtn.disabled = false;
+        return;
+    }
     const base64Image = fullDataURL.split(',')[1]; 
     
     const formData = new FormData();
@@ -542,11 +549,56 @@ document.getElementById('submitForm').addEventListener('submit', function(event)
     });
 });
 
+// Export a clean PNG: hide the guide objects (dashed print area, PRINT AREA
+// label, "choose a product" hint) while exporting. Fabric's excludeFromExport
+// flag only affects toObject/toJSON/toSVG — the bitmap export draws EVERY
+// object, so the guides must be hidden for real. The product outline itself
+// is NOT a guide, so it stays in the image.
+function exportDesignDataURL() {
+    const hidden = canvas.getObjects().filter(function(o) { return o.excludeFromExport && o.visible; });
+    hidden.forEach(function(o) { o.visible = false; });
+    try {
+        return canvas.toDataURL({ format: 'png', quality: 1.0 });
+    } finally {
+        hidden.forEach(function(o) { o.visible = true; });
+        canvas.renderAll();
+    }
+}
+
 function downloadDesign() {
-    const link = document.createElement('a');
-    link.download = 'my-design.png';
-    link.href = canvas.toDataURL({ format: 'png', quality: 1.0 });
-    link.click();
+    try {
+        const url = exportDesignDataURL();
+        const link = document.createElement('a');
+        link.download = 'my-design.png';
+        link.href = url;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        showStatus("✅ Download started! If nothing saved, use “Open design in a new tab” below — the store page can block downloads.", "green");
+    } catch (error) {
+        showStatus("❌ Download failed: " + error.message + ". Use “Open design in a new tab” below instead.", "red");
+    }
+}
+
+// Fallback for the embedded store page, where the browser blocks downloads
+// from inside the frame: open the clean design image in a new tab so the
+// customer can save it from there (right-click / long-press → Save image).
+function openDesignInNewTab() {
+    let url;
+    try {
+        url = exportDesignDataURL();
+    } catch (error) {
+        showStatus("❌ Could not open your design: " + error.message, "red");
+        return;
+    }
+    const win = window.open('', '_blank');
+    if (!win) {
+        showStatus("❌ Pop-up blocked — allow pop-ups for this site, or open the full studio link below.", "red");
+        return;
+    }
+    win.document.write('<!DOCTYPE html><html><head><title>Your design — D.I.M. Bright Ideas</title></head><body style="margin:0;background:#888;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="' + url + '" style="max-width:100vw;max-height:100vh"></body></html>');
+    win.document.close();
+    showStatus("✅ Your design opened in a new tab — save it from there.", "green");
 }
 
 function showStatus(text, color) {
