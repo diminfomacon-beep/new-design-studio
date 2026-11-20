@@ -199,6 +199,124 @@ function loadTemplate(templateKey) {
     canvas.renderAll();
 }
 
+
+// ==========================================================================
+// 2B. PRODUCT PICKER — Step 1: choose what the design goes on
+// ==========================================================================
+const PHOTO_BASE = 'https://diminfomacon-beep.github.io/Mothers_Day/catalog/photos/';
+
+const PRODUCTS = [
+    { id: 'skinny-ombre', name: '20oz Skinny Tumbler \u2013 Ombre', price: 'From $17', area: 'about 8 in \u00d7 3 in', photo: PHOTO_BASE + '20oz%20Skinny%20Tumbler%20-%20Ombre.png' },
+    { id: 'traveler-40oz', name: '40oz Traveler Tumbler', price: 'From $32', area: 'about 9 in \u00d7 4 in', photo: PHOTO_BASE + '40oz%20Traveler%20Tumbler.png' },
+    { id: 'glass-mug', name: 'Glass Mug', price: 'From $13', area: 'about 3 in \u00d7 3 in', photo: PHOTO_BASE + 'Glass%20Mug.png' },
+    { id: 'tshirt-poly', name: 'T-Shirt (Polyester, White)', price: 'From $15', area: 'about 11 in \u00d7 12 in', photo: PHOTO_BASE + 'Adult%20Polyester%20Short%20Sleeve%20T-Shirt%20-%20White.png' },
+    { id: 'tote-medium', name: 'Medium Tote Bag', price: 'From $10', area: 'about 10 in \u00d7 10 in', photo: PHOTO_BASE + 'Medium%20Tote%20Bag.png' }
+];
+
+let selectedProduct = null;
+
+function renderProductGrid() {
+    const grid = document.getElementById('productGrid');
+    if (!grid) return;
+    grid.innerHTML = PRODUCTS.map(function(p) {
+        return '<div class="product-card" data-product-id="' + p.id + '" onclick="selectProduct(\'' + p.id + '\')">' +
+            '<img src="' + p.photo + '" alt="' + p.name + '">' +
+            '<span class="product-name">' + p.name + '</span>' +
+            '<span class="product-price">' + p.price + '</span></div>';
+    }).join('');
+}
+
+function drawHint() {
+    const hint = new fabric.Textbox('Choose a product above to start designing', {
+        left: 400, top: 290, width: 440, fontSize: 22, fill: '#6b7280',
+        fontFamily: 'Montserrat, sans-serif', textAlign: 'center',
+        originX: 'center', originY: 'center',
+        selectable: false, evented: false, isProductGuide: true, excludeFromExport: true
+    });
+    canvas.add(hint);
+    canvas.renderAll();
+}
+
+function printAreaRect(left, top, width, height) {
+    return new fabric.Rect({
+        left: left, top: top, width: width, height: height,
+        fill: 'rgba(180,83,9,0.06)', stroke: '#b45309', strokeWidth: 2,
+        strokeDashArray: [8, 6], selectable: false, evented: false,
+        isProductGuide: true, excludeFromExport: true
+    });
+}
+
+function printAreaLabel(left, top) {
+    return new fabric.Text('PRINT AREA', {
+        left: left, top: top, fontSize: 12, fill: '#b45309',
+        fontFamily: 'Montserrat, sans-serif', selectable: false, evented: false,
+        isProductGuide: true, excludeFromExport: true
+    });
+}
+
+function productBody(props) {
+    const base = { fill: '#fffefb', stroke: '#0e4d42', strokeWidth: 3, selectable: false, evented: false, isProductGuide: true };
+    return new fabric.Rect(Object.assign({}, base, props));
+}
+
+function drawProductOutline(product) {
+    const shapes = [];
+    if (product.id === 'skinny-ombre') {
+        shapes.push(productBody({ left: 275, top: 55, width: 250, height: 490, rx: 26, ry: 26 }));
+        shapes.push(new fabric.Rect({ left: 275, top: 55, width: 250, height: 30, rx: 10, ry: 10, fill: '#e5e7eb', stroke: '#0e4d42', strokeWidth: 2, selectable: false, evented: false, isProductGuide: true }));
+        shapes.push(printAreaRect(295, 130, 210, 360));
+        shapes.push(printAreaLabel(295, 108));
+    } else if (product.id === 'traveler-40oz') {
+        shapes.push(productBody({ left: 255, top: 65, width: 290, height: 470, rx: 30, ry: 30 }));
+        shapes.push(new fabric.Circle({ left: 517, top: 192, radius: 58, fill: 'transparent', stroke: '#0e4d42', strokeWidth: 12, selectable: false, evented: false, isProductGuide: true }));
+        shapes.push(printAreaRect(278, 150, 244, 340));
+        shapes.push(printAreaLabel(278, 128));
+    } else if (product.id === 'glass-mug') {
+        shapes.push(productBody({ left: 215, top: 140, width: 310, height: 320, rx: 14, ry: 14 }));
+        shapes.push(new fabric.Circle({ left: 493, top: 238, radius: 62, fill: 'transparent', stroke: '#0e4d42', strokeWidth: 12, selectable: false, evented: false, isProductGuide: true }));
+        shapes.push(printAreaRect(240, 170, 260, 260));
+        shapes.push(printAreaLabel(240, 148));
+    } else if (product.id === 'tshirt-poly') {
+        shapes.push(new fabric.Path('M180,160 L270,115 Q400,175 530,115 L620,160 L565,235 L525,215 L525,510 L275,510 L275,215 L235,235 Z', { fill: '#fffefb', stroke: '#0e4d42', strokeWidth: 3, selectable: false, evented: false, isProductGuide: true }));
+        shapes.push(printAreaRect(315, 230, 170, 220));
+        shapes.push(printAreaLabel(315, 208));
+    } else if (product.id === 'tote-medium') {
+        shapes.push(productBody({ left: 235, top: 180, width: 330, height: 330, rx: 10, ry: 10 }));
+        shapes.push(new fabric.Path('M300,180 Q365,80 430,180', { fill: 'transparent', stroke: '#0e4d42', strokeWidth: 10, selectable: false, evented: false, isProductGuide: true }));
+        shapes.push(new fabric.Path('M370,180 Q435,80 500,180', { fill: 'transparent', stroke: '#0e4d42', strokeWidth: 10, selectable: false, evented: false, isProductGuide: true }));
+        shapes.push(printAreaRect(265, 220, 270, 250));
+        shapes.push(printAreaLabel(265, 198));
+    }
+    shapes.forEach(function(s) { canvas.add(s); });
+    canvas.renderAll();
+}
+
+function selectProduct(productId) {
+    const product = PRODUCTS.find(function(p) { return p.id === productId; });
+    if (!product) return;
+    if (selectedProduct && selectedProduct.id === productId) return;
+
+    const userObjects = canvas.getObjects().filter(function(o) { return !o.isProductGuide; });
+    if (userObjects.length > 0) {
+        if (!confirm('Switching products will clear your current design. Continue?')) return;
+    }
+
+    selectedProduct = product;
+    canvas.clear();
+    drawProductOutline(product);
+
+    document.querySelectorAll('.product-card').forEach(function(card) {
+        card.classList.toggle('selected', card.dataset.productId === productId);
+    });
+
+    const info = document.getElementById('productInfo');
+    info.style.display = 'block';
+    info.innerHTML = '<strong>' + product.name + '</strong> &middot; ' + product.price +
+        '<br>Print area: ' + product.area +
+        '<br>Custom orders take 5&ndash;14 business days. After you submit, we&rsquo;ll email you within 24&ndash;48 business hours to confirm your order and total.';
+    showStatus('Product selected: ' + product.name, 'green');
+}
+
 // ==========================================================================
 // 3. PIXABAY SEARCH LOGIC
 // ==========================================================================
@@ -368,6 +486,10 @@ function sendBackward() {
 // ==========================================================================
 document.getElementById('submitForm').addEventListener('submit', function(event) {
     event.preventDefault();
+    if (!selectedProduct) {
+        showStatus("Please choose a product first!", "orange");
+        return;
+    }
     const submitBtn = event.target.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     showStatus("📤 Preparing design...", "#555");
@@ -388,6 +510,9 @@ document.getElementById('submitForm').addEventListener('submit', function(event)
             const templateParams = {
                 cust_name: document.getElementById('custName').value,
                 cust_email: document.getElementById('custEmail').value,
+                product_name: selectedProduct.name,
+                product_price: selectedProduct.price,
+                product_design_area: selectedProduct.area,
                 design_image: result.data.url 
             };
             return emailjs.send('service_ezq1fuc', 'template_ut1r5xk', templateParams, '1LZbCPvH49G_r0ypB');
@@ -440,6 +565,8 @@ window.addEventListener('keydown', function(e) {
 // ==========================================================================
 window.onload = () => {
     initSwatches();
+    renderProductGrid();
+    drawHint();
     searchPixabay();        // Initial load for images
     initializeTemplates();  // Dynamic initial scan of your GitHub repo folder
     
