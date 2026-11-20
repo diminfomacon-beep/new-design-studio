@@ -99,7 +99,7 @@ window.onload = () => {
     // Hint until a product is picked (a guide — removed when a product is chosen)
     const hint = new fabric.Textbox('Choose a product above to start designing', {
         left: 400, top: 300, originX: 'center', originY: 'center', width: 500,
-        fontSize: 26, fontFamily: 'Montserrat, sans-serif', fill: '#888888',
+        fontSize: 26, fontFamily: 'Montserrat, sans-serif', fill: '#54665e',
         textAlign: 'center', selectable: false, evented: false,
         isProductGuide: true, excludeFromExport: true
     });
