@@ -206,11 +206,11 @@ function loadTemplate(templateKey) {
 const PHOTO_BASE = 'https://diminfomacon-beep.github.io/Mothers_Day/catalog/photos/';
 
 const PRODUCTS = [
-    { id: 'skinny-ombre', name: '20oz Skinny Tumbler \u2013 Ombre', price: 'From $17', area: 'about 8 in \u00d7 3 in', photo: PHOTO_BASE + '20oz%20Skinny%20Tumbler%20-%20Ombre.png' },
-    { id: 'traveler-40oz', name: '40oz Traveler Tumbler', price: 'From $32', area: 'about 9 in \u00d7 4 in', photo: PHOTO_BASE + '40oz%20Traveler%20Tumbler.png' },
-    { id: 'glass-mug', name: 'Glass Mug', price: 'From $13', area: 'about 3 in \u00d7 3 in', photo: PHOTO_BASE + 'Glass%20Mug.png' },
-    { id: 'tshirt-poly', name: 'T-Shirt (Polyester, White)', price: 'From $15', area: 'about 11 in \u00d7 12 in', photo: PHOTO_BASE + 'Adult%20Polyester%20Short%20Sleeve%20T-Shirt%20-%20White.png' },
-    { id: 'tote-medium', name: 'Medium Tote Bag', price: 'From $10', area: 'about 10 in \u00d7 10 in', photo: PHOTO_BASE + 'Medium%20Tote%20Bag.png' }
+    { id: 'skinny-ombre', name: '20oz Skinny Tumbler \u2013 Ombre', price: 'From $17', area: 'about 8 in \u00d7 3 in', photo: PHOTO_BASE + '20oz%20Skinny%20Tumbler%20-%20Ombre.png', print: { left: 295, top: 130, width: 210, height: 360 } },
+    { id: 'traveler-40oz', name: '40oz Traveler Tumbler', price: 'From $32', area: 'about 9 in \u00d7 4 in', photo: PHOTO_BASE + '40oz%20Traveler%20Tumbler.png', print: { left: 278, top: 150, width: 244, height: 340 } },
+    { id: 'glass-mug', name: 'Glass Mug', price: 'From $13', area: 'about 3 in \u00d7 3 in', photo: PHOTO_BASE + 'Glass%20Mug.png', print: { left: 240, top: 170, width: 260, height: 260 } },
+    { id: 'tshirt-poly', name: 'T-Shirt (Polyester, White)', price: 'From $15', area: 'about 11 in \u00d7 12 in', photo: PHOTO_BASE + 'Adult%20Polyester%20Short%20Sleeve%20T-Shirt%20-%20White.png', print: { left: 315, top: 230, width: 170, height: 220 } },
+    { id: 'tote-medium', name: 'Medium Tote Bag', price: 'From $10', area: 'about 10 in \u00d7 10 in', photo: PHOTO_BASE + 'Medium%20Tote%20Bag.png', print: { left: 265, top: 220, width: 270, height: 250 } }
 ];
 
 let selectedProduct = null;
@@ -224,6 +224,15 @@ function renderProductGrid() {
             '<span class="product-name">' + p.name + '</span>' +
             '<span class="product-price">' + p.price + '</span></div>';
     }).join('');
+}
+
+
+// Puts a new text/graphic in the middle of the chosen product's print area,
+// or the middle of the canvas when no product is picked yet.
+function centerOnCanvas(obj) {
+    const cx = selectedProduct ? selectedProduct.print.left + selectedProduct.print.width / 2 : canvas.width / 2;
+    const cy = selectedProduct ? selectedProduct.print.top + selectedProduct.print.height / 2 : canvas.height / 2;
+    obj.set({ originX: 'center', originY: 'center', left: cx, top: cy });
 }
 
 function drawHint() {
@@ -268,12 +277,12 @@ function drawProductOutline(product) {
         shapes.push(printAreaLabel(295, 108));
     } else if (product.id === 'traveler-40oz') {
         shapes.push(productBody({ left: 255, top: 65, width: 290, height: 470, rx: 30, ry: 30 }));
-        shapes.push(new fabric.Circle({ left: 517, top: 192, radius: 58, fill: 'transparent', stroke: '#0e4d42', strokeWidth: 12, selectable: false, evented: false, isProductGuide: true }));
+        shapes.push(new fabric.Path('M545,230 Q625,300 545,370', { fill: 'transparent', stroke: '#0e4d42', strokeWidth: 12, selectable: false, evented: false, isProductGuide: true }));
         shapes.push(printAreaRect(278, 150, 244, 340));
         shapes.push(printAreaLabel(278, 128));
     } else if (product.id === 'glass-mug') {
         shapes.push(productBody({ left: 215, top: 140, width: 310, height: 320, rx: 14, ry: 14 }));
-        shapes.push(new fabric.Circle({ left: 493, top: 238, radius: 62, fill: 'transparent', stroke: '#0e4d42', strokeWidth: 12, selectable: false, evented: false, isProductGuide: true }));
+        shapes.push(new fabric.Path('M525,240 Q610,300 525,360', { fill: 'transparent', stroke: '#0e4d42', strokeWidth: 12, selectable: false, evented: false, isProductGuide: true }));
         shapes.push(printAreaRect(240, 170, 260, 260));
         shapes.push(printAreaLabel(240, 148));
     } else if (product.id === 'tshirt-poly') {
@@ -296,13 +305,10 @@ function selectProduct(productId) {
     if (!product) return;
     if (selectedProduct && selectedProduct.id === productId) return;
 
-    const userObjects = canvas.getObjects().filter(function(o) { return !o.isProductGuide; });
-    if (userObjects.length > 0) {
-        if (!confirm('Switching products will clear your current design. Continue?')) return;
-    }
-
     selectedProduct = product;
-    canvas.clear();
+    // Swap the outline underneath and keep the customer's design in place,
+    // so switching products never wipes their work (and never pops a dialog).
+    canvas.getObjects().filter(function(o) { return o.isProductGuide; }).forEach(function(o) { canvas.remove(o); });
     drawProductOutline(product);
 
     document.querySelectorAll('.product-card').forEach(function(card) {
@@ -344,6 +350,7 @@ async function searchPixabay() {
             imgElement.onclick = function() {
                 fabric.Image.fromURL(img.largeImageURL, function(oImg) {
                     oImg.scaleToWidth(250);
+                    centerOnCanvas(oImg);
                     canvas.add(oImg);
                     canvas.setActiveObject(oImg);
                     showStatus("✨ Graphic added!", "green");
@@ -371,14 +378,13 @@ function placeTextOnCanvas() {
     const color = document.getElementById('activeColor').value || '#000000';
 
     const text = new fabric.Textbox(userInput, {
-        left: 150,
-        top: 150,
         width: 250,
         fontSize: parseInt(fontSize),
         fill: color,
         fontFamily: fontFamily,
-        textAlign: 'left'
+        textAlign: 'center'
     });
+    centerOnCanvas(text);
 
     canvas.add(text);
     canvas.setActiveObject(text);
@@ -455,6 +461,7 @@ function handleImageUpload(event) {
     reader.onload = function(f) {
         fabric.Image.fromURL(f.target.result, function(img) {
             img.scaleToWidth(300);
+            centerOnCanvas(img);
             canvas.add(img);
             canvas.setActiveObject(img);
         }, { crossOrigin: 'anonymous' });
