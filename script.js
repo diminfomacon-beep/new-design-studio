@@ -148,13 +148,14 @@ function selectProduct(productId) {
 
     const info = document.getElementById('productInfo');
     info.style.display = 'block';
+    // One slim line on purpose: a tall info box would push the canvas down
+    // and shrink it every time a product is picked (the email + timing
+    // details already live in the strip intro above).
     if (product.id === 'blank') {
-        info.innerHTML = '<strong>Blank Canvas</strong> &middot; No product yet' +
-            '<br>Design anywhere on the full canvas. After you submit, we&rsquo;ll email you within 24&ndash;48 business hours to confirm the product and your total.';
+        info.innerHTML = '<strong>Blank Canvas</strong> &middot; No product yet &mdash; design anywhere on the full canvas.';
     } else {
         info.innerHTML = '<strong>' + product.name + '</strong> &middot; ' + product.price +
-            '<br>Print area: ' + product.area +
-            '<br>Custom orders take 5&ndash;14 business days. After you submit, we&rsquo;ll email you within 24&ndash;48 business hours to confirm your order and total.';
+            ' &middot; Print area: ' + product.area;
     }
     showStatus('Product selected: ' + product.name, 'green');
     fitCanvas();
