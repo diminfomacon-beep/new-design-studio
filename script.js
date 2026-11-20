@@ -460,19 +460,24 @@ window.addEventListener('keydown', function(e) {
 // 8. INIT ON LOAD
 // ==========================================================================
 // Keep the whole 800x600 canvas visible: shrink the wrapper to fit the
-// canvas area when the window (or the embed frame) is too small, never
+// space left between the top strip and the panels below the canvas, never
 // growing past full size. Fabric corrects clicks for the CSS scale, so
-// drawing and dragging keep working at any size.
+// drawing and dragging keep working at any size. The canvas area is then
+// sized to the scaled canvas exactly, so the canvas sits right under the
+// strip with no empty space above it or between it and Manage Layers.
 function fitCanvas() {
+    const column = document.querySelector('.canvas-column');
     const area = document.querySelector('.canvas-area');
     const wrapper = document.querySelector('.canvas-wrapper');
-    if (!area || !wrapper) return;
-    const availW = area.clientWidth - 40;
-    const availH = area.clientHeight - 40;
+    const below = document.querySelector('.below-canvas');
+    if (!column || !area || !wrapper || !below) return;
+    const availW = column.clientWidth - 16;
+    const availH = column.clientHeight - below.offsetHeight - 16;
     if (availW <= 0 || availH <= 0) return;
     const scale = Math.min(availW / 800, availH / 600, 1);
     wrapper.style.transform = 'scale(' + scale + ')';
-    wrapper.style.transformOrigin = 'center center';
+    wrapper.style.transformOrigin = 'top center';
+    area.style.height = Math.round(600 * scale + 16) + 'px';
 }
 window.addEventListener('resize', fitCanvas);
 

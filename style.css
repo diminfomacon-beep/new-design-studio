@@ -43,15 +43,14 @@ html, body {
 /* 3. MAIN AREA (Canvas Area) */
 /* 3. MAIN AREA (Right) */
 .canvas-area {
-    flex: 1;
-    min-height: 0;
+    flex: 0 0 auto; /* Height is set by fitCanvas to the scaled canvas */
     overflow: hidden; /* The canvas never scrolls away — it stays put */
     background-color: #cbd5e1; /* Workspace background */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Canvas sits centred in the space */
-    padding: 16px; /* Space between canvas and edges */
+    justify-content: flex-start; /* Canvas pinned to the top, under the strip */
+    padding: 8px; /* Slim padding — no big empty border around the canvas */
     box-sizing: border-box;
 }
 
@@ -373,7 +372,7 @@ button:hover {
     flex-shrink: 0;
     background: #f9fafb;
     border-bottom: 1px solid #d1d5db;
-    padding: 12px 20px;
+    padding: 10px 16px;
     box-sizing: border-box;
 }
 .product-strip-head {
@@ -396,7 +395,7 @@ button:hover {
 .product-strip .product-grid {
     display: flex;
     gap: 10px;
-    margin-top: 10px;
+    margin-top: 8px;
 }
 .product-strip .product-card {
     flex: 1;
@@ -404,7 +403,11 @@ button:hover {
     padding: 6px;
 }
 .product-strip .product-card img {
-    height: 64px;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto;
+    display: block;
+    object-fit: cover;
 }
 .product-strip .product-card .product-name,
 .product-strip .product-card .product-price {
@@ -414,8 +417,9 @@ button:hover {
     text-overflow: ellipsis;
 }
 .product-blank-thumb {
-    width: 100%;
-    height: 64px;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto;
     border: 2px dashed #9ca3af;
     border-radius: 4px;
     background: #ffffff;
@@ -438,8 +442,8 @@ button:hover {
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 0 16px 16px;
+    gap: 8px;
+    padding: 0 8px 10px;
     background: #cbd5e1;
     box-sizing: border-box;
 }
@@ -449,7 +453,7 @@ button:hover {
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
-    padding: 10px 15px;
+    padding: 8px 12px;
 }
 .below-panel h3 {
     margin: 0;
