@@ -291,8 +291,8 @@ function drawProductOutline(product) {
         shapes.push(printAreaLabel(315, 208));
     } else if (product.id === 'tote-medium') {
         shapes.push(productBody({ left: 235, top: 180, width: 330, height: 330, rx: 10, ry: 10 }));
-        shapes.push(new fabric.Path('M300,180 Q365,80 430,180', { fill: 'transparent', stroke: '#0e4d42', strokeWidth: 10, selectable: false, evented: false, isProductGuide: true }));
-        shapes.push(new fabric.Path('M370,180 Q435,80 500,180', { fill: 'transparent', stroke: '#0e4d42', strokeWidth: 10, selectable: false, evented: false, isProductGuide: true }));
+        shapes.push(new fabric.Path('M270,180 Q315,90 360,180', { fill: 'transparent', stroke: '#0e4d42', strokeWidth: 10, selectable: false, evented: false, isProductGuide: true }));
+        shapes.push(new fabric.Path('M440,180 Q485,90 530,180', { fill: 'transparent', stroke: '#0e4d42', strokeWidth: 10, selectable: false, evented: false, isProductGuide: true }));
         shapes.push(printAreaRect(265, 220, 270, 250));
         shapes.push(printAreaLabel(265, 198));
     }
@@ -310,6 +310,10 @@ function selectProduct(productId) {
     // so switching products never wipes their work (and never pops a dialog).
     canvas.getObjects().filter(function(o) { return o.isProductGuide; }).forEach(function(o) { canvas.remove(o); });
     drawProductOutline(product);
+    // The new outline is drawn after the design, so lift the design back on
+    // top — otherwise the solid outline would cover it up.
+    canvas.getObjects().filter(function(o) { return !o.isProductGuide; }).forEach(function(o) { canvas.bringToFront(o); });
+    canvas.renderAll();
 
     document.querySelectorAll('.product-card').forEach(function(card) {
         card.classList.toggle('selected', card.dataset.productId === productId);
