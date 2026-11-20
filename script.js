@@ -31,7 +31,10 @@ const PRODUCTS = [
     { id: 'traveler-40oz', name: '40oz Traveler Tumbler', price: 'From $32', area: 'about 9 in \u00d7 4 in', photo: PHOTO_BASE + '40oz%20Traveler%20Tumbler.png', print: { left: 278, top: 150, width: 244, height: 340 } },
     { id: 'glass-mug', name: 'Glass Mug', price: 'From $13', area: 'about 3 in \u00d7 3 in', photo: PHOTO_BASE + 'Glass%20Mug.png', print: { left: 240, top: 170, width: 260, height: 260 } },
     { id: 'tshirt-poly', name: 'T-Shirt (Polyester, White)', price: 'From $15', area: 'about 11 in \u00d7 12 in', photo: PHOTO_BASE + 'Adult%20Polyester%20Short%20Sleeve%20T-Shirt%20-%20White.png', print: { left: 315, top: 230, width: 170, height: 220 } },
-    { id: 'tote-medium', name: 'Medium Tote Bag', price: 'From $10', area: 'about 10 in \u00d7 10 in', photo: PHOTO_BASE + 'Medium%20Tote%20Bag.png', print: { left: 265, top: 220, width: 270, height: 250 } }
+    { id: 'tote-medium', name: 'Medium Tote Bag', price: 'From $10', area: 'about 10 in \u00d7 10 in', photo: PHOTO_BASE + 'Medium%20Tote%20Bag.png', print: { left: 265, top: 220, width: 270, height: 250 } },
+    // Blank canvas: no outline and no print area — the whole 800x600 canvas
+    // is the design area, and the product is confirmed by email instead.
+    { id: 'blank', name: 'Blank Canvas', price: 'To be confirmed', cardPrice: 'Choose later', area: 'Full canvas (800 x 600)', photo: null, print: { left: 0, top: 0, width: 800, height: 600 } }
 ];
 
 let selectedProduct = null;
@@ -40,10 +43,13 @@ function renderProductGrid() {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
     grid.innerHTML = PRODUCTS.map(function(p) {
+        var thumb = p.photo
+            ? '<img src="' + p.photo + '" alt="' + p.name + '">'
+            : '<div class="product-blank-thumb"></div>';
         return '<div class="product-card" data-product-id="' + p.id + '" onclick="selectProduct(\'' + p.id + '\')">' +
-            '<img src="' + p.photo + '" alt="' + p.name + '">' +
+            thumb +
             '<span class="product-name">' + p.name + '</span>' +
-            '<span class="product-price">' + p.price + '</span></div>';
+            '<span class="product-price">' + (p.cardPrice || p.price) + '</span></div>';
     }).join('');
 }
 
@@ -142,10 +148,16 @@ function selectProduct(productId) {
 
     const info = document.getElementById('productInfo');
     info.style.display = 'block';
-    info.innerHTML = '<strong>' + product.name + '</strong> &middot; ' + product.price +
-        '<br>Print area: ' + product.area +
-        '<br>Custom orders take 5&ndash;14 business days. After you submit, we&rsquo;ll email you within 24&ndash;48 business hours to confirm your order and total.';
+    if (product.id === 'blank') {
+        info.innerHTML = '<strong>Blank Canvas</strong> &middot; No product yet' +
+            '<br>Design anywhere on the full canvas. After you submit, we&rsquo;ll email you within 24&ndash;48 business hours to confirm the product and your total.';
+    } else {
+        info.innerHTML = '<strong>' + product.name + '</strong> &middot; ' + product.price +
+            '<br>Print area: ' + product.area +
+            '<br>Custom orders take 5&ndash;14 business days. After you submit, we&rsquo;ll email you within 24&ndash;48 business hours to confirm your order and total.';
+    }
     showStatus('Product selected: ' + product.name, 'green');
+    fitCanvas();
 }
 
 // ==========================================================================

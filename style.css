@@ -10,7 +10,7 @@ html, body {
 
 .studio-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     height: 100vh;
     width: 100%;
 }
@@ -19,7 +19,7 @@ html, body {
 .sidebar {
     width: 350px; /* Slightly wider for better text input space */
     min-width: 350px;
-    height: 100%;
+    height: auto;
     overflow-y: auto;
     background: #395763;
     padding: 25px;
@@ -43,15 +43,15 @@ html, body {
 /* 3. MAIN AREA (Canvas Area) */
 /* 3. MAIN AREA (Right) */
 .canvas-area {
-    flex-grow: 1;
-    height: 100vh;
+    flex: 1;
+    min-height: 0;
     overflow: hidden; /* The canvas never scrolls away — it stays put */
     background-color: #cbd5e1; /* Workspace background */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center; /* Canvas sits centred in the space */
-    padding: 20px; /* Space between canvas and edges */
+    padding: 16px; /* Space between canvas and edges */
     box-sizing: border-box;
 }
 
@@ -360,3 +360,130 @@ button:hover {
 /* --- Save & Send note --- */
 .save-note { font-size: 12px; line-height: 1.5; color: #54665e; margin: 8px 0 0 0; }
 .save-note a { color: #0e4d42; }
+
+/* 9. NEW DESKTOP LAYOUT — everything on screen at once, no page scroll */
+.studio-main {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+/* Top strip: product chooser across the whole top of the screen */
+.product-strip {
+    flex-shrink: 0;
+    background: #f9fafb;
+    border-bottom: 1px solid #d1d5db;
+    padding: 12px 20px;
+    box-sizing: border-box;
+}
+.product-strip-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+.product-strip-head h3 {
+    font-size: 1rem;
+    margin: 0;
+    color: #1b2a25;
+    white-space: nowrap;
+}
+.product-strip .product-intro {
+    margin: 0;
+    flex: 1;
+    min-width: 260px;
+}
+.product-strip .product-grid {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.product-strip .product-card {
+    flex: 1;
+    min-width: 0;
+    padding: 6px;
+}
+.product-strip .product-card img {
+    height: 64px;
+}
+.product-strip .product-card .product-name,
+.product-strip .product-card .product-price {
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.product-blank-thumb {
+    width: 100%;
+    height: 64px;
+    border: 2px dashed #9ca3af;
+    border-radius: 4px;
+    background: #ffffff;
+    box-sizing: border-box;
+}
+.product-strip .product-info {
+    margin: 8px 0 0;
+    padding: 6px 10px;
+}
+
+/* Middle column: canvas on top, Manage Layers + Save & Send below it */
+.canvas-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+.below-canvas {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 16px 16px;
+    background: #cbd5e1;
+    box-sizing: border-box;
+}
+/* Compact horizontal panels — heading + controls in one row */
+.below-panel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 10px 15px;
+}
+.below-panel h3 {
+    margin: 0;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+.below-panel button {
+    margin-bottom: 0;
+}
+.below-panel .layer-buttons {
+    display: flex;
+    gap: 8px;
+}
+.below-panel .delete-btn {
+    width: auto;
+}
+#tab-save.below-panel form {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+#tab-save.below-panel input[type="text"],
+#tab-save.below-panel input[type="email"] {
+    flex: 1;
+    min-width: 160px;
+    margin-bottom: 0;
+}
+#tab-save.below-panel .save-note,
+#tab-save.below-panel #statusMessage {
+    flex-basis: 100%;
+}
+#tab-save.below-panel .save-note {
+    margin: 0;
+}
