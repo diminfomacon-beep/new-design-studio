@@ -2,8 +2,8 @@
 html, body {
     margin: 0;
     padding: 0;
-    font-family: 'Montserrat', sans-serif; /* Clean, modern font */
-    background-color: #eef0f3;
+    font-family: 'DM Sans', sans-serif;
+    background-color: #fffefb;
     height: 100vh;
     overflow: hidden; /* Prevents the whole page from scrolling */
 }
@@ -21,9 +21,9 @@ html, body {
     min-width: 350px;
     height: auto;
     overflow-y: auto;
-    background: #395763;
+    background: #0e4d42;
     padding: 25px;
-    border-right: 1px solid #d1d5db;
+    border-right: 1px solid #0a3a32;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -32,12 +32,30 @@ html, body {
     box-shadow: 2px 0 10px rgba(0,0,0,0.05);
 }
 
-.sidebar h2 {
-    font-size: 1.2rem;
+/* Brand lockup in the sidebar header */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.brand img {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+.brand-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.15rem;
     color: #fff;
-    margin-bottom: 1px;
-    border-bottom: 2px solid #395763;
-    padding-bottom: 5px;
+    line-height: 1.2;
+}
+.brand-sub {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #f2b13c;
+    margin-top: 2px;
 }
 
 /* 3. MAIN AREA (Canvas Area) */
@@ -45,7 +63,7 @@ html, body {
 .canvas-area {
     flex: 0 0 auto; /* Height is set by fitCanvas to the scaled canvas */
     overflow: hidden; /* The canvas never scrolls away — it stays put */
-    background-color: #cbd5e1; /* Workspace background */
+    background-color: #e3efe9; /* Workspace background */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -68,30 +86,31 @@ html, body {
 .canvas-container {
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     background: white !important;
-    border: 1px solid #ddd;
+    border: 1px solid #e9ddc9;
 }
 
 /* 5. CONTROL PANELS (In Sidebar) */
 .control-panel {
-    background: #f9fafb;
+    background: #ffffff;
     padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    border: 1px solid #e9ddc9;
 }
 
 .control-panel h3 {
     font-size: 0.9rem;
+    font-family: 'DM Serif Display', serif;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-top: 0;
-    color: #6b7280;
+    color: #54665e;
 }
 .control-panel h4 {
     font-size: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-top: 0;
-    color: #6b7280;
+    color: #54665e;
 }
 
 /* UI Elements */
@@ -102,7 +121,7 @@ select {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #d9c8a8;
     border-radius: 4px;
     box-sizing: border-box;
 }
@@ -112,7 +131,7 @@ button {
     padding: 5px 7px;
     border-radius: 4px;
     border: none;
-    background: #395763;
+    background: #0e4d42;
     color: white;
     font-weight: 600;
     transition: background 0.2s;
@@ -121,7 +140,7 @@ button {
 }
 
 button:hover {
-    background: #1a292e;
+    background: #0a3a32;
 }
 
 .delete-btn {
@@ -148,8 +167,8 @@ button:hover {
 .btn-align {
     flex: 1;              /* Makes all 3 buttons equal width */
     height: 32px;         /* Forces a short, professional height */
-    background-color: #395763; /* Light neutral gray (Matches image vibe) */
-    border: 1px solid #395763; /* Clean border */
+    background-color: #0e4d42;
+    border: 1px solid #0e4d42;
     border-radius: 4px;
     padding: 0;
     display: flex;
@@ -161,8 +180,8 @@ button:hover {
 
 /* Hover effect */
 .btn-align:hover {
-    background-color: #1a292e;
-    border-color: #1a292e;
+    background-color: #0a3a32;
+    border-color: #0a3a32;
 }
 
 /* SVG icon styling within the button */
@@ -191,7 +210,7 @@ button:hover {
 }
 
 .gallery-item:hover {
-    border-color: #395763;
+    border-color: #0e4d42;
 }
 
 /* 7. REMOVED ALL MOBILE QUERIES */
@@ -279,14 +298,14 @@ button:hover {
 .template-card span {
     font-size: 12px;
     font-weight: 600;
-    color: #3f3f46;
+    color: #1b2a25;
     display: block;
 }
 
 /* 8. PRODUCT PICKER */
 .product-intro {
     font-size: 12px;
-    color: #4b5563;
+    color: #54665e;
     line-height: 1.5;
     margin: 0 0 12px;
 }
@@ -314,8 +333,8 @@ button:hover {
 }
 
 .product-card.selected {
-    border-color: #00adb5;
-    box-shadow: 0 0 0 2px rgba(0,173,181,0.25);
+    border-color: #b45309;
+    box-shadow: 0 0 0 2px rgba(180,83,9,0.25);
 }
 
 .product-card img {
@@ -337,23 +356,23 @@ button:hover {
 
 .product-card .product-price {
     font-size: 12px;
-    color: #6b7280;
+    color: #54665e;
     display: block;
 }
 
 .product-info {
     margin-top: 12px;
-    background: #eef6f6;
-    border: 1px solid #bfe3e5;
+    background: #fef3c7;
+    border: 1px solid #ecd27a;
     border-radius: 6px;
     padding: 10px 12px;
     font-size: 12px;
     line-height: 1.5;
-    color: #1f2937;
+    color: #1b2a25;
 }
 
 .product-info strong {
-    color: #0f3d3e;
+    color: #0a3a32;
 }
 
 /* --- Save & Send note --- */
@@ -370,8 +389,8 @@ button:hover {
 /* Top strip: product chooser across the whole top of the screen */
 .product-strip {
     flex-shrink: 0;
-    background: #f9fafb;
-    border-bottom: 1px solid #d1d5db;
+    background: #fff6e6;
+    border-bottom: 1px solid #e9ddc9;
     padding: 10px 16px;
     box-sizing: border-box;
 }
@@ -383,6 +402,7 @@ button:hover {
 }
 .product-strip-head h3 {
     font-size: 1rem;
+    font-family: 'DM Serif Display', serif;
     margin: 0;
     color: #1b2a25;
     white-space: nowrap;
@@ -420,7 +440,7 @@ button:hover {
     width: 48px;
     height: 48px;
     margin: 0 auto;
-    border: 2px dashed #9ca3af;
+    border: 2px dashed #b45309;
     border-radius: 4px;
     background: #ffffff;
     box-sizing: border-box;
@@ -447,7 +467,7 @@ button:hover {
     flex-direction: column;
     gap: 8px;
     padding: 0 8px 10px;
-    background: #cbd5e1;
+    background: #e3efe9;
     box-sizing: border-box;
 }
 /* Compact horizontal panels — heading + controls in one row */

@@ -64,7 +64,7 @@ function centerOnCanvas(obj) {
 
 function drawHint() {
     const hint = new fabric.Textbox('Choose a product above to start designing', {
-        left: 400, top: 290, width: 440, fontSize: 22, fill: '#6b7280',
+        left: 400, top: 290, width: 440, fontSize: 22, fill: '#54665e',
         fontFamily: 'Montserrat, sans-serif', textAlign: 'center',
         originX: 'center', originY: 'center',
         selectable: false, evented: false, isProductGuide: true, excludeFromExport: true
