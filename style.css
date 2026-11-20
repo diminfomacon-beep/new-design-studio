@@ -45,14 +45,13 @@ html, body {
 .canvas-area {
     flex-grow: 1;
     height: 100vh;
-    overflow-y: auto;
+    overflow: hidden; /* The canvas never scrolls away — it stays put */
     background-color: #cbd5e1; /* Workspace background */
     display: flex;
     flex-direction: column;
-    /* CHANGE THIS: 'center' to 'flex-start' pins it to the top */
-    align-items: center; 
-    justify-content: flex-start; 
-    padding: 20px; /* Space between canvas and top edge */
+    align-items: center;
+    justify-content: center; /* Canvas sits centred in the space */
+    padding: 20px; /* Space between canvas and edges */
     box-sizing: border-box;
 }
 
@@ -61,9 +60,7 @@ html, body {
     width: 100%;
     display: flex;
     justify-content: center;
-    /* Ensure it doesn't float away */
-    margin-top: 0; 
-    margin-bottom: 40px; 
+    margin: 0;
     position: relative;
     flex-shrink: 0; /* Prevents the canvas from squishing */
 }

@@ -447,10 +447,28 @@ window.addEventListener('keydown', function(e) {
 // ==========================================================================
 // 8. INIT ON LOAD
 // ==========================================================================
+// Keep the whole 800x600 canvas visible: shrink the wrapper to fit the
+// canvas area when the window (or the embed frame) is too small, never
+// growing past full size. Fabric corrects clicks for the CSS scale, so
+// drawing and dragging keep working at any size.
+function fitCanvas() {
+    const area = document.querySelector('.canvas-area');
+    const wrapper = document.querySelector('.canvas-wrapper');
+    if (!area || !wrapper) return;
+    const availW = area.clientWidth - 40;
+    const availH = area.clientHeight - 40;
+    if (availW <= 0 || availH <= 0) return;
+    const scale = Math.min(availW / 800, availH / 600, 1);
+    wrapper.style.transform = 'scale(' + scale + ')';
+    wrapper.style.transformOrigin = 'center center';
+}
+window.addEventListener('resize', fitCanvas);
+
 window.onload = () => {
     initSwatches();
     renderProductGrid();
     drawHint();
+    fitCanvas();
     searchPixabay();        // Initial load for images
     
     // Close palette on click-off
