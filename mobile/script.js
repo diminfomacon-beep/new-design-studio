@@ -9,12 +9,108 @@ const API_URL = "https://api.github.com/repos/diminfomacon-beep/new-design-studi
 let cachedTemplateFiles = [];
 
 // ==========================================================================
+// PRODUCT PICKER — Step 1: choose a product before designing
+// ==========================================================================
+const PHOTO_BASE = 'https://diminfomacon-beep.github.io/Mothers_Day/catalog/photos/';
+const PRODUCTS = [
+    { id: 'skinny-ombre', name: '20oz Skinny Tumbler – Ombre', price: 17, area: 'about 8 in × 3 in', photo: '20oz Skinny Tumbler - Ombre.png', print: { left: 295, top: 130, width: 210, height: 360 } },
+    { id: 'traveler-40oz', name: '40oz Traveler Tumbler', price: 32, area: 'about 9 in × 4 in', photo: '40oz Traveler Tumbler.png', print: { left: 278, top: 150, width: 244, height: 340 } },
+    { id: 'glass-mug', name: 'Glass Mug', price: 13, area: 'about 3 in × 3 in', photo: 'Glass Mug.png', print: { left: 240, top: 170, width: 260, height: 260 } },
+    { id: 'tshirt-poly', name: 'T-Shirt (Polyester, White)', price: 15, area: 'about 11 in × 12 in', photo: 'Adult Polyester Short Sleeve T-Shirt - White.png', print: { left: 315, top: 230, width: 170, height: 220 } },
+    { id: 'tote-medium', name: 'Medium Tote Bag', price: 10, area: 'about 10 in × 10 in', photo: 'Medium Tote Bag.png', print: { left: 265, top: 220, width: 270, height: 250 } }
+];
+let selectedProduct = null;
+
+function buildProductGrid() {
+    const grid = document.getElementById('productGrid');
+    if (!grid) return;
+    grid.innerHTML = PRODUCTS.map(function(prod) {
+        return '<div class="product-card" data-id="' + prod.id + '" onclick="selectProduct(\'' + prod.id + '\')">' +
+            '<img src="' + PHOTO_BASE + encodeURIComponent(prod.photo) + '" alt="' + prod.name + '">' +
+            '<div class="product-name">' + prod.name + '</div>' +
+            '<div class="product-price">From $' + prod.price + '</div></div>';
+    }).join('');
+}
+
+function selectProduct(productId) {
+    const product = PRODUCTS.find(function(x) { return x.id === productId; });
+    if (!product || !canvas) return;
+    selectedProduct = product;
+    // Swap the outline underneath and keep the customer's design in place,
+    // so switching products never wipes their work (and never pops a dialog).
+    canvas.getObjects().filter(function(o) { return o.isProductGuide; }).forEach(function(o) { canvas.remove(o); });
+    drawProductOutline(product);
+    // The new outline is drawn after the design, so lift the design back on
+    // top — otherwise the solid outline would cover it up.
+    canvas.getObjects().filter(function(o) { return !o.isProductGuide; }).forEach(function(o) { canvas.bringToFront(o); });
+    canvas.renderAll();
+    document.querySelectorAll('.product-card').forEach(function(card) {
+        card.classList.toggle('selected', card.dataset.id === productId);
+    });
+    const info = document.getElementById('productInfo');
+    if (info) {
+        info.style.display = 'block';
+        info.innerHTML = '<strong>' + product.name + '</strong> · From $' + product.price +
+            '<br>Print area: ' + product.area +
+            '<br>Custom orders take 5–14 business days. We\'ll email you within 24–48 business hours to confirm your order and total.';
+    }
+}
+
+function drawProductOutline(product) {
+    const shapes = [];
+    const body = { fill: '#fffefb', stroke: '#0e4d42', strokeWidth: 3, selectable: false, evented: false, isProductGuide: true };
+    const pr = product.print;
+    if (product.id === 'skinny-ombre') {
+        shapes.push(new fabric.Rect(Object.assign({}, body, { left: 275, top: 55, width: 250, height: 490, rx: 26, ry: 26 })));
+        shapes.push(new fabric.Rect(Object.assign({}, body, { fill: '#d8d8d8', stroke: '#94a3b8', strokeWidth: 2, left: 300, top: 35, width: 200, height: 26, rx: 8, ry: 8 })));
+    } else if (product.id === 'traveler-40oz') {
+        shapes.push(new fabric.Rect(Object.assign({}, body, { left: 255, top: 65, width: 290, height: 470, rx: 30, ry: 30 })));
+        shapes.push(new fabric.Rect(Object.assign({}, body, { fill: '#d8d8d8', stroke: '#94a3b8', strokeWidth: 2, left: 285, top: 45, width: 230, height: 26, rx: 8, ry: 8 })));
+        shapes.push(new fabric.Path('M545,230 Q625,300 545,370', { fill: 'transparent', stroke: '#0e4d42', strokeWidth: 12, selectable: false, evented: false, isProductGuide: true }));
+    } else if (product.id === 'glass-mug') {
+        shapes.push(new fabric.Rect(Object.assign({}, body, { left: 215, top: 140, width: 310, height: 320, rx: 24, ry: 24 })));
+        shapes.push(new fabric.Path('M525,240 Q610,300 525,360', { fill: 'transparent', stroke: '#0e4d42', strokeWidth: 12, selectable: false, evented: false, isProductGuide: true }));
+    } else if (product.id === 'tshirt-poly') {
+        shapes.push(new fabric.Path('M180,160 L270,115 Q400,175 530,115 L620,160 L565,235 L525,215 L525,510 L275,510 L275,215 L235,235 Z', Object.assign({}, body)));
+    } else if (product.id === 'tote-medium') {
+        shapes.push(new fabric.Rect(Object.assign({}, body, { left: 235, top: 180, width: 330, height: 330 })));
+        shapes.push(new fabric.Path('M270,180 Q315,90 360,180', { fill: 'transparent', stroke: '#0e4d42', strokeWidth: 10, selectable: false, evented: false, isProductGuide: true }));
+        shapes.push(new fabric.Path('M440,180 Q485,90 530,180', { fill: 'transparent', stroke: '#0e4d42', strokeWidth: 10, selectable: false, evented: false, isProductGuide: true }));
+    }
+    // Dashed print area + label (guides, never exported)
+    shapes.push(new fabric.Rect({ left: pr.left, top: pr.top, width: pr.width, height: pr.height, fill: 'transparent', stroke: '#d97706', strokeWidth: 2, strokeDashArray: [8, 6], selectable: false, evented: false, isProductGuide: true, excludeFromExport: true }));
+    shapes.push(new fabric.Text('PRINT AREA', { left: pr.left + pr.width / 2, top: pr.top + 12, originX: 'center', originY: 'center', fontSize: 13, fontFamily: 'Montserrat, sans-serif', fill: '#d97706', selectable: false, evented: false, isProductGuide: true, excludeFromExport: true }));
+    shapes.forEach(function(s) { canvas.add(s); });
+    canvas.renderAll();
+}
+
+// Centre a new object on the selected product's print area (or canvas centre).
+function centerOnCanvas(obj) {
+    let cx = canvas.width / 2, cy = canvas.height / 2;
+    if (selectedProduct) {
+        cx = selectedProduct.print.left + selectedProduct.print.width / 2;
+        cy = selectedProduct.print.top + selectedProduct.print.height / 2;
+    }
+    obj.set({ originX: 'center', originY: 'center', left: cx, top: cy });
+}
+
+
+// ==========================================================================
 // 1. INITIALIZE STUDIO
 // ==========================================================================
 window.onload = () => {
     canvas = new fabric.Canvas('designCanvas');
     initSwatches();
     resizeCanvas();
+    buildProductGrid();
+    // Hint until a product is picked (a guide — removed when a product is chosen)
+    const hint = new fabric.Textbox('Choose a product above to start designing', {
+        left: 400, top: 300, originX: 'center', originY: 'center', width: 500,
+        fontSize: 26, fontFamily: 'Montserrat, sans-serif', fill: '#888888',
+        textAlign: 'center', selectable: false, evented: false,
+        isProductGuide: true, excludeFromExport: true
+    });
+    canvas.add(hint);
     
     // Fire up both your background graphic engine and dynamic template folders together
     searchPixabay('background');
@@ -154,7 +250,7 @@ async function searchPixabay(query) {
                 fabric.Image.fromURL(img.largeImageURL, function(oImg) {
                     oImg.scaleToWidth(250);
                     canvas.add(oImg);
-                    canvas.centerObject(oImg);
+                    centerOnCanvas(oImg);
                     canvas.setActiveObject(oImg);
                     canvas.renderAll();
                     showStatus("✨ Graphic added!", "green");
@@ -183,12 +279,12 @@ function placeTextOnCanvas() {
         fontSize: parseInt(document.getElementById('fontSize').value) || 40,
         fontFamily: document.getElementById('fontFamily').value,
         fill: document.getElementById('activeColor').value,
-        textAlign: 'left'
+        textAlign: 'center'
     });
 
     canvas.add(text);
+    centerOnCanvas(text);
     canvas.setActiveObject(text);
-    canvas.centerObject(text);
     canvas.renderAll();
     document.getElementById('textInput').value = '';
 }
@@ -271,7 +367,7 @@ function handleImageUpload(event) {
         fabric.Image.fromURL(f.target.result, (img) => {
             img.scaleToWidth(300);
             canvas.add(img);
-            canvas.centerObject(img);
+            centerOnCanvas(img);
             canvas.setActiveObject(img);
             canvas.renderAll();
             switchTab('image'); // Returns user to editing panel view
@@ -331,6 +427,11 @@ async function submitToEmail() {
     const email = document.getElementById('custEmail').value;
     const btn = document.getElementById('submitBtn');
 
+    if (!selectedProduct) {
+        showStatus("⚠️ Please choose a product first!", "orange");
+        return;
+    }
+
     if (!name || !email) {
         showStatus("⚠️ Missing Name or Email", "orange");
         return;
@@ -358,7 +459,10 @@ async function submitToEmail() {
             const templateParams = {
                 cust_name: name,
                 cust_email: email,
-                design_image: imgResult.data.url 
+                design_image: imgResult.data.url,
+                product_name: selectedProduct.name,
+                product_price: 'From $' + selectedProduct.price,
+                product_design_area: selectedProduct.area
             };
 
             await emailjs.send('service_ezq1fuc', 'template_ut1r5xk', templateParams);
