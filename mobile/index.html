@@ -40,14 +40,6 @@
                 <div id="productGrid" class="product-grid"></div>
                 <div id="productInfo" class="product-info" style="display:none"></div>
             </div>
-            <div id="tab-templates" class="tab-panel">
-                <label>Choose a Layout Template</label>
-                <div class="input-row" style="margin-bottom: 12px;">
-                    <input type="text" id="templateSearch" placeholder="Search templates..." oninput="filterTemplates()">
-                </div>
-                <div class="template-grid">
-                    </div>
-            </div>
             <div id="tab-image" class="tab-panel">
                 <label>Search Graphics</label>
                 <div class="input-row">
@@ -143,9 +135,6 @@
         <button onclick="switchTab('product')" class="active">
             <span>🛍️</span><br>Product
         </button>
-        <button onclick="switchTab('templates')">
-            <span>🎨</span><br>Templates
-        </button>
         <button onclick="switchTab('image')">
             <span>🖼️</span><br>Graphics
         </button>
@@ -166,6 +155,6 @@
 
 <input type="hidden" id="activeColor" value="#000000">
 
-<script src="script.js?v=4"></script>
+<script src="script.js?v=5"></script>
 </body>
 </html>

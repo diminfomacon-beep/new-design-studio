@@ -1,13 +1,6 @@
 let canvas;
 const PIXABAY_KEY = '54841320-2fc493da46915b0eb0a6f740c';
 
-// GitHub Repository Configurations
-const RAW_BASE_URL = "https://raw.githubusercontent.com/diminfomacon-beep/new-design-studio/1d7347945ed4cdca65a3629a35948af74ad54222/DesignTemplates/";
-const API_URL = "https://api.github.com/repos/diminfomacon-beep/new-design-studio/contents/DesignTemplates?ref=1d7347945ed4cdca65a3629a35948af74ad54222";
-
-// Global cache for instant mobile searching without extra API requests
-let cachedTemplateFiles = [];
-
 // ==========================================================================
 // PRODUCT PICKER — Step 1: choose a product before designing
 // ==========================================================================
@@ -112,9 +105,7 @@ window.onload = () => {
     });
     canvas.add(hint);
     
-    // Fire up both your background graphic engine and dynamic template folders together
     searchPixabay('background');
-    initializeTemplates();
 };
 
 (function() {
@@ -139,92 +130,6 @@ function resizeCanvas() {
 }
 window.addEventListener('resize', resizeCanvas);
 
-// ==========================================================================
-// 3. DYNAMIC GITHUB TEMPLATES LOGIC
-// ==========================================================================
-async function initializeTemplates() {
-    try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error("Failed to scan GitHub directory");
-        
-        const files = await response.json();
-        const imageExtensions = ['png', 'jpg', 'jpeg', 'webp'];
-        
-        cachedTemplateFiles = files.filter(file => {
-            const ext = file.name.split('.').pop().toLowerCase();
-            return file.type === "file" && imageExtensions.includes(ext);
-        });
-
-        renderTemplateGrid(cachedTemplateFiles);
-
-    } catch (error) {
-        console.error("Error reading templates dynamically:", error);
-        const grid = document.querySelector('.template-grid');
-        if (grid) grid.innerHTML = `<p style="color: red; font-size: 11px; text-align: center;">Could not load layouts.</p>`;
-    }
-}
-
-function renderTemplateGrid(filesList) {
-    const grid = document.querySelector('.template-grid');
-    if (!grid) return;
-
-    if (filesList.length === 0) {
-        grid.innerHTML = `<p style="color: #71717a; font-size: 12px; grid-column: 1/-1; text-align: center;">No layouts found.</p>`;
-        return;
-    }
-
-    grid.innerHTML = filesList.map(file => {
-        const fullImageUrl = `${RAW_BASE_URL}${file.name}`;
-        const cleanName = file.name.split('.')[0].replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-
-        return `
-            <div class="template-card" onclick="applyGitHubTemplate('${file.name}')" title="${cleanName}">
-                <img src="${fullImageUrl}" alt="${cleanName}" onerror="this.src='https://placehold.co/150x110?text=Error'">
-            </div>
-        `;
-    }).join('');
-}
-
-function filterTemplates() {
-    const searchInput = document.getElementById('templateSearch');
-    if (!searchInput) return;
-
-    const query = searchInput.value.toLowerCase().trim();
-    const filteredFiles = cachedTemplateFiles.filter(file => file.name.toLowerCase().includes(query));
-    renderTemplateGrid(filteredFiles);
-}
-
-function applyGitHubTemplate(fileName) {
-    if (!canvas) return;
-
-    // REMOVED: canvas.clear(); <- This was wiping the canvas every time!
-
-    const targetUrl = `${RAW_BASE_URL}${fileName}`;
-
-    fabric.Image.fromURL(targetUrl, function(img) {
-        const scaleX = canvas.width / img.width;
-        const scaleY = canvas.height / img.height;
-        const scaleFactor = Math.min(scaleX, scaleY, 1);
-
-        img.set({
-            left: (canvas.width - (img.width * scaleFactor)) / 2,
-            top: (canvas.height - (img.height * scaleFactor)) / 2,
-            scaleX: scaleFactor,
-            scaleY: scaleFactor,
-            cornerColor: '#00adb5',
-            cornerStyle: 'circle',
-            transparentCorners: false
-        });
-
-        canvas.add(img);
-        
-        // CHANGED: Instead of sending it completely to the back layer, 
-        // we just set it as the active object so you can resize and move it immediately.
-        canvas.setActiveObject(img);
-        canvas.renderAll();
-        showStatus("✨ Template added as layer!", "green");
-    }, { crossOrigin: 'anonymous' });
-}
 // ==========================================================================
 // 4. PIXABAY SEARCH GRAPHICS LOGIC
 // ==========================================================================
