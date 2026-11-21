@@ -359,13 +359,25 @@ document.getElementById('submitForm').addEventListener('submit', function(event)
     .then(response => response.json())
     .then(result => {
         if (result.success) {
+            // EmailJS template "Contact Us" (template_ut1r5xk) expects these names:
+            // from_name / from_email (body + subject), name / email (From Name +
+            // Reply-To headers), order_details, grand_total (the template adds
+            // the "$"), design_image. The old cust_* keys matched nothing, so
+            // the emails arrived blank — only the image printed.
+            var custNameVal = document.getElementById('custName').value;
+            var custEmailVal = document.getElementById('custEmail').value;
+            var grandTotalVal = String(selectedProduct.price).replace('From $', '');
             const templateParams = {
-                cust_name: document.getElementById('custName').value,
-                cust_email: document.getElementById('custEmail').value,
+                from_name: custNameVal,
+                from_email: custEmailVal,
+                name: custNameVal,
+                email: custEmailVal,
+                order_details: '\u2022 ' + selectedProduct.name + '\nDesign area: ' + selectedProduct.area,
+                grand_total: grandTotalVal,
+                design_image: result.data.url,
                 product_name: selectedProduct.name,
                 product_price: selectedProduct.price,
-                product_design_area: selectedProduct.area,
-                design_image: result.data.url 
+                product_design_area: selectedProduct.area
             };
             return emailjs.send('service_ezq1fuc', 'template_ut1r5xk', templateParams, '1LZbCPvH49G_r0ypB');
         } else {

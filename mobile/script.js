@@ -361,9 +361,18 @@ async function submitToEmail() {
 
         if (imgResult.success) {
             showStatus("📧 Sending Email...", "#007bff");
+            // EmailJS template "Contact Us" (template_ut1r5xk) expects these names:
+            // from_name / from_email (body + subject), name / email (From Name +
+            // Reply-To headers), order_details, grand_total (the template adds
+            // the "$"), design_image. The old cust_* keys matched nothing, so
+            // the emails arrived blank — only the image printed.
             const templateParams = {
-                cust_name: name,
-                cust_email: email,
+                from_name: name,
+                from_email: email,
+                name: name,
+                email: email,
+                order_details: '\u2022 ' + selectedProduct.name + '\nDesign area: ' + selectedProduct.area,
+                grand_total: selectedProduct.price,
                 design_image: imgResult.data.url,
                 product_name: selectedProduct.name,
                 product_price: 'From $' + selectedProduct.price,
