@@ -329,6 +329,21 @@ function sendBackward() {
 // ==========================================================================
 // 7. FORM SUBMISSION & DOWNLOAD
 // ==========================================================================
+// GitHub backup: the Apps Script web app saves a copy of each submitted
+// design into Dana's private design-submissions repo. Best effort only —
+// it never blocks the email. Same no-cors fire-and-forget pattern as the
+// gift-planning form's sendToAppsScript(). No token lives in this file;
+// the token is stored in the Apps Script's Script Properties.
+const GITHUB_BACKUP_URL = "https://script.google.com/macros/s/AKfycbznQYxccwM6f6MghqPOgh7eoza_5sOgckYT4sSrJAlKbyuqZ0k43pL20JLiylg-2ICEJw/exec";
+function sendToGitHubBackup(base64Image, custName, productName, imgbbUrl) {
+    fetch(GITHUB_BACKUP_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64Image, name: custName, product: productName, imgbbUrl: imgbbUrl })
+    }).catch(function(err) { console.error("GitHub backup failed:", err); });
+}
+
 document.getElementById('submitForm').addEventListener('submit', function(event) {
     event.preventDefault();
     if (!selectedProduct) {
@@ -367,6 +382,9 @@ document.getElementById('submitForm').addEventListener('submit', function(event)
             var custNameVal = document.getElementById('custName').value;
             var custEmailVal = document.getElementById('custEmail').value;
             var grandTotalVal = String(selectedProduct.price).replace('From $', '');
+            // Back up the design to GitHub (best effort — if it fails, the
+            // email below still sends).
+            sendToGitHubBackup(base64Image, custNameVal, selectedProduct.name, result.data.url);
             const templateParams = {
                 from_name: custNameVal,
                 from_email: custEmailVal,

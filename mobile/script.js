@@ -327,6 +327,21 @@ function switchTab(tabId) {
 // ==========================================================================
 // 9. EMAILJS SUBMISSION & LOCAL DOWNLOADS
 // ==========================================================================
+// GitHub backup: the Apps Script web app saves a copy of each submitted
+// design into Dana's private design-submissions repo. Best effort only —
+// it never blocks the email. Same no-cors fire-and-forget pattern as the
+// gift-planning form's sendToAppsScript(). No token lives in this file;
+// the token is stored in the Apps Script's Script Properties.
+const GITHUB_BACKUP_URL = "https://script.google.com/macros/s/AKfycbznQYxccwM6f6MghqPOgh7eoza_5sOgckYT4sSrJAlKbyuqZ0k43pL20JLiylg-2ICEJw/exec";
+function sendToGitHubBackup(base64Image, custName, productName, imgbbUrl) {
+    fetch(GITHUB_BACKUP_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64Image, name: custName, product: productName, imgbbUrl: imgbbUrl })
+    }).catch(function(err) { console.error("GitHub backup failed:", err); });
+}
+
 async function submitToEmail() {
     const name = document.getElementById('custName').value;
     const email = document.getElementById('custEmail').value;
@@ -360,6 +375,8 @@ async function submitToEmail() {
         const imgResult = await imgResponse.json();
 
         if (imgResult.success) {
+            // Back up the design to GitHub (best effort — never blocks the email).
+            sendToGitHubBackup(base64, name, selectedProduct.name, imgResult.data.url);
             showStatus("📧 Sending Email...", "#007bff");
             // EmailJS template "Contact Us" (template_ut1r5xk) expects these names:
             // from_name / from_email (body + subject), name / email (From Name +
