@@ -10,7 +10,10 @@ const PRODUCTS = [
     { id: 'traveler-40oz', name: '40oz Traveler Tumbler', price: 32, area: 'about 9 in × 4 in', photo: '40oz Traveler Tumbler.png', print: { left: 278, top: 150, width: 244, height: 340 } },
     { id: 'glass-mug', name: 'Glass Mug', price: 13, area: 'about 3 in × 3 in', photo: 'Glass Mug.png', print: { left: 240, top: 170, width: 260, height: 260 } },
     { id: 'tshirt-poly', name: 'T-Shirt (Polyester, White)', price: 15, area: 'about 11 in × 12 in', photo: 'Adult Polyester Short Sleeve T-Shirt - White.png', print: { left: 315, top: 230, width: 170, height: 220 } },
-    { id: 'tote-medium', name: 'Medium Tote Bag', price: 10, area: 'about 10 in × 10 in', photo: 'Medium Tote Bag.png', print: { left: 265, top: 220, width: 270, height: 250 } }
+    { id: 'tote-medium', name: 'Medium Tote Bag', price: 10, area: 'about 10 in × 10 in', photo: 'Medium Tote Bag.png', print: { left: 265, top: 220, width: 270, height: 250 } },
+    // Blank canvas: no outline and no print area — the whole 800x600 canvas
+    // is the design area, and the product is confirmed by email instead.
+    { id: 'blank', name: 'Blank Canvas', price: 'To be confirmed', cardPrice: 'Choose later', area: 'Full canvas (800 x 600)', photo: null, print: { left: 0, top: 0, width: 800, height: 600 } }
 ];
 let selectedProduct = null;
 
@@ -18,10 +21,13 @@ function buildProductGrid() {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
     grid.innerHTML = PRODUCTS.map(function(prod) {
+        var thumb = prod.photo
+            ? '<img src="' + PHOTO_BASE + encodeURIComponent(prod.photo) + '" alt="' + prod.name + '">'
+            : '<div class="product-blank-thumb"></div>';
         return '<div class="product-card" data-id="' + prod.id + '" onclick="selectProduct(\'' + prod.id + '\')">' +
-            '<img src="' + PHOTO_BASE + encodeURIComponent(prod.photo) + '" alt="' + prod.name + '">' +
+            thumb +
             '<div class="product-name">' + prod.name + '</div>' +
-            '<div class="product-price">From $' + prod.price + '</div></div>';
+            '<div class="product-price">' + (prod.cardPrice || 'From $' + prod.price) + '</div></div>';
     }).join('');
 }
 
@@ -43,9 +49,14 @@ function selectProduct(productId) {
     const info = document.getElementById('productInfo');
     if (info) {
         info.style.display = 'block';
-        info.innerHTML = '<strong>' + product.name + '</strong> · From $' + product.price +
-            '<br>Print area: ' + product.area +
-            '<br>Custom orders take 5–14 business days. We\'ll email you within 24–48 business hours to confirm your order and total.';
+        if (product.id === 'blank') {
+            info.innerHTML = '<strong>Blank Canvas</strong> &middot; No product yet &mdash; design anywhere on the full canvas.' +
+                '<br>Custom orders take 5–14 business days. We\'ll email you within 24–48 business hours to confirm your order and total.';
+        } else {
+            info.innerHTML = '<strong>' + product.name + '</strong> · From $' + product.price +
+                '<br>Print area: ' + product.area +
+                '<br>Custom orders take 5–14 business days. We\'ll email you within 24–48 business hours to confirm your order and total.';
+        }
     }
 }
 
@@ -70,9 +81,11 @@ function drawProductOutline(product) {
         shapes.push(new fabric.Path('M270,180 Q315,90 360,180', { fill: 'transparent', stroke: '#0e4d42', strokeWidth: 10, selectable: false, evented: false, isProductGuide: true }));
         shapes.push(new fabric.Path('M440,180 Q485,90 530,180', { fill: 'transparent', stroke: '#0e4d42', strokeWidth: 10, selectable: false, evented: false, isProductGuide: true }));
     }
-    // Dashed print area + label (guides, never exported)
-    shapes.push(new fabric.Rect({ left: pr.left, top: pr.top, width: pr.width, height: pr.height, fill: 'transparent', stroke: '#d97706', strokeWidth: 2, strokeDashArray: [8, 6], selectable: false, evented: false, isProductGuide: true, excludeFromExport: true }));
-    shapes.push(new fabric.Text('PRINT AREA', { left: pr.left + pr.width / 2, top: pr.top + 12, originX: 'center', originY: 'center', fontSize: 13, fontFamily: 'Montserrat, sans-serif', fill: '#d97706', selectable: false, evented: false, isProductGuide: true, excludeFromExport: true }));
+    // Dashed print area + label (guides, never exported) — not for Blank Canvas
+    if (product.id !== 'blank') {
+        shapes.push(new fabric.Rect({ left: pr.left, top: pr.top, width: pr.width, height: pr.height, fill: 'transparent', stroke: '#d97706', strokeWidth: 2, strokeDashArray: [8, 6], selectable: false, evented: false, isProductGuide: true, excludeFromExport: true }));
+        shapes.push(new fabric.Text('PRINT AREA', { left: pr.left + pr.width / 2, top: pr.top + 12, originX: 'center', originY: 'center', fontSize: 13, fontFamily: 'Montserrat, sans-serif', fill: '#d97706', selectable: false, evented: false, isProductGuide: true, excludeFromExport: true }));
+    }
     shapes.forEach(function(s) { canvas.add(s); });
     canvas.renderAll();
 }
@@ -393,7 +406,7 @@ async function submitToEmail() {
                 grand_total: selectedProduct.price,
                 design_image: imgResult.secure_url,
                 product_name: selectedProduct.name,
-                product_price: 'From $' + selectedProduct.price,
+                product_price: selectedProduct.id === 'blank' ? selectedProduct.price : 'From $' + selectedProduct.price,
                 product_design_area: selectedProduct.area
             };
 
