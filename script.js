@@ -335,12 +335,12 @@ function sendBackward() {
 // gift-planning form's sendToAppsScript(). No token lives in this file;
 // the token is stored in the Apps Script's Script Properties.
 const GITHUB_BACKUP_URL = "https://script.google.com/macros/s/AKfycbznQYxccwM6f6MghqPOgh7eoza_5sOgckYT4sSrJAlKbyuqZ0k43pL20JLiylg-2ICEJw/exec";
-function sendToGitHubBackup(base64Image, custName, productName, imgbbUrl) {
+function sendToGitHubBackup(base64Image, custName, productName, imageUrl) {
     fetch(GITHUB_BACKUP_URL, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64Image, name: custName, product: productName, imgbbUrl: imgbbUrl })
+        body: JSON.stringify({ image: base64Image, name: custName, product: productName, imageUrl: imageUrl })
     }).catch(function(err) { console.error("GitHub backup failed:", err); });
 }
 
@@ -365,15 +365,16 @@ document.getElementById('submitForm').addEventListener('submit', function(event)
     const base64Image = fullDataURL.split(',')[1]; 
     
     const formData = new FormData();
-    formData.append("image", base64Image);
+    formData.append("file", "data:image/png;base64," + base64Image);
+    formData.append("upload_preset", "gift_planning");
 
-    fetch("https://api.imgbb.com/1/upload?key=54309054fcb7bc0531b2f51c73e1802e", {
+    fetch("https://api.cloudinary.com/v1_1/dpsmcu07f/image/upload", {
         method: "POST",
         body: formData
     })
     .then(response => response.json())
     .then(result => {
-        if (result.success) {
+        if (result.secure_url) {
             // EmailJS template "Contact Us" (template_ut1r5xk) expects these names:
             // from_name / from_email (body + subject), name / email (From Name +
             // Reply-To headers), order_details, grand_total (the template adds
@@ -384,7 +385,7 @@ document.getElementById('submitForm').addEventListener('submit', function(event)
             var grandTotalVal = String(selectedProduct.price).replace('From $', '');
             // Back up the design to GitHub (best effort — if it fails, the
             // email below still sends).
-            sendToGitHubBackup(base64Image, custNameVal, selectedProduct.name, result.data.url);
+            sendToGitHubBackup(base64Image, custNameVal, selectedProduct.name, result.secure_url);
             const templateParams = {
                 from_name: custNameVal,
                 from_email: custEmailVal,
@@ -392,7 +393,7 @@ document.getElementById('submitForm').addEventListener('submit', function(event)
                 email: custEmailVal,
                 order_details: '\u2022 ' + selectedProduct.name + '\nDesign area: ' + selectedProduct.area,
                 grand_total: grandTotalVal,
-                design_image: result.data.url,
+                design_image: result.secure_url,
                 product_name: selectedProduct.name,
                 product_price: selectedProduct.price,
                 product_design_area: selectedProduct.area

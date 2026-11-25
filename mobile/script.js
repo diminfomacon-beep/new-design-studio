@@ -333,12 +333,12 @@ function switchTab(tabId) {
 // gift-planning form's sendToAppsScript(). No token lives in this file;
 // the token is stored in the Apps Script's Script Properties.
 const GITHUB_BACKUP_URL = "https://script.google.com/macros/s/AKfycbznQYxccwM6f6MghqPOgh7eoza_5sOgckYT4sSrJAlKbyuqZ0k43pL20JLiylg-2ICEJw/exec";
-function sendToGitHubBackup(base64Image, custName, productName, imgbbUrl) {
+function sendToGitHubBackup(base64Image, custName, productName, imageUrl) {
     fetch(GITHUB_BACKUP_URL, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64Image, name: custName, product: productName, imgbbUrl: imgbbUrl })
+        body: JSON.stringify({ image: base64Image, name: custName, product: productName, imageUrl: imageUrl })
     }).catch(function(err) { console.error("GitHub backup failed:", err); });
 }
 
@@ -366,17 +366,18 @@ async function submitToEmail() {
 
         showStatus("☁️ Uploading Image...", "orange");
         const formData = new FormData();
-        formData.append("image", base64);
+        formData.append("file", "data:image/png;base64," + base64);
+        formData.append("upload_preset", "gift_planning");
 
-        const imgResponse = await fetch("https://api.imgbb.com/1/upload?key=54309054fcb7bc0531b2f51c73e1802e", {
+        const imgResponse = await fetch("https://api.cloudinary.com/v1_1/dpsmcu07f/image/upload", {
             method: "POST",
             body: formData
         });
         const imgResult = await imgResponse.json();
 
-        if (imgResult.success) {
+        if (imgResult.secure_url) {
             // Back up the design to GitHub (best effort — never blocks the email).
-            sendToGitHubBackup(base64, name, selectedProduct.name, imgResult.data.url);
+            sendToGitHubBackup(base64, name, selectedProduct.name, imgResult.secure_url);
             showStatus("📧 Sending Email...", "#007bff");
             // EmailJS template "Contact Us" (template_ut1r5xk) expects these names:
             // from_name / from_email (body + subject), name / email (From Name +
@@ -390,7 +391,7 @@ async function submitToEmail() {
                 email: email,
                 order_details: '\u2022 ' + selectedProduct.name + '\nDesign area: ' + selectedProduct.area,
                 grand_total: selectedProduct.price,
-                design_image: imgResult.data.url,
+                design_image: imgResult.secure_url,
                 product_name: selectedProduct.name,
                 product_price: 'From $' + selectedProduct.price,
                 product_design_area: selectedProduct.area
