@@ -13,7 +13,7 @@ const PRODUCTS = [
     { id: 'tote-medium', name: 'Medium Tote Bag', price: 10, area: 'about 10 in × 10 in', photo: 'Medium Tote Bag.png', print: { left: 265, top: 220, width: 270, height: 250 } },
     // Blank canvas: no outline and no print area — the whole 800x600 canvas
     // is the design area, and the product is confirmed by email instead.
-    { id: 'blank', name: 'Blank Canvas', price: 'To be confirmed', cardPrice: 'Choose later', area: 'Full canvas (800 x 600)', photo: null, print: { left: 0, top: 0, width: 800, height: 600 } }
+    { id: 'blank', name: 'Blank Canvas', price: 'To be confirmed', area: 'Full canvas (800 x 600)', photo: null, print: { left: 0, top: 0, width: 800, height: 600 } }
 ];
 let selectedProduct = null;
 
@@ -27,7 +27,7 @@ function buildProductGrid() {
         return '<div class="product-card" data-id="' + prod.id + '" onclick="selectProduct(\'' + prod.id + '\')">' +
             thumb +
             '<div class="product-name">' + prod.name + '</div>' +
-            '<div class="product-price">' + (prod.cardPrice || 'From $' + prod.price) + '</div></div>';
+            (prod.id === 'blank' ? '' : '<div class="product-price">' + (prod.cardPrice || 'From $' + prod.price) + '</div>') + '</div>';
     }).join('');
 }
 
