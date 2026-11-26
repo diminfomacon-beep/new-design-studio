@@ -200,6 +200,7 @@ async function searchPixabay() {
             };
             gallery.appendChild(imgElement);
         });
+        showStatus("", "#555");
     } catch (error) {
         showStatus("❌ Search failed", "red");
     }
