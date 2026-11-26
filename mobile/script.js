@@ -1,5 +1,9 @@
 let canvas;
-const PIXABAY_KEY = '54841320-2fc493da46915b0eb0a6f740c';
+// Pixabay search goes through the D.I.M. Pixabay Relay (Google Apps Script)
+// so the API key is never in this public code. The key lives in the relay's
+// Script Properties. Paste the deployed relay /exec URL below (see
+// ~/workspace/pixabay-relay/README.md). Graphic search will not work until set.
+const PIXABAY_RELAY_URL = 'https://script.google.com/macros/s/AKfycbwGIOR2dzbtdJyux5d2nOCJRTH-UtR_6y9uJdbOf1DPYlUmT2LrvTG_hwHl9OmNFxjl7A/exec';
 
 // ==========================================================================
 // PRODUCT PICKER — Step 1: choose a product before designing
@@ -150,7 +154,7 @@ async function searchPixabay(query) {
     const q = query || document.getElementById('pixabaySearch').value;
     if (!q) return;
 
-    const url = `https://pixabay.com/api/?key=${PIXABAY_KEY}&q=${encodeURIComponent(q)}&image_type=vector&safesearch=true&per_page=42`;
+    const url = `${PIXABAY_RELAY_URL}?q=${encodeURIComponent(q)}&per_page=42`;
     
     try {
         const response = await fetch(url);
