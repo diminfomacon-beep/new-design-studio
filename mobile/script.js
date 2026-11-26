@@ -370,6 +370,11 @@ async function submitToEmail() {
         return;
     }
 
+    // Email must be a real email address (the input is type=email, so use the
+    // browser's own check).
+    var emailEl = document.getElementById('custEmail');
+    if (!emailEl.checkValidity()) { emailEl.reportValidity(); return; }
+
     btn.disabled = true;
     showStatus("📤 Preparing Design...", "blue");
 

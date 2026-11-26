@@ -346,6 +346,8 @@ function sendToGitHubBackup(base64Image, custName, productName, imageUrl) {
 
 document.getElementById('submitForm').addEventListener('submit', function(event) {
     event.preventDefault();
+    // Email must be a real email address before anything is sent.
+    if (!event.target.checkValidity()) { event.target.reportValidity(); return; }
     if (!selectedProduct) {
         showStatus("Please choose a product first!", "orange");
         return;
